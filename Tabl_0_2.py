@@ -11,19 +11,19 @@ class PropertiesDialog():
         self.ApplyBoo = False
         
         self.paramsMaster = [
-        ['#', 'Rhino', '0'],
-        ['GUID', 'Rhino', '1'],
-        ['Type', 'Rhino', '2'],
-        ['Name', 'Rhino', '3'],
-        ['Layer', 'Rhino', '4'],
-        ['Display Color', 'Rhino', '5'],
-        ['Linetype', 'Rhino', '6'],
-        ['Print Color', 'Rhino', '7'],
-        ['Print Width', 'Rhino', '8'],
-        ['Render Material', 'Rhino', '9'],
-        ['Length', 'Rhino', '10'],
-        ['Area', 'Rhino', '11'],
-        ['Volume', 'Rhino', '12']
+        ['#', 'Rhino', '0', '0' ],
+        ['GUID', 'Rhino', '1', '1'],
+        ['Type', 'Rhino', '2', '2'],
+        ['Name', 'Rhino', '3', '3'],
+        ['Layer', 'Rhino', '4', '4'],
+        ['Display Color', 'Rhino', '5', '5'],
+        ['Linetype', 'Rhino', '6', '6'],
+        ['Print Color', 'Rhino', '7', '7'],
+        ['Print Width', 'Rhino', '8', '8'],
+        ['Render Material', 'Rhino', '9', '9'],
+        ['Length', 'Rhino', '10', '10'],
+        ['Area', 'Rhino', '11', '11'],
+        ['Volume', 'Rhino', '12', '12']
         ]
         
         self.displayParams = []
@@ -117,6 +117,9 @@ class PropertiesDialog():
             for colToMove in colsToMove:
                 tempDisplayData.append(colToMove)
             self.grid_Display.DataStore = tempDisplayData
+            
+            #Save to sticky
+            sc.sticky['grid_Display.DataStore'] = self.grid_Display.DataStore
         except:
             print "OnToRightPressed failed"
 
@@ -160,6 +163,9 @@ class PropertiesDialog():
                 if each:
                     newMasterData.append(self.paramsMaster[i])
             self.grid_Master.DataStore = newMasterData
+            
+            #Save to sticky
+            sc.sticky['grid_Display.DataStore'] = self.grid_Display.DataStore
         except:
             print "OnToLeftPressed failed"
     
@@ -200,7 +206,7 @@ class PropertiesDialog():
     def OnNewParam(self, sender, e):
         try:
             existingData = self.grid_Master.DataStore
-            newParamItem = ['', 'User Text', '']
+            newParamItem = ['', 'User Text', '', '']
             existingData.append(newParamItem)
             self.grid_Master.DataStore = existingData
             row = int(len(existingData))
@@ -236,9 +242,6 @@ class PropertiesDialog():
                     break
         except:
             print "OnCellEdited failed"
-    
-    def GetDisplayProperties(self):
-        return self.grid_Display.DataStore
 
 class WebBrowser(forms.Dialog):
     def __init__(self, path):
@@ -694,13 +697,17 @@ class Tabl_(forms.Form):
     def Initialize(self):
         print "Initializing"
         
+        #Properties tab
+        self.propDialog = PropertiesDialog()
+        
         #Variables
         self.activeHeadingIndex = []
         self.rows = []
         
-        #Properties tab
-        self.propDialog = PropertiesDialog()
-        
+        if 'grid_Display.DataStore' in sc.sticky:
+            self.propDialog.grid_Display.DataStore = sc.sticky['grid_Display.DataStore']
+        else:
+            self.propDialog.grid_Display.DataStore = [['#', 'Rhino', '0', '0'], ['Name', 'Rhino', '3', '3']]
         ########################################################################
         #Form Setup
         self.Title = "Tabl_"
@@ -914,7 +921,7 @@ class Tabl_(forms.Form):
             self.countLbl = forms.Label(Text = "Selection Error")
             ########################################################################
             #Columns
-            self.CreateColumnsFromProperties([['#', 'Rhino', '0'], ['Name', 'Rhino', '3']])
+            self.CreateColumnsFromProperties(self.propDialog.grid_Display.DataStore)
             ########################################################################
             #Lists
             self.SetupLists()
@@ -1164,8 +1171,7 @@ class Tabl_(forms.Form):
             self.grid.Columns.Clear()
             self.grid.DataStore = []
             
-            visibleProperties = self.propDialog.GetDisplayProperties()
-            self.CreateColumnsFromProperties(visibleProperties)
+            self.CreateColumnsFromProperties(self.propDialog.grid_Display.DataStore)
             self.Regen()
         except:
             print "OnTabChangedToTable failed"
@@ -1185,6 +1191,14 @@ class Tabl_(forms.Form):
             self.grid.Columns.Add(tempCol)
 
     def OnTabChangedToPropManager(self):
+        self.propDialog.displayParams = self.currentProperties
+        self.propDialog.grid_Display.DataStore = self.currentProperties
+        tempMasterData = list(self.propDialog.grid_Master.DataStore)
+        for eachProp in self.currentProperties:
+            for i, eachMasterProp in enumerate(tempMasterData):
+                if eachMasterProp[3] == eachProp[3]:
+                    tempMasterData.pop(i)
+        self.propDialog.grid_Master.DataStore = tempMasterData
         print "Property Tab"
 
     def OnTest(self, sender, e):
