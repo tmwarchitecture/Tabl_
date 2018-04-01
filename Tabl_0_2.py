@@ -23,7 +23,9 @@ class PropertiesDialog():
         ['Render Material', 'Rhino', '9', '9'],
         ['Length', 'Rhino', '10', '10'],
         ['Area', 'Rhino', '11', '11'],
-        ['Volume', 'Rhino', '12', '12']
+        ['Volume', 'Rhino', '12', '12'],
+        ['IsPlanar', 'Rhino', '16', '16'],
+        ['IsClosed', 'Rhino', '17', '17']
         ]
         
         self.displayParams = []
@@ -1018,21 +1020,16 @@ class Tabl_(forms.Form):
     def CheckSticky(self):
         print "Checking sticky"
         try:
-            self.CheckStickyForProperties()
+            self.CheckStickyForSettings()
             self.GetObjsFromSticky()
         except:
             print "CheckSticky() failed"
 
-    def CheckStickyForProperties(self):
+    def CheckStickyForSettings(self):
         if 'colorFormat' in sc.sticky:
             self.colorFormat = sc.sticky['colorFormat']
         else:
             self.colorFormat = 1
-        
-        for i, parameter in enumerate(self.paramStates):
-            if str(parameter) in sc.sticky: bool = sc.sticky[str(parameter)]
-            else: bool = True
-            self.columns[i].Visible = bool #Show visible columns
 
     def SetObjs2Sticky(self):
         sc.sticky["self.rows"] = self.rows
@@ -1162,7 +1159,7 @@ class Tabl_(forms.Form):
                 self.OnTabChangedToPropManager()
             #print self.propDialog.grid_Display.DataStore
         except:
-            print "OnButtoNTest Failed"
+            print "OnTabChanged Failed\n***************"
 
     def OnTabChangedToTable(self):
         try:
@@ -1178,23 +1175,21 @@ class Tabl_(forms.Form):
 
     def CreateColumnsFromProperties(self, properties):
         self.activeHeadingIndex = []
-        self.activeProperties = []
+        self.activePropertiesFunc = []
         for i, property in enumerate(properties):
             tempCol = forms.GridColumn()
             tempCol.HeaderText = property[0] + " \t"
             tempCol.DataCell = forms.TextBoxCell(i)
             tempCol.Sortable = True
             self.activeHeadingIndex.append(property[2])
-            self.activeProperties.append(property[2])
+            self.activePropertiesFunc.append(property[2])
             if property[1] == "User Text":
                 tempCol.Editable = True
             self.grid.Columns.Add(tempCol)
 
     def OnTabChangedToPropManager(self):
-        self.propDialog.displayParams = self.currentProperties
-        self.propDialog.grid_Display.DataStore = self.currentProperties
         tempMasterData = list(self.propDialog.grid_Master.DataStore)
-        for eachProp in self.currentProperties:
+        for eachProp in self.propDialog.grid_Display.DataStore:
             for i, eachMasterProp in enumerate(tempMasterData):
                 if eachMasterProp[3] == eachProp[3]:
                     tempMasterData.pop(i)
@@ -1224,6 +1219,10 @@ class Tabl_(forms.Form):
             if newObjs is None: return
             
             self.rows += newObjs
+            
+            #Save to sticky
+            self.SetObjs2Sticky()
+            
             #Regen
             self.Regen()
             print "AddByPicking() Succeeded"
@@ -1300,7 +1299,7 @@ class Tabl_(forms.Form):
     def Regen(self, *args):
         try:
             #Remove blank GUIDs
-            #self.CleanGUIDs()
+            self.CleanGUIDs()
             #Regen Data
             self.RegenData2()
             #Regen Format
@@ -1314,14 +1313,16 @@ class Tabl_(forms.Form):
         """
         try:
             count = 0
+            print "self.rows:\n" + str(self.rows)
             for i, eachRow in enumerate(self.rows):
-                if len(eachRow)>0:
+                if len(str(eachRow))>0:
                     if not rs.IsObject(str(eachRow)):
                         count += 1
                         self.rows.pop(i)
             if count > 0:
                 print "{} objects from previous selection not found.".format(count)
             self.SetObjs2Sticky()
+            print "CleanGUIDs() suceeded"
         except:
             print "CleanGUIDs() failed"
 
@@ -1732,17 +1733,55 @@ class Tabl_(forms.Form):
                     except:
                         return None
                         print "volume failed"
+                
+                def IsObjPlanar(obj):
+                    try:
+                        if rs.IsCurve(obj):
+                            isPlanar = str(rs.IsCurvePlanar(obj))
+                        elif rs.IsSurface(obj):
+                            isPlanar = str(rs.IsSurfacePlanar(obj))
+                        else:
+                            isPlanar = ""
+                        try:
+                            isPlanar
+                        except:
+                            isPlanar = ""
+                        return isPlanar
+                    except:
+                        return ""
+                        print "isPlanar failed"
+
+                def IsObjClosed(obj):
+                    try:
+                        if isCurve:
+                            isClosed = str(rs.IsCurveClosed(obj))
+                        elif rs.IsPolysurface(obj):
+                            isClosed = str(rs.IsPolysurfaceClosed(obj))
+                        elif isSurface:
+                            isClosed = str(rs.IsPolysurfaceClosed(obj))
+                        else:
+                            isClosed = ""
+                        try:
+                            isClosed
+                        except:
+                            isClosed = ""
+                        return isClosed
+                    except:
+                        return ""
+                        print "isClosed failed"
+                
+                
                 #print ""
                 #print "\tProcessing obj: " + str(obj)
                 #print "\tProcessing obj with propNum :" + str(propNum)
                 
                 if propNum == 0:
                     result = rowNum+1
+                    
                 try:
                     if len(str(obj))>6:
                         pass
                     else:
-                        #print "\tNot an object"
                         return ""
                 except:
                     return ""
@@ -1781,7 +1820,11 @@ class Tabl_(forms.Form):
                     result = GetObjArea(obj)
                 if propNum == 12:
                     result = GetObjVolume(obj)
-                print "\tResult: " + str(result)
+                if propNum == 16:
+                    result = IsObjPlanar(obj)
+                if propNum == 17:
+                    result = IsObjClosed(obj)
+                #print "\tResult: " + str(result)
                 return str(result)
             
             #RegenData2
@@ -1791,12 +1834,11 @@ class Tabl_(forms.Form):
             #---GetObjColor
             
             #print "rows: " + str(self.rows)
-            #print "activeProperties: " + str(self.activeProperties)
             
             dataStore = []
             for i, eachRow in enumerate(self.rows):
                 tempRow = []
-                for eachProperty in self.activeProperties:
+                for eachProperty in self.activePropertiesFunc:
                     tempRow.append(GetProperty(i, eachRow, int(eachProperty)))
                 dataStore.append(tempRow)
             #print "Received properties: " + str(dataStore)
@@ -2044,14 +2086,15 @@ class Tabl_(forms.Form):
     #Checkbox Events
     def onCheckboxChanged(self, sender, e):
         try:
-            checkboxName = sender.Text.split(" ")[0]
-            for i, item in enumerate(self.colNames):
-                if checkboxName == item:
-                    number = i
-                    break
+            print "onCheckboxChanged is OBSOLETE"
+            #checkboxName = sender.Text.split(" ")[0]
+            #for i, item in enumerate(self.colNames):
+            #    if checkboxName == item:
+            #        number = i
+            #        break
 
-            sc.sticky[self.paramStates[number]] = self.checkboxes[number].Checked
-            self.columns[number].Visible = self.checkboxes[number].Checked
+            #sc.sticky[self.paramStates[number]] = self.checkboxes[number].Checked
+            #self.columns[number].Visible = self.checkboxes[number].Checked
         except:
             print "onCheckboxChanged() failed"
 
