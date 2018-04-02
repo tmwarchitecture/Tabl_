@@ -1253,31 +1253,37 @@ class Tabl_(forms.Form):
 
     def RemoveSelection(self, sender, e):
         try:
-            print "RemoveSelection() Running"
+            #print "RemoveSelection() Running"
             #Get objs to remove
             items = list(self.grid.SelectedItems)
             if items is None: return
-            for item in items:
-                try:
-                    self.RemoveByGUID(str(item[self.guid_Num]))
-                    
-                except:
-                    print "RemoveByGUID failed"
-            rowNums = list(self.grid.SelectedRows)
-            if rowNums is None: return
-            for row in self.rows:
-                self.rows.pop(int(row))
-            #Regen
+            
+            itemNums = list(self.grid.SelectedRows)
+            itemNums.sort(reverse = True)
+            
+            for itemNum in itemNums:
+                self.RemoveByIndex(itemNum)
+            
             self.Regen()
             print "RemoveSelection() Finished"
         except:
             print "RemoveSelection failed"
+
+    def RemoveByIndex(self, index):
+        try:
+            #clean self.rows
+            self.rows.pop(int(index))
+        except:
+            print "RemoveByIndex failed"
 
     def RemoveByGUID(self, guid):
         for i, obj in enumerate(self.rows):
             if str(obj) == str(guid):
                 del self.rows[i]
                 break
+        
+        print "INSIDE"
+        
         #Remove from dataStore
         data = self.grid.DataStore
         for i, each in enumerate(data):
