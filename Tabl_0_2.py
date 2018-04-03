@@ -1874,12 +1874,15 @@ class Tabl_(forms.Form):
     #Modify object functions
     def OnSelectFromGrid(self, sender, e):
         try:
-            selectItems = []
-            items = list(self.grid.SelectedItems)
-            for item in items:
-                if len(item)>0:
-                    selectItems.append(str(item[self.guid_Num]))
-            rs.SelectObjects(selectItems)
+            itemNums = list(self.grid.SelectedRows)
+            if itemNums is None: return
+            itemNums.sort(reverse = True)
+            
+            finalObjs = []
+            for itemNum in itemNums:
+                if rs.IsObject(self.rows[itemNum]):
+                    finalObjs.append(self.rows[itemNum])
+            rs.SelectObjects(finalObjs)
         except:
             print "OnSelectFromGrid() failed"
 
