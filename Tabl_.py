@@ -1,4 +1,4 @@
-import Rhino
+import Rhino as rc
 import Rhino.UI
 import Eto.Drawing as drawing
 import Eto.Forms as forms
@@ -6,13 +6,44 @@ import rhinoscriptsyntax as rs
 import scriptcontext as sc
 import os.path as op
 
+class Parameter():
+    def __init__(self, name, num, alignment = forms.TextAlignment.Left):
+        self.name = name
+        
+        #Columns
+        self.colNum = num
+        self.col = forms.GridColumn()
+        self.col.Visible = False
+        self.col.HeaderText = name + " \t"
+        self.col.DataCell = forms.TextBoxCell(num)
+        self.col.DataCell.TextAlignment = alignment
+        
+        #Checkbox
+        self.checkBox = forms.CheckBox()
+        self.checkBox.Text = name
+        self.checkBox.CheckedChanged += self.onCheckboxChanged
+        #if self.paramStates[i] in sc.sticky:
+        #    parameter.checkBox.Checked = sc.sticky[self.paramStates[i]]
+        #else:
+        #    parameter.checkBox.Checked = True
+        
+        #Other
+        self.sortDescending = True
+    
+    def onCheckboxChanged(self, sender, e):
+        try:
+            print "{} is now {}".format(self.name, self.checkBox.Checked)
+            self.col.Visible = self.checkBox.Checked
+        except:
+            print "onCheckboxChanged() failed"
+
 class SettingsDialog(forms.Dialog):
     def __init__(self):
         self.Title = "Settings"
         self.Padding = drawing.Padding(5)
         self.Resizable = False
         self.CreateLayout()
-        path = Rhino.PlugIns.PlugIn.PathFromName("Tabl_")
+        path = rc.PlugIns.PlugIn.PathFromName("Tabl_")
         dirName = op.dirname(path)
         iconPath = dirName + r"\mainIcon.ico"
         self.Icon = drawing.Icon(iconPath)
@@ -104,17 +135,43 @@ class SettingsDialog(forms.Dialog):
 class Tabl_Form(forms.Form):
     def __init__(self):
         ########################################################################
+        self.SetupParameters()
         #Setup Form
         self.Initialize()
         #Create Controls
         self.CreateLayout()
         #Check Sticky
-        self.CheckSticky()
+        #self.CheckSticky()
         #Setup Grid
         self.Regen()
         #Events
         self.CreateEvents()
-
+    
+    #################################TEST
+    def SetupParameters(self):
+        self.objs = []
+        
+        self.parameters = []
+        self.parameters.append(Parameter("#", 0, forms.TextAlignment.Right))
+        self.parameters.append(Parameter("GUID", 1))
+        self.parameters.append(Parameter("Type", 2))
+        self.parameters.append(Parameter("Name", 3))
+        self.parameters.append(Parameter("Layer", 4))
+        self.parameters.append(Parameter("Color", 5))
+        self.parameters.append(Parameter("Linetype", 6))
+        self.parameters.append(Parameter("PrintColor", 7))
+        self.parameters.append(Parameter("PrintWidth", 8))
+        self.parameters.append(Parameter("Material", 9))
+        self.parameters.append(Parameter("Length", 10))
+        self.parameters.append(Parameter("Area", 11, forms.TextAlignment.Right))
+        self.parameters.append(Parameter("Volume", 12, forms.TextAlignment.Right))
+        self.parameters.append(Parameter("NumEdges", 13, forms.TextAlignment.Right))
+        self.parameters.append(Parameter("NumPts", 14, forms.TextAlignment.Right))
+        self.parameters.append(Parameter("Degree", 15, forms.TextAlignment.Right))
+        self.parameters.append(Parameter("CenterZ", 16, forms.TextAlignment.Right))
+        self.parameters.append(Parameter("IsPlanar", 17))
+        self.parameters.append(Parameter("IsClosed", 18))
+    
     #Initialize
     def Initialize(self):
         ########################################################################
@@ -138,7 +195,7 @@ class Tabl_Form(forms.Form):
         ########################################################################
         #Form Icon
         def loadImages():
-            path = Rhino.PlugIns.PlugIn.PathFromName("Tabl_")
+            path = rc.PlugIns.PlugIn.PathFromName("Tabl_")
             dirName = op.dirname(path)
             try:
                 iconPath = dirName + r"\mainIcon.ico"
@@ -263,29 +320,6 @@ class Tabl_Form(forms.Form):
             ########################################################################
             #Checkboxes & Columns
             def createCheckboxes():
-                #Checkbox - Show Number
-                self.showNum = forms.CheckBox()
-                self.showGUID = forms.CheckBox()
-                self.showType = forms.CheckBox()
-                self.showName = forms.CheckBox()
-                self.showLayer = forms.CheckBox()
-                self.showColor = forms.CheckBox()
-                self.showLinetype = forms.CheckBox()
-                self.showP_Color = forms.CheckBox()
-                self.showP_Width = forms.CheckBox()
-                self.showMaterial = forms.CheckBox()
-                self.showLength = forms.CheckBox()
-                self.showArea = forms.CheckBox()
-                self.showVol = forms.CheckBox()
-                self.showNumEdges = forms.CheckBox()
-                self.showNumPts = forms.CheckBox()
-                self.showDegree = forms.CheckBox()
-                self.showCenterZ = forms.CheckBox()
-                self.showIsPlanar = forms.CheckBox()
-                self.showIsClosed = forms.CheckBox()
-                
-                
-
                 #Checkbox - Show Units
                 self.showUnits = forms.CheckBox()
                 if 'showUnitsChecked' in sc.sticky:
@@ -312,108 +346,14 @@ class Tabl_Form(forms.Form):
                     self.showHeaders.Checked = True
                 self.showHeaders.Text = "Export Headers\t"
                 self.showHeaders.CheckedChanged += self.showHeadersChanged
-
-            def createColumns():
-                #Column -Number
-                self.numCol = forms.GridColumn()
-                self.numCol.DataCell.TextAlignment = forms.TextAlignment.Right
-                self.numColSortUp = True
-
-                #Column - GUID
-                self.guidCol = forms.GridColumn()
-                self.guidColSortUp = True
-
-                #Column - Type
-                self.typeCol = forms.GridColumn()
-                self.typeColSortUp = True
-
-                #Column - Name
-                self.nameCol = forms.GridColumn()
-                self.nameCol.Sortable = True
-                self.nameCol.Editable = True
-                self.nameColSortUp = True
-
-                #Column - Layer
-                self.layerCol = forms.GridColumn()
-                self.layerColSortUp = True
-
-                #Column - Color
-                self.colorCol = forms.GridColumn()
-                self.colorColSortUp = True
-
-                #Column - linetype
-                self.linetypeCol = forms.GridColumn()
-                self.linetypeColSortUp = True
-
-                #Column - p_color
-                self.p_colorCol = forms.GridColumn()
-                self.p_colorColSortUp = True
-
-                #Column - p_width
-                self.p_widthCol = forms.GridColumn()
-                self.p_widthCol.DataCell.TextAlignment = forms.TextAlignment.Right
-                self.p_widthColSortUp = True
-
-                #Column - Material
-                self.materialCol = forms.GridColumn()
-                self.materialColSortUp = True
-
-                #Column - Length
-                self.lengthCol = forms.GridColumn()
-                self.lengthCol.DataCell.TextAlignment = forms.TextAlignment.Right
-                self.lengthColSortUp = True
-
-                #Column - Area
-                self.areaCol = forms.GridColumn()
-                self.areaCol.DataCell.TextAlignment = forms.TextAlignment.Right
-                self.areaColSortUp = True
-
-                #Column - Volume
-                self.volCol = forms.GridColumn()
-                self.volCol.DataCell.TextAlignment = forms.TextAlignment.Right
-                self.volColSortUp = True
-
-                #Column - Num Edges
-                self.numEdgesCol = forms.GridColumn()
-                self.numEdgesColSortUp = True
-                #Column - Num Pts
-                self.numPtsCol = forms.GridColumn()
-                self.numPtsColSortUp = True
-                #Column - Degree
-                self.degreeCol = forms.GridColumn()
-                self.degreeColSortUp = True
-                #Column - Center Z
-                self.centerZCol = forms.GridColumn()
-                self.centerZColSortUp = True
-                #Column - Is Planar
-                self.isPlanarCol = forms.GridColumn()
-                self.isPlanarColSortUp = True
-                #Column - Is Closed
-                self.isClosedCol = forms.GridColumn()
-                self.isClosedColSortUp = True
-
-            def createCheckboxSettings():
-                for i in range(len(self.checkboxes)):
-                    self.checkboxes[i].Text = self.colNames[i] + " \t"
-                    self.checkboxes[i].CheckedChanged += self.onCheckboxChanged
-                    if self.paramStates[i] in sc.sticky:
-                        self.checkboxes[i].Checked = sc.sticky[self.paramStates[i]]
-                    else:
-                        self.checkboxes[i].Checked = True
-            def createColumnSettings():
-                for i in range(len(self.columns)):
-                    self.columns[i].HeaderText = self.colNames[i] + " \t"
-                    self.columns[i].DataCell = forms.TextBoxCell(i)
-                    self.grid.Columns.Add(self.columns[i])
-                for num in self.alignRightCols:
-                    self.columns[num].DataCell.TextAlignment = forms.TextAlignment.Right
             
             try:
+                #Create other checkboxes
                 createCheckboxes()
-                createColumns()
-                self.SetupLists()
-                createCheckboxSettings()
-                createColumnSettings()
+                
+                #Create Columns
+                for parameter in self.parameters:
+                    self.grid.Columns.Add(parameter.col)
             except:
                 print "Column and Checkbox Setup failed"
             ########################################################################
@@ -483,8 +423,9 @@ class Tabl_Form(forms.Form):
                 self.parameterGroup = forms.GroupBox(Text = "Properties")
                 self.parameterGroup.Padding = drawing.Padding(5)
                 self.parameterLayout = forms.DynamicLayout()
-                for checkbox in self.checkboxes:
-                    self.parameterLayout.AddRow(checkbox)
+                for parameter in self.parameters:
+                    #parameter.checkBox = forms.CheckBox()
+                    self.parameterLayout.AddRow(parameter.checkBox)
                 self.parameterLayout.AddRow(None)
                 self.parameterGroup.Content = self.parameterLayout
 
@@ -507,7 +448,7 @@ class Tabl_Form(forms.Form):
             self.gridLayout.AddSeparateRow(self.addSelection, self.removeSelection,self.updateSelection, self.btnSettings, None,self.btnCopy, self.btnExport, self.btnClose)
             self.gridGroupBox.Content = self.gridLayout
             self.gridLayout.Spacing = drawing.Size(5, 5)
-
+            
             #Dynamic Layout - paramPanel
             self.paramPanel = forms.DynamicLayout()
             self.paramPanel.AddSeparateRow(self.parameterGroup)
@@ -519,171 +460,6 @@ class Tabl_Form(forms.Form):
         except:
             print "CreateControls() failed"
 
-    #Setup the lists
-    def SetupLists(self):
-        self.columns = [
-        self.numCol,
-        self.guidCol,
-        self.typeCol,
-        self.nameCol,
-        self.layerCol,
-        self.colorCol,
-        self.linetypeCol,
-        self.p_colorCol,
-        self.p_widthCol,
-        self.materialCol,
-        self.lengthCol,
-        self.areaCol,
-        self.volCol,
-        self.numEdgesCol,
-        self.numPtsCol,
-        self.degreeCol,
-        self.centerZCol,
-        self.isPlanarCol,
-        self.isClosedCol,
-        ]
-
-        self.colNames = [
-        "#",        #0
-        "GUID",     #1
-        "Type",     #2
-        "Name",     #3
-        "Layer",    #4
-        "Color",    #5
-        "Linetype", #6
-        "PrintColor",  #7
-        "PrintWidth",  #8
-        "Material", #9
-        "Length",   #10
-        "Area",     #11
-        "Volume",   #12
-        "NumEdges", #13
-        "NumPts",   #14
-        "Degree",  #15
-        "CenterZ",  #16
-        "IsPlanar", #17
-        "IsClosed"  #18
-        ]
-
-        self.checkboxes = [
-        self.showNum,
-        self.showGUID,
-        self.showType,
-        self.showName,
-        self.showLayer,
-        self.showColor,
-        self.showLinetype,
-        self.showP_Color,
-        self.showP_Width,
-        self.showMaterial,
-        self.showLength,
-        self.showArea,
-        self.showVol,
-        self.showNumEdges,
-        self.showNumPts,
-        self.showDegree,
-        self.showCenterZ,
-        self.showIsPlanar,
-        self.showIsClosed
-        ]
-
-        self.paramStates = [
-        "showNumChecked",       #0
-        "showGUIDChecked",      #1
-        "showTypeChecked",      #2
-        "showNameChecked",      #3
-        "showLayerChecked",     #4
-        "showColorChecked",     #5
-        "showLinetypeChecked",  #6
-        "showP_ColorChecked",   #7
-        "showP_WidthChecked",   #8
-        "showMaterialChecked",  #9
-        "showLengthChecked",    #10
-        "showAreaChecked",      #11
-        "showVolChecked",       #12
-        "showNumEdgesChecked",  #14
-        "showNumPtsChecked",    #15
-        "showDegreeChecked",   #16
-        "showCenterZChecked",   #17
-        "showIsPlanarChecked",  #18
-        "showIsClosedChecked"   #19
-        ]
-
-        self.num_Num = 0
-        self.guid_Num = 1
-        self.type_Num = 2
-        self.name_Num = 3
-        self.layer_Num = 4
-        self.color_Num = 5
-        self.linetype_Num = 6
-        self.p_color_Num = 7
-        self.p_width_Num = 8
-        self.material_Num = 9
-        self.length_Num = 10
-        self.area_Num = 11
-        self.volume_Num = 12
-        self.numEdges_Num = 13
-        self.numPts_Num = 14
-        self.degrees_Num = 15
-        self.centerZ_Num = 16
-        self.isPlanar_Num = 17
-        self.isClosed_Num = 18
-
-        self.sortDirections = [
-        self.numColSortUp,      #0
-        self.guidColSortUp,     #1
-        self.typeColSortUp,     #2
-        self.nameColSortUp,     #3
-        self.layerColSortUp,    #4
-        self.colorColSortUp,    #5
-        self.linetypeColSortUp, #6
-        self.p_colorColSortUp,  #7
-        self.p_widthColSortUp,  #8
-        self.materialColSortUp, #9
-        self.lengthColSortUp,   #10
-        self.areaColSortUp,     #11
-        self.volColSortUp,      #12
-        self.numEdgesColSortUp, #14
-        self.numPtsColSortUp,   #15
-        self.degreeColSortUp,  #16
-        self.centerZColSortUp,  #17
-        self.isPlanarColSortUp, #18
-        self.isClosedColSortUp  #19
-        ]
-        
-        self.alignRightCols = [
-        self.num_Num,
-        self.p_width_Num,
-        self.length_Num,
-        self.area_Num,
-        self.volume_Num,
-        self.numEdges_Num,
-        self.numPts_Num,
-        self.degrees_Num,
-        self.centerZ_Num
-        ]
-
-        self.typeDict = {
-        0       : "Unknown object",
-        1       : "Point",
-        2       : "Point cloud",
-        4       : "Curve",
-        8       : "Surface",
-        16      : "Polysurface",
-        32      : "Mesh",
-        256     : "Light",
-        512     : "Annotation",
-        4096    : "Block",
-        8192    : "Text dot object",
-        16384   : "Grip object",
-        32768   : "Detail",
-        65536   : "Hatch",
-        131072  : "Morph control",
-        134217728  : "Cage",
-        268435456  : "Phantom",
-        536870912  : "Clipping plane"
-        }
-
     #CheckSticky
     def CheckSticky(self):
         try:
@@ -691,35 +467,35 @@ class Tabl_Form(forms.Form):
             self.GetObjsFromSticky()
         except:
             print "CheckSticky() failed"
-
+    
     def CheckStickyForProperties(self):
         for i, parameter in enumerate(self.paramStates):
             if str(parameter) in sc.sticky: bool = sc.sticky[str(parameter)]
             else: bool = True
             self.columns[i].Visible = bool #Show visible columns
-
+    
     def SetObjs2Sticky(self):
         sc.sticky["self.objs"] = self.objs
-
+    
     def GetObjsFromSticky(self):
         try:
             self.objs = sc.sticky["self.objs"]
         except:
             self.objs = []
-
+    
     #CreateEvents
     def CreateEvents(self):
-        Rhino.Commands.Command.EndCommand += self.OnModifyObject
+        rc.Commands.Command.EndCommand += self.OnModifyObject
         sc.doc.ActiveDoc.ModifyObjectAttributes += self.OnModifyObject
 
     def RemoveEvents(self):
         sc.doc.ActiveDoc.ModifyObjectAttributes -= self.OnModifyObject
-        Rhino.Commands.Command.EndCommand -= self.OnModifyObject
+        rc.Commands.Command.EndCommand -= self.OnModifyObject
 
     def OnSettingsDialog(self, sender, e):
         try:
             settingsDialog = SettingsDialog()
-            settingsDialog.ShowModal(Rhino.UI.RhinoEtoApp.MainWindow)
+            settingsDialog.ShowModal(rc.UI.RhinoEtoApp.MainWindow)
             if settingsDialog.applyBool:
                 self.Regen()
         except:
@@ -1061,7 +837,7 @@ class Tabl_Form(forms.Form):
                 isClosed
                 ]
                 return thisData
-
+            
             self.data = []
             for i, obj in enumerate(self.objs):
                 try:
@@ -1187,17 +963,17 @@ class Tabl_Form(forms.Form):
     def activeHeadingsList(self):
         currentHeadings = []
         for i, each in enumerate(self.colNames):
-            if self.checkboxes[i].Checked:
-                currentHeadings.append(str(each))
+            #if self.checkboxes[i].Checked:
+            currentHeadings.append(str(each))
         return currentHeadings
 
     def activeDataList(self):
         currentDataIndex = []
-
-        for i, each in enumerate(self.checkboxes):
-            if each.Checked:
+        
+        for i, each in enumerate(self.parameters):
+            if each.checkBox.Checked:
                 currentDataIndex.append(i)
-
+        
         newDataStore = []
         for row in self.grid.DataStore:
             rowAttribute = []
@@ -1285,19 +1061,6 @@ class Tabl_Form(forms.Form):
             print "closeDialog() failed"
 
     #Checkbox Events
-    def onCheckboxChanged(self, sender, e):
-        try:
-            checkboxName = sender.Text.split(" ")[0]
-            for i, item in enumerate(self.colNames):
-                if checkboxName == item:
-                    number = i
-                    break
-
-            sc.sticky[self.paramStates[number]] = self.checkboxes[number].Checked
-            self.columns[number].Visible = self.checkboxes[number].Checked
-        except:
-            print "onCheckboxChanged() failed"
-
     def showUnitsChanged(self, sender, e):
         sc.sticky['showUnitsChecked'] = self.showUnits.Checked
         if self.showUnits.Checked:
@@ -1613,7 +1376,7 @@ def main():
     version = "Version 0.1.0"
 
     Tabl = Tabl_Form()
-    Tabl.Owner = Rhino.UI.RhinoEtoApp.MainWindow
+    Tabl.Owner = rc.UI.RhinoEtoApp.MainWindow
     Tabl.Show()
 
 if __name__ == "__main__":
