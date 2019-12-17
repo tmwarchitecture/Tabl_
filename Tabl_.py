@@ -17,6 +17,7 @@ class Parameter():
         self.col.HeaderText = name + " \t"
         self.col.DataCell = forms.TextBoxCell(num)
         self.col.DataCell.TextAlignment = alignment
+        self.col.Sortable = True
         
         #Checkbox
         self.checkBox = forms.CheckBox()
@@ -37,18 +38,40 @@ class Parameter():
         except:
             print "onCheckboxChanged() failed"
 
-class SettingsDialog(forms.Dialog):
+class Settings():
     def __init__(self):
+        self.version = "Version 1.1.0"
+        
+        #Color Format
+        if 'settings.colorFormat' in sc.sticky:
+            self.colorFormat = sc.sticky['settings.colorFormat']
+        else:
+            self.colorFormat = 0
+        
+        #Decimal Places
+        if 'settings.decPlaces' in sc.sticky:
+            self.decPlaces = sc.sticky['settings.decPlaces']
+        else:
+            self.decPlaces = 2
+        
+        #Comma Seperator
+        if 'settings.commaSep' in sc.sticky:
+            self.commaSep = sc.sticky['settings.commaSep']
+        else:
+            self.commaSep = False
+        
+        self.applyBool = False
+
+class SettingsDialog(forms.Dialog):
+    def __init__(self, settings):
+        #Variables
+        self.settings = settings
+        self.applyBool = False
+        self.initColorFormat = 0
         self.Title = "Settings"
         self.Padding = drawing.Padding(5)
         self.Resizable = False
         self.CreateLayout()
-        path = rc.PlugIns.PlugIn.PathFromName("Tabl_")
-        dirName = op.dirname(path)
-        iconPath = dirName + r"\mainIcon.ico"
-        self.Icon = drawing.Icon(iconPath)
-        #Variables
-        self.applyBool = False
 
     def CreateLayout(self):
         self.CreateControls()
@@ -59,68 +82,128 @@ class SettingsDialog(forms.Dialog):
 
         self.numFormatGroup = forms.GroupBox(Text = "Number Format")
         self.numFormatLayout = forms.DynamicLayout()
-        self.numFormatLayout.AddSeparateRow(self.label1, self.numericDecPlaces, None)
-        self.numFormatLayout.AddSeparateRow(self.showCommas, None)
+        self.numFormatLayout.Spacing = drawing.Size(5, 5)
+        self.numFormatLayout.AddSeparateRow(self.label1, None, self.numericDecPlaces)
+        self.numFormatLayout.AddSeparateRow(self.label2, None, self.seperatorDropDown)
+        #self.numFormatLayout.AddSeparateRow(self.showCommas, None)
         self.numFormatGroup.Content = self.numFormatLayout
-
+        
         layout = forms.DynamicLayout()
         layout.AddSeparateRow(self.numFormatGroup, None)
         layout.AddSeparateRow(self.colorFormatGroup)
-        layout.AddSeparateRow(self.lblVersion, None)
+        layout.AddSeparateRow(self.optionsGroup)
+        layout.AddSeparateRow(self.updateModeGroup)
         layout.AddSeparateRow(None, self.btnCancel, self.btnApply)
         layout.AddRow(None)
+        layout.Spacing = drawing.Size(5, 5)
 
         self.Content = layout
+        
+        print "Creating Layout"
 
     def CreateControls(self):
+        print "Creating Controls"
         self.label1 = forms.Label()
         self.label1.Text = "Decimal Places"
         
-        self.lblVersion = forms.Label(Text = version)
-
-        self.showCommas = forms.CheckBox(Text = "Thousands Separator")
-        try:
-            self.showCommas.Checked = commaSep
-        except:
-            print "showCommas failed"
-
+        self.label2 = forms.Label()
+        self.label2.Text = "Thousands Separator\t"
+        
         self.btnApply = forms.Button()
         self.btnApply.Text = "OK"
         self.btnApply.Click += self.OnApplySettings
-
+        
         self.btnCancel = forms.Button()
         self.btnCancel.Text = "Cancel"
         self.btnCancel.Click += self.OnCancelSettings
-
+        ########################################################################
+        
+        #Seperator
+        self.seperatorDropDown = forms.DropDown()
+        self.seperatorDropDown.DataStore = ['None','Comma\t","', 'Dot\t"."', 'Space\t" "']
+        self.seperatorDropDown.SelectedIndex = self.settings.commaSep
+        
+        #Dec Places
         self.numericDecPlaces = forms.NumericUpDown()
         self.numericDecPlaces.DecimalPlaces  = 0
         self.numericDecPlaces.MaxValue = 8
         self.numericDecPlaces.MinValue = 0
+        self.numericDecPlaces.Value = self.settings.decPlaces
         
-        try:
-            self.numericDecPlaces.Value = int(decPlaces)
-        except:
-            print "numericDecPlaces failed"
-
+        #Color Format
         self.colorRadioBtn = forms.RadioButtonList()
         self.colorRadioBtn.DataStore = ["Name", "R-G-B", "R,G,B"]
         self.colorRadioBtn.Orientation = forms.Orientation.Vertical
+        self.colorRadioBtn.SelectedIndex = self.settings.colorFormat
+        
+        ########################################################################
+        #Checkbox - Show Units
+        self.showUnits = forms.CheckBox()
+        if 'showUnitsChecked' in sc.sticky:
+            self.showUnits.Checked = sc.sticky['showUnitsChecked']
+        else:
+            self.showUnits.Checked = False
+        self.showUnits.Text = "Show Units\t"
+        #self.showUnits.CheckedChanged += self.showUnitsChanged
+
+        #Checkbox - Show Total
+        self.showTotal = forms.CheckBox()
+        if 'showTotalChecked' in sc.sticky:
+            self.showTotal.Checked = sc.sticky['showTotalChecked']
+        else:
+            self.showTotal.Checked = False
+        self.showTotal.Text = "Show Total\t"
+        #self.showTotal.CheckedChanged += self.showTotalChanged
+
+        #Checkbox - Show Headers
+        self.showHeaders = forms.CheckBox()
+        if 'showHeadersChecked' in sc.sticky:
+            self.showHeaders.Checked = sc.sticky['showHeadersChecked']
+        else:
+            self.showHeaders.Checked = True
+        self.showHeaders.Text = "Export Headers\t"
+        #self.showHeaders.CheckedChanged += self.showHeadersChanged
+        
+        ########################################################################
+        #Radiobutton - Auto-manual
+        self.radioMode = forms.RadioButtonList()
+        self.radioMode.DataStore = ["Automatic", "Manual"]
+        self.radioMode.Orientation = forms.Orientation.Vertical
         try:
-            self.colorRadioBtn.SelectedIndex = colorFormat
+            self.radioMode.SelectedIndex = sc.sticky['radioMode']
         except:
-            print "colorRadioBtn failed"
+            self.radioMode.SelectedIndex = 1
+        #self.radioMode.SelectedIndexChanged += self.OnRadioChanged
+        
+        ########################################################################
+        #Groupbox - Checkboxes - Options
+        self.optionsGroup = forms.GroupBox(Text = "Options")
+        self.optionsGroup.Padding = drawing.Padding(5)
+        self.optionsLayout = forms.DynamicLayout()
+        self.optionsLayout.AddRow(self.showUnits)
+        self.optionsLayout.AddRow(self.showTotal)
+        self.optionsLayout.AddRow(self.showHeaders)
+        #self.optionsLayout.AddRow(self.showPreview)
+        self.optionsLayout.AddRow(None)
+        self.optionsGroup.Content = self.optionsLayout
+        
+        #Groupbox - Radio - Update
+        self.updateModeGroup = forms.GroupBox(Text = "Update")
+        self.updateModeGroup.Padding = drawing.Padding(5)
+        self.updateModeGroup.Content = self.radioMode
 
     def OnApplySettings(self, sender, e):
         try:
-            global decPlaces
-            decPlaces = self.numericDecPlaces.Value
-            global commaSep
-            commaSep = self.showCommas.Checked
-            global colorFormat
-            colorFormat = self.colorRadioBtn.SelectedIndex
-            sc.sticky['decPlaces'] = int(decPlaces)
-            sc.sticky['commaSep'] = bool(commaSep)
-            sc.sticky['colorFormat'] = int(colorFormat)
+            print "Applying Settings"
+            self.settings.decPlaces = self.numericDecPlaces.Value
+            sc.sticky['settings.decPlaces'] = self.settings.decPlaces
+            
+            self.settings.commaSep = self.seperatorDropDown.SelectedIndex
+            sc.sticky['settings.commaSep'] = self.settings.commaSep
+            
+            self.settings.colorFormat = self.colorRadioBtn.SelectedIndex
+            sc.sticky['settings.colorFormat'] = self.settings.colorFormat
+            
             self.applyBool = True
             self.Close()
         except:
@@ -128,9 +211,11 @@ class SettingsDialog(forms.Dialog):
 
     def OnCancelSettings(self, sender, e):
         try:
+            print "Cancelled"
             self.Close()
         except:
             print "Failed to cancel settings"
+
 
 class Tabl_Form(forms.Form):
     def __init__(self):
@@ -150,6 +235,7 @@ class Tabl_Form(forms.Form):
     #################################TEST
     def SetupParameters(self):
         self.objs = []
+        self.guids = []
         
         self.parameters = []
         self.parameters.append(Parameter("#", 0, forms.TextAlignment.Right))
@@ -190,7 +276,8 @@ class Tabl_Form(forms.Form):
         self.Closed += self.closeDialog
         self.SizeChanged += self.OnSizeChanged
         
-        
+        #Settings
+        self.settings = Settings()
 
         ########################################################################
         #Form Icon
@@ -247,7 +334,7 @@ class Tabl_Form(forms.Form):
             def createGrid():
                 self.grid = forms.GridView()
                 self.grid.BackgroundColor = drawing.Colors.LightGrey
-                self.grid.AllowColumnReordering = False
+                self.grid.AllowColumnReordering = True
                 self.grid.GridLines = forms.GridLines.Both
                 self.grid.Border = forms.BorderType.Line
                 self.grid.AllowMultipleSelection = True
@@ -319,38 +406,7 @@ class Tabl_Form(forms.Form):
             self.countLbl = forms.Label(Text = "Selection Error")
             ########################################################################
             #Checkboxes & Columns
-            def createCheckboxes():
-                #Checkbox - Show Units
-                self.showUnits = forms.CheckBox()
-                if 'showUnitsChecked' in sc.sticky:
-                    self.showUnits.Checked = sc.sticky['showUnitsChecked']
-                else:
-                    self.showUnits.Checked = False
-                self.showUnits.Text = "Show Units\t"
-                self.showUnits.CheckedChanged += self.showUnitsChanged
-
-                #Checkbox - Show Total
-                self.showTotal = forms.CheckBox()
-                if 'showTotalChecked' in sc.sticky:
-                    self.showTotal.Checked = sc.sticky['showTotalChecked']
-                else:
-                    self.showTotal.Checked = False
-                self.showTotal.Text = "Show Total\t"
-                self.showTotal.CheckedChanged += self.showTotalChanged
-
-                #Checkbox - Show Headers
-                self.showHeaders = forms.CheckBox()
-                if 'showHeadersChecked' in sc.sticky:
-                    self.showHeaders.Checked = sc.sticky['showHeadersChecked']
-                else:
-                    self.showHeaders.Checked = True
-                self.showHeaders.Text = "Export Headers\t"
-                self.showHeaders.CheckedChanged += self.showHeadersChanged
-            
             try:
-                #Create other checkboxes
-                createCheckboxes()
-                
                 #Create Columns
                 for parameter in self.parameters:
                     self.grid.Columns.Add(parameter.col)
@@ -414,11 +470,6 @@ class Tabl_Form(forms.Form):
             createButtons()
             ########################################################################
             def createGroups():
-                #Groupbox - Radio - Update
-                self.updateModeGroup = forms.GroupBox(Text = "Update")
-                self.updateModeGroup.Padding = drawing.Padding(5)
-                self.updateModeGroup.Content = self.radioMode
-
                 #Groupbox - Checkboxes - Properties
                 self.parameterGroup = forms.GroupBox(Text = "Properties")
                 self.parameterGroup.Padding = drawing.Padding(5)
@@ -429,15 +480,6 @@ class Tabl_Form(forms.Form):
                 self.parameterLayout.AddRow(None)
                 self.parameterGroup.Content = self.parameterLayout
 
-                #Groupbox - Checkboxes - Options
-                self.optionsGroup = forms.GroupBox(Text = "Options")
-                self.optionsGroup.Padding = drawing.Padding(5)
-                self.optionsLayout = forms.DynamicLayout()
-                self.optionsLayout.AddRow(self.showUnits)
-                self.optionsLayout.AddRow(self.showTotal)
-                self.optionsLayout.AddRow(self.showHeaders)
-                self.optionsLayout.AddRow(None)
-                self.optionsGroup.Content = self.optionsLayout
             createGroups()
             ########################################################################
             #Dynamic Layout - gridLayout
@@ -475,40 +517,40 @@ class Tabl_Form(forms.Form):
             self.columns[i].Visible = bool #Show visible columns
     
     def SetObjs2Sticky(self):
-        sc.sticky["self.objs"] = self.objs
+        sc.sticky["self.guids"] = self.guids
     
     def GetObjsFromSticky(self):
         try:
-            self.objs = sc.sticky["self.objs"]
+            self.guids = sc.sticky["self.guids"]
         except:
-            self.objs = []
+            self.guids = []
     
     #CreateEvents
     def CreateEvents(self):
         rc.Commands.Command.EndCommand += self.OnModifyObject
         sc.doc.ActiveDoc.ModifyObjectAttributes += self.OnModifyObject
 
-    def RemoveEvents(self):
-        sc.doc.ActiveDoc.ModifyObjectAttributes -= self.OnModifyObject
-        rc.Commands.Command.EndCommand -= self.OnModifyObject
-
     def OnSettingsDialog(self, sender, e):
         try:
-            settingsDialog = SettingsDialog()
-            settingsDialog.ShowModal(rc.UI.RhinoEtoApp.MainWindow)
-            if settingsDialog.applyBool:
-                self.Regen()
+            settingsDialog = SettingsDialog(self.settings)
+            settingsDialog.ShowModal(Rhino.UI.RhinoEtoApp.MainWindow)
+            #if settingsDialog.applyBool:
+            #    self.colorFormat = settingsDialog.colorRadioBtn.SelectedIndex
+            #    self.Regen()
         except:
             print "OnSettingsDialog() failed"
+            #print self.settingsDialog
 
     #Change selection functions
     def AddByPicking(self, sender, e):
         try:
-            rs.LockObjects(self.objs)
-            newObjs = rs.GetObjects("Select objects to add to selection", preselect = True)
-            rs.UnlockObjects(self.objs)
-            if newObjs is None: return
-            self.objs += newObjs
+            rs.LockObjects(self.guids)
+            newIDs = rs.GetObjects("Select objects to add to selection", preselect = True)
+            rs.UnlockObjects(self.guids)
+            if newIDs is None: return
+            self.guids += newIDs
+            for id in newIDs:
+                self.objs.append(rs.coercerhinoobject(id))
             #Regen
             self.Regen()
         except:
@@ -518,17 +560,15 @@ class Tabl_Form(forms.Form):
         try:
             #Get objs to remove
             rs.EnableRedraw(False)
-            tempLock = rs.InvertSelectedObjects(rs.SelectObjects(self.objs))
+            tempLock = rs.InvertSelectedObjects(rs.SelectObjects(self.guids))
             rs.LockObjects(tempLock)
             rs.EnableRedraw(True)
             items = rs.GetObjects("Select objects to remove from selection", preselect = True)
             rs.UnlockObjects(tempLock)
             if items is None: return
             for item in items:
-                try:
-                    self.RemoveByGUID(str(item))
-                except:
-                    pass
+                if item in self.guids:
+                    self.guids.remove(item)
             #Regen
             self.Regen()
         except:
@@ -546,12 +586,6 @@ class Tabl_Form(forms.Form):
         #Regen
         self.Regen()
 
-    def RemoveByGUID(self, guid):
-        for i, obj in enumerate(self.objs):
-            if str(obj) == str(guid):
-                del self.objs[i]
-                break
-
     def Regen(self, *args):
         #Remove blank GUIDs
         self.CleanGUIDs()
@@ -564,14 +598,14 @@ class Tabl_Form(forms.Form):
         try:
             existingGUIDs = []
             count = 0
-            for i, obj in enumerate(self.objs):
+            for i, obj in enumerate(self.guids):
                 if rs.IsObject(obj):
                     existingGUIDs.append(obj)
                 else:
                     count += 1
             if count > 0:
                 print "{} objects from previous selection not found.".format(count)
-            self.objs = existingGUIDs
+            self.guids = existingGUIDs
             self.SetObjs2Sticky()
         except:
             print "CleanGUIDs() failed"
@@ -839,7 +873,7 @@ class Tabl_Form(forms.Form):
                 return thisData
             
             self.data = []
-            for i, obj in enumerate(self.objs):
+            for i, obj in enumerate(self.guids):
                 try:
                     self.data.append(RegenDataForObj(i, obj))
                 except:
@@ -949,12 +983,6 @@ class Tabl_Form(forms.Form):
             sc.sticky['radioMode'] = self.radioMode.SelectedIndex
             self.Regen()
 
-    def OnDeleteRhinoObject(self, sender, e):
-        try:
-            self.RemoveByGUID(e.ObjectId)
-        except:
-            print "OnDeleteRhinoObject Failed"
-
     def OnSizeChanged(self, *args):
         self.grid.Height = self.Height-125
         sc.sticky['dialogSize'] = self.Size
@@ -988,14 +1016,14 @@ class Tabl_Form(forms.Form):
             self.hideTotalsFunc()
             self.hideUnitsFunc()
             self.hideThousandsComma()
-
+            
             colName = e.Column.HeaderText.split(" ")[0]
             for i, each in enumerate(self.colNames):
                 if each == colName:
                     self.sortingBy = i
                     break
             self.sortDirections[self.sortingBy] = not self.sortDirections[self.sortingBy]
-
+            
             #Headers
             self.RemoveHeaderArrows()
             self.AddHeaderArrow(self.sortingBy)
@@ -1010,7 +1038,9 @@ class Tabl_Form(forms.Form):
                 self.sortingBy
             except:
                 self.sortingBy = 0
+            print "1"
             state = self.sortDirections[self.sortingBy]
+            print "2"
             keys = []
             for row in self.grid.DataStore:
                 keyRaw = row[self.sortingBy]
@@ -1051,7 +1081,8 @@ class Tabl_Form(forms.Form):
     #CLOSE
     def closeDialog(self, sender, e):
         try:
-            self.RemoveEvents()
+            sc.doc.ActiveDoc.ModifyObjectAttributes -= self.OnModifyObject
+            rc.Commands.Command.EndCommand -= self.OnModifyObject
         except:
             print "RemoveEvents() failed"
         try:
@@ -1195,7 +1226,7 @@ class Tabl_Form(forms.Form):
             print "hideTotalsFunc() failed"
 
     def recountLabel(self):
-        self.countLbl.Text = "Selected: {} objects".format(len(self.objs))
+        self.countLbl.Text = "Selected: {} objects".format(len(self.guids))
 
     #I/O Functions
     def copyToClipboard(self, sender, e):
@@ -1230,24 +1261,19 @@ class Tabl_Form(forms.Form):
                 if extension == "html":
                     string = self.DataStoreToHTML()
                 if extension == "csv":
-                    global colorFormat
-                    global commaSep
+                    tempCommaSep = self.settings.commaSep
+                    tempColorFormat = self.settings.colorFormat
                     
-                    prevCommaSep = commaSep
-                    prevColorFormat = colorFormat
+                    if tempColorFormat == 2:
+                        tempColorFormat = 1
                     
-                    if colorFormat == 2:
-                        colorFormat = 1
-                    
-                    if commaSep:
-                        commaSep = False
+                    #This needs to be fixed. Uses different comma sep index, not bool
+                    #if tempCommaSep:
+                    #    tempCommaSep = False
                     
                     self.Regen()
                     
                     string = self.DataStoreToCSV()
-                    
-                    colorFormat = prevColorFormat
-                    commaSep = prevCommaSep
                     
                     self.Regen()
                 if extension == "txt":
@@ -1352,29 +1378,6 @@ class Tabl_Form(forms.Form):
         return string
 
 def main():
-    if 'decPlaces' in sc.sticky:
-        global decPlaces
-        decPlaces = sc.sticky['decPlaces']
-    else:
-        global decPlaces
-        decPlaces = 2
-        
-    if 'commaSep' in sc.sticky:
-        global commaSep
-        commaSep = sc.sticky['commaSep']
-    else:
-        global commaSep
-        commaSep = False
-        
-    if 'colorFormat' in sc.sticky:
-        global colorFormat
-        colorFormat = sc.sticky['colorFormat']
-    else:
-        global colorFormat
-        colorFormat = 1
-    global version
-    version = "Version 0.1.0"
-
     Tabl = Tabl_Form()
     Tabl.Owner = rc.UI.RhinoEtoApp.MainWindow
     Tabl.Show()
