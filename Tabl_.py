@@ -64,9 +64,11 @@ class Settings():
         
         self.sortingBy = 0
         
-        self.placeType = 0
-        self.placeBufferSize = 2
-
+        self.place_Type = 0
+        self.place_BufferSize = 2
+        self.place_ColWidth = 100
+        self.place_TableWidth = 30
+    
 class SettingsDialog(forms.Dialog):
     def __init__(self, settings):
         #Variables
@@ -177,7 +179,7 @@ class PlaceDialog(forms.Dialog):
     def __init__(self, currentData, settings):
         self.settings = settings
         self.data = currentData
-        
+        print "HI"
         #Variables
         self.Title = "Place Settings"
         #self.ClientSize = drawing.Size(300, 200)
@@ -215,11 +217,13 @@ class PlaceDialog(forms.Dialog):
         self.btnCancel.Text = "Cancel"
         self.btnCancel.Click += self.OnCancelSettings
         
+        
         self.bufferUpDownLbl = forms.Label(Text = " Buffer Size")
         self.bufferUpDown = forms.NumericUpDown()
-        self.bufferUpDown.DecimalPlaces = 0
+        self.bufferUpDown.DecimalPlaces = 2
+        self.bufferUpDown.Increment = .1
         self.bufferUpDown.MinValue = 0
-        self.bufferUpDown.Value = self.settings.placeBufferSize
+        self.bufferUpDown.Value = self.settings.place_BufferSize
         
         self.PlaceTypeRadio = forms.RadioButtonList()
         self.PlaceTypeRadio.DataStore = [
@@ -228,7 +232,7 @@ class PlaceDialog(forms.Dialog):
         "Fixed Table Width (Divide Even)", 
         "Fixed Column Width"]
         self.PlaceTypeRadio.Orientation = forms.Orientation.Vertical
-        self.PlaceTypeRadio.SelectedIndex = self.settings.placeType
+        self.PlaceTypeRadio.SelectedIndex = self.settings.place_Type
 
     def OnCancelSettings(self, sender, e):
         try:
@@ -240,10 +244,11 @@ class PlaceDialog(forms.Dialog):
     #Place Table
     def OnPlace(self, sender, e):
         try:
-            self.settings.placeBufferSize = int(self.bufferUpDown.Value)
-            self.settings.placeType = int(self.PlaceTypeRadio.SelectedIndex)
             self.Close()
-            self.PlaceTable(self.PlaceTypeRadio.SelectedIndex)
+            result = self.PlaceTable(self.PlaceTypeRadio.SelectedIndex)
+            if result is not None:
+                self.settings.place_Type = self.PlaceTypeRadio.SelectedIndex
+                self.settings.place_BufferSize = self.bufferUpDown.Value
         except:
             print "PlaceTable failed"
     
@@ -254,18 +259,17 @@ class PlaceDialog(forms.Dialog):
         Type 1 = Fit Columns To Table Width
         Type 2 = Fixed Table Width
         Type 3 = Fixed Column Width
-        Type 4 = Fill Rectangle
         """
         
         def placeTable_FitWidth(dataLen, bufferSize):
             minColWidths = []
             transposed = zip(*dataLen)
             for item in transposed:
-                minColWidth = 0
+                minColWidth = None
                 for param in item:
-                    if param > minColWidth:
+                    if param > minColWidth or minColWidth is None:
                         minColWidth = param
-                minColWidths.append(minColWidth + (bufferSize*2))
+                minColWidths.append(minColWidth)
             return minColWidths
         
         def placeTable_FitWidthToTable(tableWidth, dataLen, bufferSize):
@@ -281,23 +285,14 @@ class PlaceDialog(forms.Dialog):
                 for param in item:
                     if param > minColWidth:
                         minColWidth = param
-                minColWidths.append(minColWidth + (bufferSize*2))
+                minColWidths.append(minColWidth)
             count = 0
             for width in minColWidths:
                 count += width
-            print count
-            print tableWidth
             for width in minColWidths:
                 tempWidth = mapFromTo(width, 0, count, 0, tableWidth)
                 colWidths.append(tempWidth)
             return colWidths
-        
-        def placeTable_FixedColWidth(fixedWidth, dataLen):
-            fixedWidths = []
-            transposed = zip(*dataLen)
-            for item in transposed:
-                fixedWidths.append(fixedWidth)
-            return fixedWidths
         
         def placeTable_FixedTableWidth(tableWidth, dataLen):
             fixedWidths = []
@@ -311,31 +306,66 @@ class PlaceDialog(forms.Dialog):
                 fixedWidths.append(fixedWidth)
             return fixedWidths
         
+        def placeTable_FixedColWidth(fixedWidth, dataLen):
+            fixedWidths = []
+            transposed = zip(*dataLen)
+            for item in transposed:
+                fixedWidths.append(fixedWidth)
+            return fixedWidths
         
-        def GetRectangleLocation(width, height):
-            line_color = color.Gray
-            
+        def GetRectangleLocation(width, height, bufferWidth, bufferHeight, type):
             def GetPointDynamicDrawFunc( sender, args ):
+                tempWidth = width
+                tempHeight = height
+                
+                if sc.doc.Views.ModelSpaceIsActive:
+                    if type == 0:
+                        tempWidth *= sc.doc.ActiveDoc.DimStyles.Current.DimensionScale
+                    tempHeight *= sc.doc.ActiveDoc.DimStyles.Current.DimensionScale
+                
+                tempWidth += bufferWidth
+                tempHeight += bufferHeight
+                
                 xLoc = args.CurrentPoint[0]
                 yLoc = args.CurrentPoint[1]
-                pt0 = rg.Point3d(xLoc,yLoc,0)
-                pt1 = rg.Point3d(xLoc+width,yLoc,0)
-                pt2 = rg.Point3d(xLoc+width,yLoc-height,0)
-                pt3 = rg.Point3d(xLoc,yLoc-height,0)
-                args.Display.DrawPolyline([pt0, pt1, pt2, pt3, pt0], line_color, 1)
+                zLoc = args.CurrentPoint[2]
+                pt0 = rg.Point3d(xLoc,yLoc,zLoc)
+                pt1 = rg.Point3d(xLoc+tempWidth,yLoc,zLoc)
+                pt2 = rg.Point3d(xLoc+tempWidth,yLoc-tempHeight,zLoc)
+                pt3 = rg.Point3d(xLoc,yLoc-tempHeight,zLoc)
+                args.Display.DrawPolyline([pt0, pt1, pt2, pt3, pt0], color.Gray, 1)
             
             gp = Rhino.Input.Custom.GetPoint()
-            gp.SetCommandPrompt("Choose point to place table")
+            gp.SetCommandPrompt("Choose point to place Tabl_")
             gp.DynamicDraw += GetPointDynamicDrawFunc
             gp.Get()
             
             if (gp.CommandResult() == Rhino.Commands.Result.Success):
                 pt = gp.Point()
-                return pt
+                modelSpace = False
+                if sc.doc.Views.ModelSpaceIsActive:
+                    modelSpace = True
+                return pt, modelSpace
         
         #Variables
-        textSize = sc.doc.ActiveDoc.DimStyles.Current.TextHeight
+        textHeight = sc.doc.ActiveDoc.DimStyles.Current.TextHeight
         bufferSize = self.bufferUpDown.Value
+        
+        #Check if any data
+        if len(self.data) == 0:
+            print "No data to place"
+            return None
+        
+        #Get text alignment
+        alignments = []
+        for parameter in self.settings.parameters:
+            if parameter.col.Visible:
+                if parameter.col.DataCell.TextAlignment == forms.TextAlignment.Left:
+                    alignments.append(rg.TextJustification.Left)
+                elif parameter.col.DataCell.TextAlignment == forms.TextAlignment.Center:
+                    alignments.append(rg.TextJustification.Center)
+                elif parameter.col.DataCell.TextAlignment == forms.TextAlignment.Right:
+                    alignments.append(rg.TextJustification.Right)
         
         #Cleanup Data
         cleanData = []
@@ -350,95 +380,135 @@ class PlaceDialog(forms.Dialog):
                     tempList.append(str(param).rstrip())
             cleanData.append(tempList)
         
-        if len(cleanData) == 0:
-            print "No data to place"
-            return
-        
-        #get dataLen
-        dataLen = []
+        #Get textWidths
+        textWidths = []
+        plane = rg.Plane.WorldXY
+        dimStyle = sc.doc.ActiveDoc.DimStyles.CurrentDimensionStyle
         for item in cleanData:
             itemLen = []
             for param in item:
                 text = str(param)
-                plane = rg.Plane.WorldXY
-                dimStyle = sc.doc.ActiveDoc.DimStyles.CurrentDimensionStyle
                 textObj = rg.TextEntity.Create(text, plane, dimStyle, False,0,0)
                 length = textObj.TextModelWidth
                 itemLen.append(length)
-            dataLen.append(itemLen)
+            textWidths.append(itemLen)
         
-        #get minColWidth
+        #Get colWidths
         if type == 0:
-            colWidths = placeTable_FitWidth(dataLen, bufferSize)
+            colWidths = placeTable_FitWidth(textWidths, bufferSize)
         if type == 1:
-            tableWidth = rs.GetReal("Table Width", number = 100, minimum = 1)
-            if tableWidth is None: return
-            colWidths = placeTable_FitWidthToTable(tableWidth, dataLen, bufferSize)
+            tableWidth = rs.GetReal("Table Width", number = self.settings.place_TableWidth, minimum = 1)
+            if tableWidth is None: return None
+            self.settings.place_TableWidth = tableWidth
+            colWidths = placeTable_FitWidthToTable(tableWidth, textWidths, bufferSize)
         if type == 2:
-            tableWidth = rs.GetReal("Table Width", number = 100, minimum = 1)
-            if tableWidth is None: return
-            colWidths = placeTable_FixedTableWidth(tableWidth, dataLen)
+            tableWidth = rs.GetReal("Table Width", number = self.settings.place_TableWidth, minimum = 1)
+            if tableWidth is None: return None
+            self.settings.place_TableWidth = tableWidth
+            colWidths = placeTable_FixedTableWidth(tableWidth, textWidths)
         if type == 3:
-            fixedWidth = rs.GetReal("Column Width", number = 30, minimum = 1)
-            if fixedWidth is None: return
-            colWidths = placeTable_FixedColWidth(fixedWidth, dataLen)
+            fixedWidth = rs.GetReal("Column Width", number = self.settings.place_ColWidth, minimum = 1)
+            if fixedWidth is None: return None
+            self.settings.place_ColWidth = fixedWidth
+            colWidths = placeTable_FixedColWidth(fixedWidth, textWidths)
         
-        #get rowHeight
-        rowHeight = textSize + (bufferSize*2)
         
-        #Get overall width, height
-        tableWidth = 0
+        #Get Tabl width, height
+        totalTextWidth = 0
         for col in colWidths:
-            tableWidth += col
+            totalTextWidth += col
+        totalBufferWidth = len(colWidths) * (bufferSize * 2)
+        if type > 0:
+            totalBufferWidth = 0
         
-        tableHeight = 0
+        totalTextHeight = 0
         for each in cleanData:
-            tableHeight += rowHeight
+            totalTextHeight += textHeight
+        totalBufferHeight = len(cleanData) * (bufferSize * 2)
         
-        #getFramePts & textPts
-        placePt = GetRectangleLocation(tableWidth,tableHeight)
-        if placePt is None: return
+        #Get placePt
+        placePt, modelSpace = GetRectangleLocation(totalTextWidth,totalTextHeight, totalBufferWidth, totalBufferHeight, type)
+        if placePt is None: return None
         
+        #Check which space it's in
+        if modelSpace:
+            rowHeight = (textHeight * sc.doc.ActiveDoc.DimStyles.Current.DimensionScale) + (bufferSize*2)
+            if  type == 0:
+                for i, colWidth in enumerate(colWidths):
+                    colWidth *= sc.doc.ActiveDoc.DimStyles.Current.DimensionScale
+                    colWidths[i] = colWidth + (bufferSize*2)
+            else:
+                for i, colWidth in enumerate(colWidths):
+                    colWidths[i] = colWidth
+        else:
+            #In paperspace
+            rowHeight = textHeight + (bufferSize*2)
+            if  type == 0:
+                for i, colWidth in enumerate(colWidths):
+                    colWidths[i] = colWidth + (bufferSize*2)
+            else:
+                for i, colWidth in enumerate(colWidths):
+                    colWidths[i] = colWidth
+        
+        #Add Text and Rectangles
         xLoc = placePt[0]
         yLoc = placePt[1]
         zLoc = placePt[2]
-        
-        
-        framePts = []
-        textPts = []
-        for row in cleanData:
-            tempFramePts = []
-            tempTextPts = []
-            
-            for i, col in enumerate(row):
-                tempFramePts.append([xLoc, yLoc, zLoc])
-                tempTextPts.append([xLoc + bufferSize, yLoc - (bufferSize), zLoc])
-                xLoc += colWidths[i]
-            yLoc -= rowHeight
-            xLoc = placePt[0]
-            
-            framePts.append(tempFramePts)
-            textPts.append(tempTextPts)
-        
-        #Add Text and Rectangles
         allText = []
         allRect = []
-        
+        plane = rg.Plane.WorldXY
         sn = sc.doc.BeginUndoRecord("Place Tabl_")
         rs.EnableRedraw(False)
         for i, item in enumerate(cleanData):
             for j, param in enumerate(item):
                 #Add rectangle
-                plane = Rhino.Geometry.Plane.WorldXY
-                plane.Origin = rs.coerce3dpoint(framePts[i][j])
+                framePt = rg.Point3d(xLoc, yLoc, zLoc)
+                plane.Origin = framePt
                 width = colWidths[j]
                 height = rowHeight
                 allRect.append(rs.AddRectangle(plane, width, -height))
                 
-                #Add text
+                #Skip text with 0 length
                 if len(str(param)) == 0:
                     continue
-                allText.append(rs.AddText(str(param), textPts[i][j], textSize, justification = 262145))
+                
+                #Justification
+                if i == 0 and self.settings.showHeaders == True:
+                    #HEADERS
+                    plane.Origin = rg.Point3d(xLoc+(width/2), yLoc-bufferSize, zLoc)
+                    textObject = rg.TextEntity.Create(str(param), plane, dimStyle, False,0,0)
+                    textObject.Justification = rg.TextJustification.Center
+                    textObject.SetBold(True)
+                elif i == len(cleanData)-1 and self.settings.showTotals == True:
+                    #TOTALS
+                    plane.Origin = rg.Point3d(xLoc+width-bufferSize, yLoc-bufferSize, zLoc)
+                    textObject = rg.TextEntity.Create(str(param), plane, dimStyle, False,0,0)
+                    textObject.Justification = rg.TextJustification.Right
+                else:
+                    #DATA
+                    if alignments[j] == rg.TextJustification.Left:
+                        #LEFT
+                        plane.Origin = rg.Point3d(xLoc+bufferSize, yLoc-bufferSize, zLoc)
+                        textObject = rg.TextEntity.Create(str(param), plane, dimStyle, False,0,0)
+                        textObject.Justification = rg.TextJustification.Left
+                    elif alignments[j] == rg.TextJustification.Right:
+                        #RIGHT
+                        plane.Origin = rg.Point3d(xLoc+width-bufferSize, yLoc-bufferSize, zLoc)
+                        textObject = rg.TextEntity.Create(str(param), plane, dimStyle, False,0,0)
+                        textObject.Justification = rg.TextJustification.Right
+                    else:
+                        #CENTER
+                        plane.Origin = rg.Point3d(xLoc+(width/2), yLoc-bufferSize, zLoc)
+                        textObject = rg.TextEntity.Create(str(param), plane, dimStyle, False,0,0)
+                        textObject.Justification = rg.TextJustification.Center
+                
+                txt = sc.doc.Objects.AddText(textObject)
+                allText.append(txt)
+                
+                xLoc += colWidths[j]
+            yLoc -= rowHeight
+            xLoc = placePt[0]
+        
         rs.EnableRedraw(True)
         sc.doc.Views.Redraw()
         if (sn > 0):
@@ -509,6 +579,7 @@ class Tabl_Form(forms.Form):
         self.MinimumSize = drawing.Size(676, 600)
         self.Closed += self.closeDialog
         self.SizeChanged += self.OnSizeChanged
+        self.LocationChanged += self.OnPositionChanged
         
         self.KeyDown += self.OnOptionsChangedAlt
         
@@ -592,6 +663,15 @@ class Tabl_Form(forms.Form):
                 mnuTest = forms.ButtonMenuItem(Text = "Test")
                 mnuTest.Click += self.OnTest
                 mnuEdit.Items.Add(mnuTest)
+                
+                mnuParameters = forms.ButtonMenuItem(Text = "Parameters")
+                mnuParamViewAll = forms.ButtonMenuItem(Text = "View All")
+                mnuParamViewAll.Click += self.OnViewAll
+                mnuParameters.Items.Add(mnuParamViewAll)
+                mnuParamHideAll = forms.ButtonMenuItem(Text = "Hide All")
+                mnuParamHideAll.Click += self.OnHideAll
+                mnuParameters.Items.Add(mnuParamHideAll)
+                
                 mnuHelp = forms.ButtonMenuItem(Text = "Help")
                 mnuTutorial = forms.ButtonMenuItem(Text = "User Manual")
                 mnuTutorial.Click += self.OnTutorialsClick
@@ -599,7 +679,7 @@ class Tabl_Form(forms.Form):
                 mnuVersion.Text = str(self.settings.version)
                 mnuHelp.Items.Add(mnuTutorial)
                 mnuHelp.Items.Add(mnuVersion)
-                mnuBar = forms.MenuBar(mnuFile, mnuEdit, mnuHelp)
+                mnuBar = forms.MenuBar(mnuFile, mnuEdit, mnuParameters, mnuHelp)
                 self.Menu = mnuBar
             
             createMenuBar()
@@ -845,11 +925,11 @@ class Tabl_Form(forms.Form):
         #print e.Row
         #if e.Column == 0:
         #    e.BackgroundColor = drawing.Colors.Red
-        
-        if e.Row == len(self.grid.DataStore)-1 and self.settings.showTotals:
-            #drawing.Colors.DarkGray
-            #drawing.Colors.
-            e.ForegroundColor = drawing.Colors.DarkGray
+        pass
+        #if e.Row == len(self.grid.DataStore)-1 and self.settings.showTotals:
+        #    #drawing.Colors.DarkGray
+        #    #drawing.Colors.
+        #    e.ForegroundColor = drawing.Colors.DarkGray
         #elif e.Row == 1:
         #    e.BackgroundColor = drawing.Colors.Green 
         #elif e.Row == 2:
@@ -915,6 +995,20 @@ class Tabl_Form(forms.Form):
         except:
             print "FAILED"
     
+    def OnViewAll(self, sender, e):
+        try:
+            for parameter in self.settings.parameters:
+                parameter.checkBox.Checked = True
+        except:
+            print "View all failed"
+    
+    def OnHideAll(self, sender, e):
+        try:
+            for parameter in self.settings.parameters:
+                parameter.checkBox.Checked = False
+        except:
+            print "Hiding all failed"
+    
     #Change selection functions
     def AddByPicking(self, sender, e):
         try:
@@ -956,6 +1050,7 @@ class Tabl_Form(forms.Form):
     def RemoveSelection(self, sender, e):
         #Get objs to remove
         items = list(self.grid.SelectedItems)
+        counter = 0
         for item in items:
             try:
                 guid = rs.coerceguid(str(item[1]))
@@ -965,15 +1060,16 @@ class Tabl_Form(forms.Form):
                     for i, row in enumerate(data):
                         if str(row[1]) == str(guid):
                             data.pop(i)
-                            print "One removed"
+                            counter += 1
                     self.grid.DataStore = data
                     
                     #Remove from settings
                     if guid in self.settings.guids:
                         self.settings.guids.remove(guid)
             except:
-                print "failed to removeByGUID"
-                pass
+                print "Tabl_ failed to remove an item."
+        print "{} items removed from Tabl_".format(counter)
+        
         #Regen
         self.Regen()
     
@@ -1010,6 +1106,7 @@ class Tabl_Form(forms.Form):
                 except:
                     isCurve = False
                     isSurface = False
+                
                 #Number
                 try:
                     number = num+1
@@ -1071,7 +1168,8 @@ class Tabl_Form(forms.Form):
                 try:
                     if isCurve:
                         if rs.IsCurveClosed(obj):
-                            area = str(rs.Area(obj))
+                            if rs.IsCurvePlanar(obj):
+                                area = str(rs.Area(obj))
                     if rs.IsBrep(obj):
                         area = str(rs.Area(obj))
                     try:
@@ -1107,11 +1205,11 @@ class Tabl_Form(forms.Form):
 
                 #TYPE
                 try:
-                    typeNum = rs.ObjectType(obj)
-                    type = self.typeDict[typeNum]
+                    rhobj = rs.coercerhinoobject(obj)
+                    type = str(rhobj.ObjectType)
                 except:
-                    type = "Extrusion"
-
+                    type = "Type Error"
+                
                 #Print Color
                 try:
                     if self.settings.colorFormat == 0:
@@ -1324,6 +1422,7 @@ class Tabl_Form(forms.Form):
             self.settings.showUnits = self.showUnitsBox.Checked
             self.settings.showTotals = self.showTotalsBox.Checked
             self.settings.showHeaders = self.showHeadersBox.Checked
+            self.Regen()
         except:
             print "Options Change failed"
     
@@ -1418,6 +1517,9 @@ class Tabl_Form(forms.Form):
     def OnSizeChanged(self, *args):
         self.grid.Height = self.Height-145
         self.settings.dialogSize = self.Size
+
+    def OnPositionChanged(self, *args):
+        self.settings.dialogPos = self.Location
 
     #Get Active
     def VisibleHeadingsList(self):
@@ -1535,7 +1637,7 @@ class Tabl_Form(forms.Form):
         except:
             print "RemoveEvents() failed"
         try:
-            self.settings.dialogPos = self.Location
+            #self.settings.dialogPos = self.Location
             sc.sticky['tabl.settings'] = self.settings
             self.Close()
         except:
@@ -1645,7 +1747,7 @@ class Tabl_Form(forms.Form):
                 data.append(lastRow)
                 self.grid.DataStore = data
             except:
-                print "showTotal() failed"
+                print "showTotals() failed"
 
     def hideTotalsFunc(self):
         try:
