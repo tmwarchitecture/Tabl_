@@ -41,14 +41,13 @@ class Parameter():
     
     def onCheckboxChanged(self, sender, e):
         try:
-            #print "{} is now {}".format(self.name, self.checkBox.Checked)
             self.col.Visible = self.checkBox.Checked
         except:
             print "onCheckboxChanged() failed"
 
 class Settings():
     def __init__(self):
-        self.version = "Version 0.2.0_BETA"
+        self.version = "Version 0.2"
         self.dialogPosX = 100
         self.dialogPosY = 100
         self.dialogWidth = 600
@@ -73,9 +72,6 @@ class Settings():
         self.place_BufferSize = 2
         self.place_ColWidth = 100
         self.place_TableWidth = 30
-    
-    def __dict__(self):
-        pass
 
 class SettingsDialog(forms.Dialog):
     def __init__(self, settings):
@@ -85,6 +81,15 @@ class SettingsDialog(forms.Dialog):
         self.Padding = drawing.Padding(5)
         self.Resizable = False
         self.CreateLayout()
+        
+        #Icon
+        path = rc.PlugIns.PlugIn.PathFromName("Tabl_")
+        dirName = op.dirname(path)
+        try:
+            iconPath = op.join(dirName, r'main.ico')
+            self.Icon = drawing.Icon(iconPath)
+        except:
+            print "Could not load mainIcon.ico"
 
     def CreateLayout(self):
         self.CreateControls()
@@ -120,11 +125,8 @@ class SettingsDialog(forms.Dialog):
         layout.Spacing = drawing.Size(5, 5)
 
         self.Content = layout
-        
-        print "Creating Layout"
 
     def CreateControls(self):
-        print "Creating Controls"
         self.label1 = forms.Label()
         self.label1.Text = "Decimal Places"
         
@@ -159,6 +161,7 @@ class SettingsDialog(forms.Dialog):
         self.numericDecPlaces.MaxValue = 8
         self.numericDecPlaces.MinValue = 0
         self.numericDecPlaces.Value = self.settings.decPlaces
+        self.numericDecPlaces.ToolTip = "Changes the number of decimal places to display"
         
         #Color Format
         self.colorRadioBtn = forms.RadioButtonList()
@@ -172,6 +175,7 @@ class SettingsDialog(forms.Dialog):
         self.numericScaleUnits.MaxValue = 99999
         self.numericScaleUnits.MinValue = -1
         self.numericScaleUnits.Value = self.settings.unitScale
+        self.numericScaleUnits.ToolTip = "Multiplies length by this value, squares area, and cubes volume"
         
         self.txtCustomUnits = forms.TextBox()
         self.txtCustomUnits.Text = self.settings.customUnit
@@ -193,7 +197,6 @@ class SettingsDialog(forms.Dialog):
         
     def OnApplySettings(self, sender, e):
         try:
-            print "Applying Settings"
             self.settings.decPlaces = self.numericDecPlaces.Value
             self.settings.commaSep = self.seperatorDropDown.SelectedIndex
             self.settings.colorFormat = self.colorRadioBtn.SelectedIndex
@@ -210,7 +213,6 @@ class SettingsDialog(forms.Dialog):
 
     def OnCancelSettings(self, sender, e):
         try:
-            print "Cancelled"
             self.Result = False
             self.Close()
         except:
@@ -222,10 +224,18 @@ class PlaceDialog(forms.Dialog):
         self.data = currentData
         #Variables
         self.Title = "Place Settings"
-        #self.ClientSize = drawing.Size(300, 200)
         self.Padding = drawing.Padding(5)
         self.Resizable = False
         self.CreateLayout()
+        
+        #Icon
+        path = rc.PlugIns.PlugIn.PathFromName("Tabl_")
+        dirName = op.dirname(path)
+        try:
+            iconPath = op.join(dirName, r'main.ico')
+            self.Icon = drawing.Icon(iconPath)
+        except:
+            print "Could not load mainIcon.ico"
     
     def CreateLayout(self):
         self.CreateControls()
@@ -247,7 +257,6 @@ class PlaceDialog(forms.Dialog):
         self.Content = layout
     
     def CreateControls(self):
-        print "Creating Controls"
         self.PlaceBtn = forms.Button()
         self.PlaceBtn.Text = "Place"
         self.PlaceBtn.ToolTip = "Place Tabl inside Rhino"
@@ -276,7 +285,6 @@ class PlaceDialog(forms.Dialog):
 
     def OnCancelSettings(self, sender, e):
         try:
-            print "Cancelled"
             self.Close()
         except:
             print "Failed to cancel settings"
@@ -561,19 +569,20 @@ class Tabl_Form(forms.Form):
         #Settings
         if 'tabl.settings' in sc.sticky:
             self.settings = sc.sticky['tabl.settings']
-            print 'tabl.settings found in sticky'
         else:
             self.settings = Settings()
             self.settings.parameters = self.SetupParameters()
-            print 'tabl.settings not found. New created'
         
         #Setup Form
         self.Initialize()
+        
         #Create Controls
         self.CreateLayout()
+        
         #Setup Grid
         self.Regen()
-        #Events
+        
+        #Setup Events
         self.CreateEvents()
     
     #################################
@@ -618,8 +627,6 @@ class Tabl_Form(forms.Form):
         self.Closed += self.closeDialog
         self.SizeChanged += self.OnSizeChanged
         self.LocationChanged += self.OnPositionChanged
-        
-        self.KeyDown += self.OnOptionsChangedAlt
         
         ########################################################################
         #Form Icon
@@ -676,7 +683,7 @@ class Tabl_Form(forms.Form):
             def createMenuBar():
                 mnuFile = forms.ButtonMenuItem(Text = "File")
                 sep1 = forms.SeparatorMenuItem()
-                mnuExport = forms.ButtonMenuItem(Text = "Export Tabl as...")
+                mnuExport = forms.ButtonMenuItem(Text = "Export as...")
                 mnuExport.Click += self.exportData
                 mnuClose = forms.ButtonMenuItem(Text = "Close")
                 mnuClose.Click += self.closeDialog
@@ -713,14 +720,6 @@ class Tabl_Form(forms.Form):
                 mnuParamHideAll.Click += self.OnHideAll
                 mnuParameters.Items.Add(mnuParamHideAll)
                 
-                #mnuHelp = forms.ButtonMenuItem(Text = "Help")
-                #mnuTutorial = forms.ButtonMenuItem(Text = "User Manual")
-                #mnuTutorial.Click += self.OnTutorialsClick
-                #mnuVersion = forms.ButtonMenuItem()
-                #mnuVersion.Text = str(self.settings.version)
-                #mnuHelp.Items.Add(mnuTutorial)
-                #mnuHelp.Items.Add(mnuVersion)
-                
                 mnuBar = forms.MenuBar(mnuFile, mnuEdit, mnuParameters)
                 self.Menu = mnuBar
             
@@ -737,20 +736,16 @@ class Tabl_Form(forms.Form):
                 self.grid.Size = drawing.Size(700,500)
                 self.grid.CellEdited += self.OnNameCellChanged
                 self.grid.ColumnHeaderClick += self.sortColumn
-                self.grid.CellFormatting += self.OnCellFormatting
             
             createGrid()
             try:
                 for i, parameter in enumerate(self.settings.parameters):
-                    #self.colNum = num
                     newCol = forms.GridColumn()
                     newCol.Visible = parameter.checkBox.Checked
                     newCol.HeaderText = parameter.col.HeaderText
                     
                     #This textboxcell index is different when columns are reordered. So have to create new one. Otherwise, when added to grid, they are in wrong position.
                     newCol.DataCell = forms.TextBoxCell(parameter.colNum)
-                    #newCol.DataCell = parameter.col.DataCell
-                    
                     newCol.DataCell.TextAlignment = parameter.col.DataCell.TextAlignment
                     newCol.Sortable = parameter.col.Sortable
                     newCol.Editable = parameter.col.Editable
@@ -860,7 +855,7 @@ class Tabl_Form(forms.Form):
 
                 #Button - Export Data
                 self.btnExport = forms.Button()
-                self.btnExport.Text = "Save as..."
+                self.btnExport.Text = "Export as..."
                 self.btnExport.ToolTip = "Export Tabl to CSV, HTML, or TXT"
                 self.btnExport.Click += self.exportData
 
@@ -883,9 +878,6 @@ class Tabl_Form(forms.Form):
             self.showUnitsBox.Checked = self.settings.showUnits
             self.showUnitsBox.Text = "Show Units\t"
             self.showUnitsBox.CheckedChanged += self.OnOptionsChanged
-            #self.showUnitsBox.KeyDown += self.OnOptionsChangedAlt
-            
-            #print  self.showUnitsBox.KeyDown
             
             #Checkbox - Show Total
             self.showTotalsBox = forms.CheckBox()
@@ -959,24 +951,6 @@ class Tabl_Form(forms.Form):
         except:
             print "OnSettingsDialog() failed"
     
-    def OnCellFormatting(self, sender, e):
-        #e.ForegroundColor = drawing.Colors.Gray 
-        #e.BackgroundColor = drawing.Colors.Black 
-        #print dir(e)
-        #print e.Column
-        #print e.Row
-        #if e.Column == 0:
-        #    e.BackgroundColor = drawing.Colors.Red
-        pass
-        #if e.Row == len(self.grid.DataStore)-1 and self.settings.showTotals:
-        #    #drawing.Colors.DarkGray
-        #    #drawing.Colors.
-        #    e.ForegroundColor = drawing.Colors.DarkGray
-        #elif e.Row == 1:
-        #    e.BackgroundColor = drawing.Colors.Green 
-        #elif e.Row == 2:
-        #    e.BackgroundColor = drawing.Colors.Blue     
-    
     def OnNewTable(self, sender, e):
         try:
             result = rs.MessageBox("Are you sure you want to clear the Tabl?", 1 | 32 | 4096, 'New Tabl')
@@ -985,12 +959,6 @@ class Tabl_Form(forms.Form):
                 self.Regen()
         except:
             print "New Tabl failed"
-    
-    def exportData(self, sender, e):
-        print "Export"
-    
-    def OnTutorialsClick(self, sender, e):
-        print "Tutorials Clicked"
     
     def OnSaveTable(self, sender, e):
         try:
@@ -1028,16 +996,11 @@ class Tabl_Form(forms.Form):
             print e
     
     def OnPlaceBtnPressed(self, sender, e):
-        print "PLACE TABL"
         try:
             self.Minimize()
             if self.settings.showHeaders:
                 tempData = self.VisibleHeadingsList()
-                print "activeHeadingsList:"
-                print tempData
                 dataToPlace = self.VisibleDataList()
-                print "activeDataList:"
-                print dataToPlace
                 dataToPlace.insert(0, tempData)
             else:
                 dataToPlace = self.VisibleDataList()
@@ -1507,13 +1470,6 @@ class Tabl_Form(forms.Form):
         except:
             print "Options Change failed"
     
-    def OnOptionsChangedAlt(self, sender, e):
-        try:
-            if e.Alt:
-                print "Alt was down"        
-        except:
-            print "Options Change failed"
-    
     def OnSelectFromGrid(self, sender, e):
         try:
             rs.UnselectAllObjects()
@@ -1557,7 +1513,6 @@ class Tabl_Form(forms.Form):
                 if len(obj[1]) > 0:
                     rs.ObjectName(obj[1], newName)
             
-            #if self.settings.updateMode == 0:
             self.Regen()
         except:
             print "OnNameChanged() Failed"
@@ -1709,9 +1664,9 @@ class Tabl_Form(forms.Form):
         
         direction = self.settings.parameters[self.settings.sortingBy].sortDescending
         if direction:
-            self.settings.parameters[self.settings.sortingBy].col.HeaderText += " ^"
+            self.settings.parameters[self.settings.sortingBy].col.HeaderText += " "+ u'\u2191'
         else:
-            self.settings.parameters[self.settings.sortingBy].col.HeaderText += " v"
+            self.settings.parameters[self.settings.sortingBy].col.HeaderText += " " + u'\u2193'
     
     #CLOSE
     def OnClosedDialog(self, sender, e):
@@ -1749,37 +1704,9 @@ class Tabl_Form(forms.Form):
                                     data[i][j] = "{0:,.{prec}f}".format(float(row[j]), prec = int(self.settings.decPlaces)).replace(',', ' ')
                         except:
                             print "Failed to format number"
-                            pass
             self.grid.DataStore = data
         except:
             print "Showing Thousands Separator Failed"
-
-    def hideThousandsComma(self):
-        print "THIS WILL BE OBSOLETE"
-        data = self.grid.DataStore
-        
-        try:
-            for row in data:
-                for i, parameter in enumerate(self.settings.parameters):
-                    try:
-                        parameter.units
-                    except:
-                        row[i].split(" ")[0]
-        except:
-            print "hideUnitsFunc() Failed"
-        self.grid.DataStore = data
-        
-        
-        
-        try:
-            numColumns = [self.length_Num, self.area_Num, self.volume_Num]
-            data = self.grid.DataStore
-            for list in data:
-                for numColumn in numColumns:
-                    if list[numColumn] is not None:
-                        list[numColumn] = list[numColumn].replace(",", "")
-        except:
-            print "hideThousandsComma() Failed"
 
     def showUnitsFunc(self):
         if self.settings.showUnits:
@@ -1854,7 +1781,6 @@ class Tabl_Form(forms.Form):
                 del tempData[-1]
                 self.grid.DataStore = tempData
             else:
-                #print "Already hidden totals"
                 return
         except:
             print "hideTotalsFunc() failed"
@@ -1925,9 +1851,7 @@ class Tabl_Form(forms.Form):
         seperator = "\t"
         
         if self.settings.showHeaders:
-            print "y"
             allHeadings = self.VisibleHeadingsList()
-            print "X"
             for heading in allHeadings:
                 itemLen = len(str(heading))
                 if itemLen >= 8:
@@ -1957,7 +1881,6 @@ class Tabl_Form(forms.Form):
         string = ""
         if self.settings.showHeaders:
             allHeadings = self.VisibleHeadingsList()
-            print "Headings received"
             for heading in allHeadings:
                 string += str(heading) + ","
             string += "\n"
@@ -1969,7 +1892,7 @@ class Tabl_Form(forms.Form):
                 if str(item) == "None":
                     string += ","
                 else:
-                    string += str(item) + ","
+                    string +=  '"' + str(item) + '",'
             string += "\n"
         return string
 
