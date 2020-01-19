@@ -2,7 +2,7 @@
 <RhinoScriptCompilerProject>
   <Plugin>
     <PluginName>Tabl_</PluginName>
-    <PluginFolder>D:\Files\Work\TMW Projects\018_Tabl_\0.2\dev\CURRENT\Tabl_\deploy\</PluginFolder>
+    <PluginFolder>D:\Files\Work\TMW Projects\018_Tabl_\0.2\dev\CURRENT\Tabl_\</PluginFolder>
     <AuthorName>Tim Williams</AuthorName>
     <AuthorEmail>HotCoffeeGroup@gmail.com</AuthorEmail>
     <AuthorPhone />
@@ -10,14 +10,14 @@
     <AuthorCountry>USA</AuthorCountry>
     <AuthorWebsite>https://discourse.mcneel.com/u/Tim_Williams</AuthorWebsite>
     <UpdateURL>https://www.food4rhino.com/app/tabl</UpdateURL>
-    <CopyrightMessage>Tabl_ Version 0.2 BETA</CopyrightMessage>
+    <CopyrightMessage>Tabl_ Version 0.2</CopyrightMessage>
     <RhinoCommonOverride>C:\Program Files\Rhino 6\System\RhinoCommon.dll</RhinoCommonOverride>
   </Plugin>
   <Commands>
     <!--Compiled Script: Tabl_-->
     <Command>
       <Name>Tabl_</Name>
-      <Path>D:\Files\Work\TMW Projects\018_Tabl_\0.2\dev\CURRENT\Tabl_\deploy\Tabl_.py</Path>
+      <Path>D:\Files\Work\TMW Projects\018_Tabl_\0.2\dev\CURRENT\Tabl_\Tabl_.py</Path>
       <Type>Normal</Type>
     </Command>
   </Commands>
