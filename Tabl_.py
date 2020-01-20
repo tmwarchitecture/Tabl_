@@ -10,7 +10,7 @@ import System.Drawing.Color as color
 
 
 class Parameter():
-    def __init__(self, tabl, name, num, alignment = forms.TextAlignment.Left, vis = False, edit = False, totalable = False, units = None, float = False, superscript = ''):
+    def __init__(self, tabl, name, num, alignment = forms.TextAlignment.Left, vis = False, edit = False, totalable = False, units = None, is_float = False, superscript = ''):
         self.tabl = tabl
         self.name = name
         
@@ -35,7 +35,7 @@ class Parameter():
         self.totalable = totalable
         self.units = units
         self.superscript = superscript
-        self.float = float
+        self.is_float = is_float
         
         self.formula = None
     
@@ -599,16 +599,16 @@ class Tabl_Form(forms.Form):
         parameters.append(Parameter(self, "PrintColor", len(parameters)))
         parameters.append(Parameter(self, "PrintWidth", len(parameters), forms.TextAlignment.Right))
         parameters.append(Parameter(self, "Material", len(parameters)))
-        parameters.append(Parameter(self, "Length", len(parameters), forms.TextAlignment.Right, totalable = True, units = unit, float = True))
-        parameters.append(Parameter(self, "Area", len(parameters), forms.TextAlignment.Right, totalable = True, units = unit, float = True, superscript = u'\xb2'))
-        parameters.append(Parameter(self, "Volume", len(parameters), forms.TextAlignment.Right, totalable = True, units = unit, float = True, superscript = u'\xb3'))
+        parameters.append(Parameter(self, "Length", len(parameters), forms.TextAlignment.Right, totalable = True, units = unit, is_float = True))
+        parameters.append(Parameter(self, "Area", len(parameters), forms.TextAlignment.Right, totalable = True, units = unit, is_float = True, superscript = u'\xb2'))
+        parameters.append(Parameter(self, "Volume", len(parameters), forms.TextAlignment.Right, totalable = True, units = unit, is_float = True, superscript = u'\xb3'))
         parameters.append(Parameter(self, "NumPts", len(parameters), forms.TextAlignment.Right, totalable = True))
         parameters.append(Parameter(self, "NumEdges", len(parameters), forms.TextAlignment.Right, totalable = True))
         parameters.append(Parameter(self, "NumFaces", len(parameters), forms.TextAlignment.Right, totalable = True))
         parameters.append(Parameter(self, "Degree", len(parameters), forms.TextAlignment.Right))
-        parameters.append(Parameter(self, "CenterX", len(parameters), forms.TextAlignment.Right, float = True))
-        parameters.append(Parameter(self, "CenterY", len(parameters), forms.TextAlignment.Right, float = True))
-        parameters.append(Parameter(self, "CenterZ", len(parameters), forms.TextAlignment.Right, float = True))
+        parameters.append(Parameter(self, "CenterX", len(parameters), forms.TextAlignment.Right, is_float = True))
+        parameters.append(Parameter(self, "CenterY", len(parameters), forms.TextAlignment.Right, is_float = True))
+        parameters.append(Parameter(self, "CenterZ", len(parameters), forms.TextAlignment.Right, is_float = True))
         parameters.append(Parameter(self, "IsPlanar", len(parameters)))
         parameters.append(Parameter(self, "IsClosed", len(parameters)))
         parameters.append(Parameter(self, "Comments", len(parameters), edit = True))
@@ -1690,7 +1690,7 @@ class Tabl_Form(forms.Form):
             data = self.grid.DataStore
             for i, row in enumerate(data):
                 for j, parameter in enumerate(self.settings.parameters):
-                    if parameter.float:
+                    if parameter.is_float:
                         try:
                             #float(row[j]) #Sometime data in grid is a float, sometimes string, this catches that
                             if len(row[j])>0:
