@@ -1,0 +1,9 @@
+D:\Github repos\Tabl_\csharp\Tabl_\Tabl_\bin\Tabl_.dll
+D:\Github repos\Tabl_\csharp\Tabl_\Tabl_\bin\Tabl_.pdb
+D:\Github repos\Tabl_\csharp\Tabl_\Tabl_\obj\Debug\Tabl_.csprojAssemblyReference.cache
+D:\Github repos\Tabl_\csharp\Tabl_\Tabl_\obj\Debug\Tabl_.MainForm.resources
+D:\Github repos\Tabl_\csharp\Tabl_\Tabl_\obj\Debug\Tabl_.Properties.Resources.resources
+D:\Github repos\Tabl_\csharp\Tabl_\Tabl_\obj\Debug\Tabl_.csproj.GenerateResource.cache
+D:\Github repos\Tabl_\csharp\Tabl_\Tabl_\obj\Debug\Tabl_.csproj.CoreCompileInputs.cache
+D:\Github repos\Tabl_\csharp\Tabl_\Tabl_\obj\Debug\Tabl_.dll
+D:\Github repos\Tabl_\csharp\Tabl_\Tabl_\obj\Debug\Tabl_.pdb
