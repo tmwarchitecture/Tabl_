@@ -24,6 +24,8 @@ namespace Tabl_cs
         private double rtol;
         private double atol_deg;
         private double atol_rad;
+        // 0 - show units; 1 - show total; 2 - export headers
+        private bool[] options = new bool[] { false, false, false };
 
         /// <summary>
         /// construtor
@@ -48,14 +50,19 @@ namespace Tabl_cs
             Name = title;
             Icon = Properties.Resources.main;
 
+            // set default checked items on properties
             checkedListBox1.SetItemChecked(3, true);
             checkedListBox1.SetItemChecked(4, true);
+            // only bind before last setitemcheck so
+            // itemcheck event only fire once
             checkedListBox1.ItemCheck += checkedListBox1_CheckedChanged;
             checkedListBox1.SetItemChecked(12, true);
+
+            checkedListBox2.ItemCheck += checkedListBox2_CheckedChanged;
+
             dataGridView1.ColumnCount = checkedListBox1.CheckedItems.Count;
             for (int i = 0; i < dataGridView1.ColumnCount; i++)
                 dataGridView1.Columns[i].Name = checkedListBox1.CheckedItems[i].ToString();
-            
         }
 
         #region user methods
@@ -106,9 +113,9 @@ namespace Tabl_cs
         /// update the datagridview
         /// </summary>
         /// <param name="header">header to modify; use empty to skip</param>
-        /// <param name="add">add or remove header</param>
+        /// <param name="add">add or remove header; irrelevatn if `header` is empty string</param>
         /// <param name="orefs">selected rhino object references</param>
-        private void RefreshDGVContent(string header, bool add)
+        internal void RefreshDGVContent(string header, bool add)
         {
             if (header!="")
                 RefreshDGVHeaders(header, add);
@@ -121,7 +128,7 @@ namespace Tabl_cs
                 headers.SetValue(c.Name, i);
             }
 
-            LoadORefs();
+            LoadORefs(); // this eidts "selected" field
             string[,] meta = GetMeta(selected, headers);
             for (int i = 0; i <= meta.GetUpperBound(0); i++)
             {
@@ -130,8 +137,13 @@ namespace Tabl_cs
                     row.SetValue(meta[i, j], j);
 
                 dataGridView1.Rows.Add(row);
-                dataGridView1.Rows[dataGridView1.Rows.GetLastRow(DataGridViewElementStates.None)].HeaderCell.Value = i.ToString();
+                // enumerate row #
+                int last = dataGridView1.Rows.GetLastRow(DataGridViewElementStates.None);
+                dataGridView1.Rows[last].HeaderCell.Value = i.ToString();
             }
+
+            if (options[1])
+                DBVTotal();
         }
 
         /// <summary>
@@ -140,7 +152,7 @@ namespace Tabl_cs
         /// <returns>returns true if something is loaded</returns>
         private bool LoadORefs()
         {
-            RhinoApp.WriteLine(parent.Strings.GetValue("tabl_cs_selected"));
+            
             try
             {
                 string raw = parent.Strings.GetValue("tabl_cs_selected");
@@ -162,7 +174,7 @@ namespace Tabl_cs
         /// register tabl_ state
         /// </summary>
         /// <param name="open">set state value</param>
-        internal void RegisterTabl_(bool open = true)
+        private void RegisterTabl_(bool open = true)
         {
             if (open)
                 parent.Strings.SetString("tabl_cs_session", "open");
@@ -176,11 +188,9 @@ namespace Tabl_cs
         /// <param name="parent">parent form that started the command</param>
         /// <param name="ot">selection object type</param>
         /// <returns>array of ObjRef</returns>
-        internal ObjRef[] PickObj(ObjectType ot = ObjectType.AnyObject)
+        private ObjRef[] PickObj(ObjectType ot = ObjectType.AnyObject)
         {
-            TopMost = false;
-            SendToBack();
-
+            WindowState = FormWindowState.Minimized;
 
             //ObjRef[] picked = await Task.Run(() =>
             //{
@@ -197,15 +207,13 @@ namespace Tabl_cs
             Result r = RhinoGet.GetMultipleObjects(" select object(s)", true, ot, out ObjRef[] picked);
             if (r == Result.Success)
             {
-                TopMost = true;
-                BringToFront();
+                WindowState = FormWindowState.Normal;
                 return picked;
             }
             else
             {
                 RhinoApp.WriteLine(" nothing selected...");
-                TopMost = true;
-                BringToFront();
+                WindowState = FormWindowState.Normal;
                 return new ObjRef[] { };
             }
         }
@@ -216,7 +224,7 @@ namespace Tabl_cs
         /// <param name="orefs">Object references from doc</param>
         /// <param name="propkeys">names of the meta data to query</param>
         /// <returns>2d array of meta data, i row index, j column index</returns>
-        internal string[,] GetMeta(ObjRef[] orefs, string[] propkeys)
+        private string[,] GetMeta(ObjRef[] orefs, string[] propkeys)
         {
             string[,] matrix = new string[orefs.Length, propkeys.Length];
             for (int i = 0; i < orefs.Length; i++)
@@ -235,10 +243,11 @@ namespace Tabl_cs
         /// <param name="oref">object reference</param>
         /// <param name="propkeys">query keys</param>
         /// <returns>array of properties</returns>
-        internal string[] GetProp(ObjRef oref, string[] propkeys)
+        private string[] GetProp(ObjRef oref, string[] propkeys)
         {
             string[] line = new string[propkeys.Length];
             RhinoObject obj = oref.Object();
+            //TODO: obj could be null if user deleted something referenced in "selected"
             for (int i = 0; i < propkeys.Length; i++)
             {
                 string k = propkeys[i];
@@ -294,6 +303,12 @@ namespace Tabl_cs
                         else if (obj.ObjectType == ObjectType.Curve)
                             if (oref.Curve().IsClosed)
                                 amp = AreaMassProperties.Compute(oref.Curve());
+                            else amp = null;
+                        else if (obj.ObjectType == ObjectType.Extrusion)
+                            if (obj.Geometry.HasBrepForm)
+                                amp = AreaMassProperties.Compute(Brep.TryConvertBrep(obj.Geometry));
+                            else amp = null;
+
                         if (amp != null)
                             line.SetValue(amp.Area.ToString(), i);
                         else
@@ -305,6 +320,15 @@ namespace Tabl_cs
                                 line.SetValue(oref.Brep().GetVolume(rtol, tol), i);
                             else
                                 line.SetValue("open brep", i);
+                        else if (obj.ObjectType == ObjectType.Extrusion)
+                        {
+                            Brep b = Brep.TryConvertBrep(obj.Geometry);
+                            if (b == null) line.SetValue(" invalid extrusion", i);
+                            else
+                                if (b.IsSolid)
+                                    line.SetValue(b.GetVolume(rtol, tol), i);
+                                else line.SetValue("open brep", i);
+                        }
                         else
                             line.SetValue(null, i);
                         break;
@@ -316,11 +340,19 @@ namespace Tabl_cs
                     case "NumEdges":
                         if (obj.ObjectType == ObjectType.Brep)
                             line.SetValue(oref.Brep().Edges.Count.ToString(), i);
+                        else if (obj.ObjectType == ObjectType.Extrusion)
+                            if (obj.Geometry.HasBrepForm)
+                                line.SetValue(Brep.TryConvertBrep(obj.Geometry).Edges.Count.ToString(), i);
+                            else line.SetValue("invalid extrusion", i);
                         else line.SetValue(null, i);
                         break;
                     case "NumFaces":
                         if (obj.ObjectType == ObjectType.Brep)
                             line.SetValue(oref.Brep().Faces.Count.ToString(), i);
+                        else if (obj.ObjectType == ObjectType.Extrusion)
+                            if (obj.Geometry.HasBrepForm)
+                                line.SetValue(Brep.TryConvertBrep(obj.Geometry).Faces.Count.ToString(), i);
+                            else line.SetValue("invalid extrusion", i);
                         else line.SetValue(null, i);
                         break;
                     case "Degree":
@@ -351,8 +383,18 @@ namespace Tabl_cs
                             if (oref.Curve().IsPlanar())
                                 line.SetValue("yes", i);
                             else line.SetValue("no", i);
-                        else
-                            line.SetValue("irrelevant", i);
+                        else if (obj.ObjectType == ObjectType.Extrusion)
+                            if (obj.Geometry.HasBrepForm)
+                            {
+                                Brep brep = Brep.TryConvertBrep(obj.Geometry);
+                                if (brep.IsSurface)
+                                    if (brep.Faces[0].IsPlanar())
+                                        line.SetValue("yes", i);
+                                    else line.SetValue("no", i);
+                                else line.SetValue("polysrf", i);
+                            }
+                            else line.SetValue("invalid extrusion", i);
+                        else line.SetValue("irrelevant", i);
                         break;
                     case "IsClosed":
                         if (obj.ObjectType == ObjectType.Brep)
@@ -366,10 +408,19 @@ namespace Tabl_cs
                             if (oref.Curve().IsClosed)
                                 line.SetValue("yes", i);
                             else line.SetValue("no", i);
+                        else if (obj.ObjectType == ObjectType.Extrusion)
+                            if (obj.Geometry.HasBrepForm)
+                            {
+                                Brep brep = Brep.TryConvertBrep(obj.Geometry);
+                                if (brep.IsSolid)
+                                    line.SetValue("yes", i);
+                                else line.SetValue("no", i);
+                            }
+                            else line.SetValue("invalid extrusion", i);
                         else line.SetValue("irrelevant", i);
                         break;
                     case "Comments":
-                        //TODO: implement this!!
+                        var usertxts = obj.Attributes.GetUserStrings();
                         line.SetValue("no_imp", i);
                         break;
                     default:
@@ -384,7 +435,7 @@ namespace Tabl_cs
         /// </summary>
         /// <param name="expt">exempt objects to remain locked; can be null if !unlock</param>
         /// <param name="unlock">set true to lock</param>
-        internal void PickFilter(RhinoObject[] expt, bool unlock=false)
+        private void PickFilter(RhinoObject[] expt, bool unlock=false)
         {
             string[] idstrings = new string[selected.Length];
             for (int i = 0; i < idstrings.Length; i++)
@@ -409,6 +460,28 @@ namespace Tabl_cs
                         parent.Objects.Lock(robj.Id, false);
                     else continue;
             parent.Views.RedrawEnabled = true;
+        }
+
+        /// <summary>
+        /// add total at bottom of datagridview
+        /// </summary>
+        private void DBVTotal()
+        {
+            string[] totalrow = new string[dataGridView1.ColumnCount];
+            for (int ci = 0; ci < dataGridView1.ColumnCount; ci++)
+            {
+                double colsum = 0.0;
+                for (int ri = 0; ri < dataGridView1.RowCount; ri++)
+                {
+                    string val = dataGridView1.Rows[ri].Cells[ci].Value.ToString();
+                    if (double.TryParse(val, out double num))
+                        colsum += num;
+                }
+                totalrow.SetValue(colsum.ToString(), ci);
+            }
+            dataGridView1.Rows.Add(totalrow);
+            int last = dataGridView1.Rows.GetLastRow(DataGridViewElementStates.None);
+            dataGridView1.Rows[last].HeaderCell.Value = "SUM";
         }
 
         #endregion
@@ -443,7 +516,7 @@ namespace Tabl_cs
             RefreshDGVContent("", true);
         }
 
-        // when checked item changes
+        // properties check change
         private void checkedListBox1_CheckedChanged(object sender, ItemCheckEventArgs e)
         {
             if (e.NewValue == CheckState.Checked)
@@ -452,7 +525,7 @@ namespace Tabl_cs
                 RefreshDGVContent(checkedListBox1.Items[e.Index].ToString(), false);
         }
 
-        // check all
+        // check all propoerties
         private void checkAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < checkedListBox1.Items.Count; i++)
@@ -470,7 +543,7 @@ namespace Tabl_cs
         
         }
 
-        //check none
+        // check none properties
         private void checkNoneToolStripMenuItem_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < checkedListBox1.Items.Count; i++)
@@ -523,6 +596,59 @@ namespace Tabl_cs
             selected = newselected;
 
             PickFilter(userlocked.ToArray(), true);
+            RefreshDGVContent("", true);
+        }
+
+        // refresh meta data button
+        private void button3_Click(object sender, EventArgs e)
+        {
+            RefreshDGVContent("", true);
+        }
+
+        // options check box check change
+        private void checkedListBox2_CheckedChanged(object sender, ItemCheckEventArgs e)
+        {
+            if (e.NewValue == CheckState.Checked)
+                options.SetValue(true, e.Index);
+            else options.SetValue(false, e.Index);
+            RefreshDGVContent("", true);
+        }
+
+        // show doc string info in a msgbox
+        private void devLogToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string msg = "";
+            for (int i = 0; i < parent.Strings.Count; i++)
+            {
+                string k = parent.Strings.GetKey(i);
+                string v = parent.Strings.GetValue(k);
+                if (v.Length > 100)
+                    v = v.Substring(0, 99) + " ...";
+                msg += i.ToString() + " - " + k + "\n" + v + "\n";
+            }
+            if (msg.Length > 1000)
+                msg = msg.Substring(0, 999) + "(truncated)";
+            MessageBox.Show(msg, "DevLog", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        // settings button click
+        private void button4_Click(object sender, EventArgs e)
+        {
+            Settings popup = new Settings();
+            popup.ShowDialog(this);
+        }
+
+        // close this tabl_ window
+        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        // clear selected and the doctring k-v pair
+        private void clearTableToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            parent.Strings.Delete("tabl_cs_selected");
+            selected = new ObjRef[] { };
             RefreshDGVContent("", true);
         }
     }

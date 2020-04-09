@@ -20,3 +20,4 @@ D:\Github repos\Tabl_\csharp\Tabl_\bin\Eto.Wpf.dll
 D:\Github repos\Tabl_\csharp\Tabl_\bin\Mindscape.Raygun4Net.dll
 D:\Github repos\Tabl_\csharp\Tabl_\bin\Eto.Wpf.pdb
 D:\Github repos\Tabl_\csharp\Tabl_\obj\Debug\Tabl_cs.csproj.CopyComplete
+D:\Github repos\Tabl_\csharp\Tabl_\obj\Debug\Tabl_cs.Settings.resources
