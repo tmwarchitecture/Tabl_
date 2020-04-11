@@ -26,6 +26,9 @@ namespace Tabl_cs
         private double atol_rad;
         // 0 - show units; 1 - show total; 2 - export headers
         private bool[] options = new bool[] { false, false, false };
+        private int clickedrowindex; // see event handler OnRowHeaderRightClick
+
+        private Settings popup = new Settings();
 
         /// <summary>
         /// construtor
@@ -59,10 +62,11 @@ namespace Tabl_cs
             checkedListBox1.SetItemChecked(12, true);
 
             checkedListBox2.ItemCheck += checkedListBox2_CheckedChanged;
-
+            
             dataGridView1.ColumnCount = checkedListBox1.CheckedItems.Count;
             for (int i = 0; i < dataGridView1.ColumnCount; i++)
                 dataGridView1.Columns[i].Name = checkedListBox1.CheckedItems[i].ToString();
+            dataGridView1.RowHeaderMouseClick += OnRowHeaderRightClick;
         }
 
         #region user methods
@@ -137,7 +141,7 @@ namespace Tabl_cs
                     row.SetValue(meta[i, j], j);
 
                 dataGridView1.Rows.Add(row);
-                // enumerate row #
+                // enumerate row # and set in row header
                 int last = dataGridView1.Rows.GetLastRow(DataGridViewElementStates.None);
                 dataGridView1.Rows[last].HeaderCell.Value = i.ToString();
             }
@@ -171,7 +175,7 @@ namespace Tabl_cs
         }
 
         /// <summary>
-        /// register tabl_ state
+        /// register tabl_ state DEFUNCT
         /// </summary>
         /// <param name="open">set state value</param>
         private void RegisterTabl_(bool open = true)
@@ -264,29 +268,45 @@ namespace Tabl_cs
                         break;
                     case "Layer":
                         var li = obj.Attributes.LayerIndex;
-                        var layer = RhinoDoc.ActiveDoc.Layers.FindIndex(li);
+                        var layer = parent.Layers.FindIndex(li);
                         line.SetValue(layer.Name, i);
                         break;
                     case "Color":
-                        var c = obj.Attributes.ObjectColor;
+                        var c = obj.Attributes.DrawColor(parent);
                         line.SetValue(c.ToString(), i);
                         break;
                     case "LineType":
-                        var lti = obj.Attributes.LinetypeIndex;
-                        var lt = RhinoDoc.ActiveDoc.Linetypes.FindIndex(lti);
-                        line.SetValue(lt.Name, i);
+                        var lti = parent.Linetypes.LinetypeIndexForObject(obj);
+                        var lt = parent.Linetypes[lti].Name;
+                        line.SetValue(lt, i);
                         break;
                     case "PrintColor":
-                        var pc = obj.Attributes.PlotColor;
+                        Color pc;
+                        var pcs = obj.Attributes.PlotColorSource;
+                        if (pcs == ObjectPlotColorSource.PlotColorFromLayer)
+                        {
+                            li = obj.Attributes.LayerIndex;
+                            layer = parent.Layers.FindIndex(li);
+                            pc = layer.PlotColor;
+                        }
+                        else pc = obj.Attributes.PlotColor;
                         line.SetValue(pc.ToString(), i);
                         break;
                     case "PrintWidth":
-                        var pw = obj.Attributes.PlotWeight;
+                        double pw;
+                        var pws = obj.Attributes.PlotWeightSource;
+                        if (pws == ObjectPlotWeightSource.PlotWeightFromLayer)
+                        {
+                            li = obj.Attributes.LayerIndex;
+                            layer = parent.Layers.FindIndex(li);
+                            pw = layer.PlotWeight;
+                        }
+                        else pw = obj.Attributes.PlotWeight;
                         line.SetValue(pw.ToString(), i);
                         break;
                     case "Material":
                         var mti = obj.Attributes.MaterialIndex;
-                        var mt = RhinoDoc.ActiveDoc.Materials.FindIndex(mti);
+                        var mt = parent.Materials.FindIndex(mti);
                         if (mt == null) line.SetValue(null, i);
                         else line.SetValue(mt.Name, i);
                         break;
@@ -317,7 +337,7 @@ namespace Tabl_cs
                     case "Volume":
                         if (obj.ObjectType == ObjectType.Brep)
                             if (oref.Brep().IsSolid)
-                                line.SetValue(oref.Brep().GetVolume(rtol, tol), i);
+                                line.SetValue(oref.Brep().GetVolume(rtol, tol).ToString(), i);
                             else
                                 line.SetValue("open brep", i);
                         else if (obj.ObjectType == ObjectType.Extrusion)
@@ -326,7 +346,7 @@ namespace Tabl_cs
                             if (b == null) line.SetValue(" invalid extrusion", i);
                             else
                                 if (b.IsSolid)
-                                    line.SetValue(b.GetVolume(rtol, tol), i);
+                                    line.SetValue(b.GetVolume(rtol, tol).ToString(), i);
                                 else line.SetValue("open brep", i);
                         }
                         else
@@ -473,7 +493,9 @@ namespace Tabl_cs
                 double colsum = 0.0;
                 for (int ri = 0; ri < dataGridView1.RowCount; ri++)
                 {
-                    string val = dataGridView1.Rows[ri].Cells[ci].Value.ToString();
+                    string val;
+                    try { val = dataGridView1.Rows[ri].Cells[ci].Value.ToString(); }
+                    catch (NullReferenceException) { val = "NaN"; }
                     if (double.TryParse(val, out double num))
                         colsum += num;
                 }
@@ -490,7 +512,9 @@ namespace Tabl_cs
         private void OnFormClosing(object sender, FormClosingEventArgs e)
         {
             RegisterTabl_(false);
-            // register this form as closed
+            // register this form as closed DEFUNCT
+            Hide();
+            e.Cancel = true; // effectively never truly close/dispose this window
         }
 
         // click add
@@ -634,8 +658,7 @@ namespace Tabl_cs
         // settings button click
         private void button4_Click(object sender, EventArgs e)
         {
-            Settings popup = new Settings();
-            popup.ShowDialog(this);
+            popup.ShowDialog(this); // showmodal doesn't dispose on close
         }
 
         // close this tabl_ window
@@ -650,6 +673,21 @@ namespace Tabl_cs
             parent.Strings.Delete("tabl_cs_selected");
             selected = new ObjRef[] { };
             RefreshDGVContent("", true);
+        }
+
+        // right click row header handler
+        private void OnRowHeaderRightClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                clickedrowindex = e.RowIndex;
+                contextMenuStrip1.Show(Cursor.Position);
+            }
+        }
+
+        private void removeRowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(clickedrowindex.ToString());
         }
     }
 }

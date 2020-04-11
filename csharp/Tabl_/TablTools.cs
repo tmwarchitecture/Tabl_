@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
 using Rhino;
 using Rhino.Commands;
 using Rhino.Geometry;
@@ -13,6 +12,7 @@ namespace Tabl_cs
 {
     public class TablTools : Command
     {
+        MainForm app = null; // keeps a copy of main app
 
         public TablTools()
         {
@@ -35,6 +35,7 @@ namespace Tabl_cs
 
         protected override Result RunCommand(RhinoDoc doc, RunMode mode)
         {
+            /*
             // launch winform with dup check
             string sessopen;
             try
@@ -62,7 +63,12 @@ namespace Tabl_cs
                 var wf = new MainForm(RhinoDoc.ActiveDoc);
                 wf.Show(RhinoWinApp.MainWindow);
             }
-            
+            */
+
+            // once instantiated, app window is never disposed until rhino closes
+            if (app == null) app = new MainForm(RhinoDoc.ActiveDoc);
+            try { app.Show(RhinoWinApp.MainWindow); }
+            catch (InvalidOperationException) { RhinoApp.WriteLine(" dialog is already open"); }
 
             return Result.Success;
         }
