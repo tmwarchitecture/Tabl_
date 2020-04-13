@@ -69,7 +69,9 @@ namespace Tabl_cs
             if (app == null) app = new MainForm(RhinoDoc.ActiveDoc);
             try { app.Show(RhinoWinApp.MainWindow); }
             catch (InvalidOperationException) { RhinoApp.WriteLine(" dialog is already open"); }
-
+            RhinoDoc.ModifyObjectAttributes += app.AutoRefresh;
+            EndCommand += app.AutoRefresh; // static event, bond to all command endings
+            
             return Result.Success;
         }
 

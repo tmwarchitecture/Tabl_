@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.IO;
 using System.Windows.Forms;
 using Rhino.DocObjects;
 using Rhino;
@@ -24,6 +25,7 @@ namespace Tabl_cs
         private double rtol;
         private double atol_deg;
         private double atol_rad;
+        private string docunit;
         // 0 - show units; 1 - show total; 2 - export headers
         private bool[] options = new bool[] { false, false, false };
         private int clickedrowindex; // see event handler OnRowHeaderRightClick
@@ -44,6 +46,7 @@ namespace Tabl_cs
             rtol = parent.ModelRelativeTolerance;
             atol_deg = parent.ModelAngleToleranceDegrees;
             atol_rad = parent.ModelAngleToleranceRadians;
+            
             LoadORefs();
 
 
@@ -52,6 +55,7 @@ namespace Tabl_cs
             FormClosing += OnFormClosing;
             Name = title;
             Icon = Properties.Resources.main;
+            popup.FormClosing += button3_Click;
 
             // set default checked items on properties
             checkedListBox1.SetItemChecked(3, true);
@@ -133,6 +137,7 @@ namespace Tabl_cs
             }
 
             LoadORefs(); // this eidts "selected" field
+            if (headers.Length == 0) return; // no columns, no data should show
             string[,] meta = GetMeta(selected, headers);
             for (int i = 0; i <= meta.GetUpperBound(0); i++)
             {
@@ -255,6 +260,10 @@ namespace Tabl_cs
             for (int i = 0; i < propkeys.Length; i++)
             {
                 string k = propkeys[i];
+                if (popup.cun != "" && popup.cun != null)
+                    docunit = popup.cun;
+                else
+                    docunit = parent.GetUnitSystemName(true, false, true, true);
                 switch (k)
                 {
                     case "GUID":
@@ -273,7 +282,12 @@ namespace Tabl_cs
                         break;
                     case "Color":
                         var c = obj.Attributes.DrawColor(parent);
-                        line.SetValue(c.ToString(), i);
+                        if (popup.cf == 0)
+                            line.SetValue(c.ToString(), i);
+                        else if (popup.cf == 1)
+                            line.SetValue(string.Format("{0}-{1}-{2}", c.R, c.G, c.B), i);
+                        else
+                            line.SetValue(string.Format("{0} {1} {2}", c.R, c.G, c.B), i);
                         break;
                     case "LineType":
                         var lti = parent.Linetypes.LinetypeIndexForObject(obj);
@@ -290,7 +304,12 @@ namespace Tabl_cs
                             pc = layer.PlotColor;
                         }
                         else pc = obj.Attributes.PlotColor;
-                        line.SetValue(pc.ToString(), i);
+                        if (popup.cf == 0)
+                            line.SetValue(pc.ToString(), i);
+                        else if (popup.cf == 1)
+                            line.SetValue(string.Format("{0}-{1}-{2}",pc.R, pc.G, pc.B), i);
+                        else
+                            line.SetValue(string.Format("{0} {1} {2}", pc.R, pc.G, pc.B), i);
                         break;
                     case "PrintWidth":
                         double pw;
@@ -302,7 +321,8 @@ namespace Tabl_cs
                             pw = layer.PlotWeight;
                         }
                         else pw = obj.Attributes.PlotWeight;
-                        line.SetValue(pw.ToString(), i);
+                        if (options[0]) line.SetValue(pw.ToString() + "pt", i); // with unit
+                        else line.SetValue(pw.ToString(), i);
                         break;
                     case "Material":
                         var mti = obj.Attributes.MaterialIndex;
@@ -311,10 +331,21 @@ namespace Tabl_cs
                         else line.SetValue(mt.Name, i);
                         break;
                     case "Length":
+                        string len = null;
                         if (obj.ObjectType == ObjectType.Curve)
-                            line.SetValue(oref.Curve().GetLength().ToString(), i);
-                        else
-                            line.SetValue(null, i);
+                        {
+                            var len_num = Math.Round(oref.Curve().GetLength(), popup.dp); //decimal
+                            len_num *= popup.su; //custom scale
+                            if (popup.ts == ",")
+                                len = len_num.ToString("#,##0.00");
+                            else if (popup.ts == ".")
+                                len = len_num.ToString("#.##0.00");
+                            else if (popup.ts == " ")
+                                len = len_num.ToString("# ##0.00");
+                            else len = len_num.ToString();
+                        }
+                        if (options[0] && len!=null) len += docunit; // with unit
+                        line.SetValue(len, i);
                         break;
                     case "Area":
                         AreaMassProperties amp = null;
@@ -330,27 +361,77 @@ namespace Tabl_cs
                             else amp = null;
 
                         if (amp != null)
-                            line.SetValue(amp.Area.ToString(), i);
+                        {
+                            double area_num = Math.Round(amp.Area, popup.dp);
+                            area_num *= popup.su;
+                            string area;
+                            if (popup.ts == ",")
+                                area = area_num.ToString("#,##0.00");
+                            else if (popup.ts == ".")
+                                area = area_num.ToString("#.##0.00");
+                            else if (popup.ts == " ")
+                                area = area_num.ToString("# ##0.00");
+                            else area = area_num.ToString();
+
+                            if (options[0])
+                            {
+                                if (popup.cun != "" && popup.cun != null)
+                                    line.SetValue(area + popup.cun + "sq", i);
+                                else line.SetValue(area + docunit + "sq", i);
+                            }
+                            else line.SetValue(area, i);
+                        }
                         else
                             line.SetValue(null, i);
                         break;
                     case "Volume":
+                        string vol = null;
                         if (obj.ObjectType == ObjectType.Brep)
                             if (oref.Brep().IsSolid)
-                                line.SetValue(oref.Brep().GetVolume(rtol, tol).ToString(), i);
+                            {
+                                double vol_num = oref.Brep().GetVolume(rtol, tol);
+                                vol_num = Math.Round(vol_num, popup.dp);
+                                vol_num *= popup.su;
+                                if (popup.ts == ",")
+                                    vol = vol_num.ToString("#,##0.00");
+                                else if (popup.ts == ".")
+                                    vol = vol_num.ToString("#.##0.00");
+                                else if (popup.ts == " ")
+                                    vol = vol_num.ToString("# ##0.00");
+                                else vol = vol_num.ToString();
+                            }
                             else
-                                line.SetValue("open brep", i);
+                                vol = "open brep";
                         else if (obj.ObjectType == ObjectType.Extrusion)
                         {
                             Brep b = Brep.TryConvertBrep(obj.Geometry);
-                            if (b == null) line.SetValue(" invalid extrusion", i);
+                            if (b == null) vol = "invalid extrusion";
                             else
+                            {
                                 if (b.IsSolid)
-                                    line.SetValue(b.GetVolume(rtol, tol).ToString(), i);
-                                else line.SetValue("open brep", i);
+                                {
+                                    double vol_num = b.GetVolume(rtol, tol);
+                                    vol_num = Math.Round(vol_num, popup.dp);
+                                    vol_num *= popup.su;
+                                    if (popup.ts == ",")
+                                        vol = vol_num.ToString("#,##0.00");
+                                    else if (popup.ts == ".")
+                                        vol = vol_num.ToString("#.##0.00");
+                                    else if (popup.ts == " ")
+                                        vol = vol_num.ToString("# ##0.00");
+                                    else vol = vol_num.ToString();
+                                }
+                                else vol = "open brep";
+                            }
                         }
-                        else
-                            line.SetValue(null, i);
+
+                        if (!options[0] || vol==null) line.SetValue(vol, i);
+                        else if (vol != "open brep" && vol != "invalid extrusion")
+                        {
+                            if (popup.cun!="" && popup.cun!=null)
+                                line.SetValue(vol + popup.cun + "cu", i);
+                            else line.SetValue(vol + docunit + "cu", i);
+                        }
                         break;
                     case "NumPts":
                         if (obj.ObjectType == ObjectType.Curve)
@@ -381,13 +462,22 @@ namespace Tabl_cs
                         else line.SetValue(null, i);
                         break;
                     case "CenterX":
-                        line.SetValue(obj.Geometry.GetBoundingBox(false).Center.X.ToString(), i);
+                        var num = obj.Geometry.GetBoundingBox(false).Center.X;
+                        num = Math.Round(num, popup.dp);
+                        num *= popup.su;
+                        line.SetValue(num.ToString(), i);
                         break;
                     case "CenterY":
-                        line.SetValue(obj.Geometry.GetBoundingBox(false).Center.Y.ToString(), i);
+                        num = obj.Geometry.GetBoundingBox(false).Center.Y;
+                        num = Math.Round(num, popup.dp);
+                        num *= popup.su;
+                        line.SetValue(num.ToString(), i);
                         break;
                     case "CenterZ":
-                        line.SetValue(obj.Geometry.GetBoundingBox(false).Center.Z.ToString(), i);
+                        num = obj.Geometry.GetBoundingBox(false).Center.Z;
+                        num = Math.Round(num, popup.dp);
+                        num *= popup.su;
+                        line.SetValue(num.ToString(), i);
                         break;
                     case "IsPlanar":
                         if (obj.ObjectType == ObjectType.Brep)
@@ -441,7 +531,12 @@ namespace Tabl_cs
                         break;
                     case "Comments":
                         var usertxts = obj.Attributes.GetUserStrings();
-                        line.SetValue("no_imp", i);
+                        string txt = null;
+                        if (usertxts.Count == 1)
+                            txt = usertxts[0];
+                        else
+                            txt = string.Join(";", usertxts.AllKeys);
+                        line.SetValue("keys_"+txt, i);
                         break;
                     default:
                         break;
@@ -494,8 +589,9 @@ namespace Tabl_cs
                 for (int ri = 0; ri < dataGridView1.RowCount; ri++)
                 {
                     string val;
+                    // TODO: make sure to take out unit when parsing
                     try { val = dataGridView1.Rows[ri].Cells[ci].Value.ToString(); }
-                    catch (NullReferenceException) { val = "NaN"; }
+                    catch (NullReferenceException) { val = null; }
                     if (double.TryParse(val, out double num))
                         colsum += num;
                 }
@@ -515,6 +611,13 @@ namespace Tabl_cs
             // register this form as closed DEFUNCT
             Hide();
             e.Cancel = true; // effectively never truly close/dispose this window
+        }
+
+        // bind automatic refresh, in command script
+        public void AutoRefresh(object sender, EventArgs e)
+        {
+            if (popup.update)
+                RefreshDGVContent("", true);
         }
 
         // click add
@@ -623,7 +726,7 @@ namespace Tabl_cs
             RefreshDGVContent("", true);
         }
 
-        // refresh meta data button
+        // refresh meta, shared between Click and settings FormClosing
         private void button3_Click(object sender, EventArgs e)
         {
             RefreshDGVContent("", true);
@@ -684,10 +787,57 @@ namespace Tabl_cs
                 contextMenuStrip1.Show(Cursor.Position);
             }
         }
-
+        // right click and remove row handler, in tandem with above
         private void removeRowToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(clickedrowindex.ToString());
+            //first eliminate from doc string
+            string raw = parent.Strings.GetValue("tabl_cs_selected");
+            List<string> idstrings = raw.Split(new string[] { ",", }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            idstrings.RemoveAt(clickedrowindex);
+            parent.Strings.SetString("tabl_cs_selected", string.Join(",", idstrings));
+
+            //replace `selected` field
+            ObjRef[] newselected = new ObjRef[idstrings.Count];
+            for (int i = 0; i < idstrings.Count; i++)
+                newselected.SetValue(new ObjRef(new Guid(idstrings[i])), i);
+            selected = newselected;
+
+            RefreshDGVContent("", true);
+        }
+
+        // export csv button click
+        private void button6_Click(object sender, EventArgs e)
+        {
+            if ( saveFileDialog1.ShowDialog(this) == DialogResult.OK)
+                using (StreamWriter sw = new StreamWriter(saveFileDialog1.FileName))
+                {
+                    for (int ri=0; ri < dataGridView1.RowCount; ri++)
+                    {
+                        string[] linetxt = new string[dataGridView1.ColumnCount];
+                        if (ri == 0 && options[2])
+                        {
+                            for (int i = 0; i < dataGridView1.ColumnCount; i++)
+                                linetxt.SetValue(dataGridView1.Columns[i].Name, i);
+                            sw.WriteLine(string.Join(",", linetxt));
+                        }
+                        var row = dataGridView1.Rows[ri];
+                        for (int ci = 0; ci < dataGridView1.ColumnCount; ci++)
+                            try { linetxt.SetValue(row.Cells[ci].Value.ToString(), ci); }
+                            catch(NullReferenceException) { linetxt.SetValue("no-value", ci); }
+                        sw.WriteLine(string.Join(",", linetxt));
+                    }
+                }
+        }
+        // export csv menustrip click, call above
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            button6_Click(sender, e);
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AboutTabl_ about = new AboutTabl_();
+            about.ShowDialog(this);
         }
     }
 }

@@ -24,7 +24,11 @@ using Rhino.PlugIns;
 [assembly: AssemblyTitle("Tabl_cs")]
 
 // This will be used also for the plug-in description.
-[assembly: AssemblyDescription("Tabl_cs utility plug-in")]
+[assembly: AssemblyDescription(@"Tabl_cs utility plug-in
+This is an early alpha written by Will Wang
+Totally Tim Williams idea
+If you are neither of these two person, you really shouldn't be using this
+Go check out Tim's original version")]
 
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label2 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
@@ -47,6 +48,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -131,7 +133,7 @@
             this.radioButton3.Size = new System.Drawing.Size(54, 17);
             this.radioButton3.TabIndex = 2;
             this.radioButton3.TabStop = true;
-            this.radioButton3.Text = "R,G,B";
+            this.radioButton3.Text = "R G B";
             this.radioButton3.UseVisualStyleBackColor = true;
             // 
             // radioButton2
@@ -176,6 +178,7 @@
             this.radioButton5.TabIndex = 1;
             this.radioButton5.TabStop = true;
             this.radioButton5.Text = "Automatic";
+            this.toolTip1.SetToolTip(this.radioButton5, "beware of computing time");
             this.radioButton5.UseVisualStyleBackColor = true;
             // 
             // radioButton4
@@ -208,6 +211,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(66, 20);
             this.textBox1.TabIndex = 3;
+            this.toolTip1.SetToolTip(this.textBox1, "leave blank to use default units");
             // 
             // label4
             // 
@@ -230,6 +234,7 @@
             this.numericUpDown2.Name = "numericUpDown2";
             this.numericUpDown2.Size = new System.Drawing.Size(66, 20);
             this.numericUpDown2.TabIndex = 1;
+            this.toolTip1.SetToolTip(this.numericUpDown2, "multiplies all numbers");
             this.numericUpDown2.Value = new decimal(new int[] {
             1,
             0,
@@ -316,5 +321,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }

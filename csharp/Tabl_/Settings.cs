@@ -13,7 +13,7 @@ namespace Tabl_cs
     public partial class Settings : Form
     {
         internal int dp = 2; // decimal place
-        internal string ts =","; // thousands separater
+        internal string ts =""; // thousands separater
         internal int cf = 0; // color format
         internal bool update = false; // true as automatic
         internal double su = 1.0; // scale units
@@ -71,7 +71,7 @@ namespace Tabl_cs
             else cf = 0; //TODO: should never reach this; add debug message
             update = radioButton5.Checked;
             su = (double)numericUpDown2.Value;
-            cun = textBox1.Text;
+            cun = textBox1.Text.Trim();
 
             Close();
         }
