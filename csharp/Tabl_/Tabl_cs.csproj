@@ -66,6 +66,12 @@
     <Compile Include="AboutTabl_.Designer.cs">
       <DependentUpon>AboutTabl_.cs</DependentUpon>
     </Compile>
+    <Compile Include="DockPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DockPanel.Designer.cs">
+      <DependentUpon>DockPanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -83,13 +89,17 @@
     <Compile Include="Settings.Designer.cs">
       <DependentUpon>Settings.cs</DependentUpon>
     </Compile>
+    <Compile Include="TablDock.cs" />
     <Compile Include="TablTools.cs" />
-    <Compile Include="Tabl.cs" />
+    <Compile Include="Tabl_cs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="AboutTabl_.resx">
       <DependentUpon>AboutTabl_.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DockPanel.resx">
+      <DependentUpon>DockPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EmbeddedResources\plugin-utility.ico" />
     <EmbeddedResource Include="MainForm.resx">

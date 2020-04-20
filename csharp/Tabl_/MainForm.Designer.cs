@@ -164,21 +164,21 @@
             // checkAllToolStripMenuItem
             // 
             this.checkAllToolStripMenuItem.Name = "checkAllToolStripMenuItem";
-            this.checkAllToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.checkAllToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.checkAllToolStripMenuItem.Text = "Check all properties";
             this.checkAllToolStripMenuItem.Click += new System.EventHandler(this.checkAllToolStripMenuItem_Click);
             // 
             // checkNoneToolStripMenuItem
             // 
             this.checkNoneToolStripMenuItem.Name = "checkNoneToolStripMenuItem";
-            this.checkNoneToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.checkNoneToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.checkNoneToolStripMenuItem.Text = "Check none";
             this.checkNoneToolStripMenuItem.Click += new System.EventHandler(this.checkNoneToolStripMenuItem_Click);
             // 
             // clearTableToolStripMenuItem
             // 
             this.clearTableToolStripMenuItem.Name = "clearTableToolStripMenuItem";
-            this.clearTableToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.clearTableToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.clearTableToolStripMenuItem.Text = "Clear table";
             this.clearTableToolStripMenuItem.Click += new System.EventHandler(this.clearTableToolStripMenuItem_Click);
             // 
