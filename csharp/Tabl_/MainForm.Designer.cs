@@ -296,7 +296,7 @@
             // 
             // button1
             // 
-            this.button1.Image = global::Tabl_cs.Properties.Resources.add;
+            this.button1.Image = global::Tabl_cs.Properties.Resources.addicon;
             this.button1.Location = new System.Drawing.Point(2, 2);
             this.button1.Margin = new System.Windows.Forms.Padding(2);
             this.button1.Name = "button1";
@@ -308,7 +308,7 @@
             // 
             // button2
             // 
-            this.button2.Image = global::Tabl_cs.Properties.Resources.remove;
+            this.button2.Image = global::Tabl_cs.Properties.Resources.removeicon;
             this.button2.Location = new System.Drawing.Point(31, 2);
             this.button2.Margin = new System.Windows.Forms.Padding(2);
             this.button2.Name = "button2";
@@ -320,7 +320,7 @@
             // 
             // button3
             // 
-            this.button3.Image = global::Tabl_cs.Properties.Resources.refresh;
+            this.button3.Image = global::Tabl_cs.Properties.Resources.refreshicon;
             this.button3.Location = new System.Drawing.Point(60, 2);
             this.button3.Margin = new System.Windows.Forms.Padding(2);
             this.button3.Name = "button3";

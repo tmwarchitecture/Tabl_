@@ -67,7 +67,7 @@ namespace Tabl_cs
             dataGridView1.ColumnCount = checkedListBox1.CheckedItems.Count;
             for (int i = 0; i < dataGridView1.ColumnCount; i++)
                 dataGridView1.Columns[i].Name = checkedListBox1.CheckedItems[i].ToString();
-            dataGridView1.RowHeaderMouseClick += OnRowHeaderRightClick;
+            dataGridView1.CellMouseClick += OnDGVRightClick;
         }
 
         public static Guid PanelId
@@ -246,7 +246,15 @@ namespace Tabl_cs
         {
             string[] line = new string[propkeys.Length];
             RhinoObject obj = oref.Object();
-            //TODO: obj could be null if user deleted something referenced in "selected"
+
+            // catch when user delete object in doc but tabl_ still has reference
+            // oref can still return guid string, use it to remove in selected and docstr
+            if (obj == null || oref == null)
+            {
+                line.SetValue("MISSING OBJECT", 0);
+                return line;
+            }
+
             for (int i = 0; i < propkeys.Length; i++)
             {
                 string k = propkeys[i];
@@ -731,22 +739,52 @@ namespace Tabl_cs
             RefreshDGVContent("", true);
         }
 
-        // right click row header handler
-        private void OnRowHeaderRightClick(object sender, DataGridViewCellMouseEventArgs e)
+        // right click context menu within datagridview
+        private void OnDGVRightClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
             {
                 clickedrowindex = e.RowIndex;
+                // catch click on headers row
+                if (clickedrowindex == -1) return;
                 contextMenuStrip1.Show(Cursor.Position);
             }
         }
-        // right click and remove row handler, in tandem with above
+        // right click and add more
+        private void addMoreToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            button1_Click(sender, e);
+        }
+        // right click and remove row handler
         private void removeRowToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //first eliminate from doc string
             string raw = parent.Strings.GetValue("tabl_cs_selected");
             List<string> idstrings = raw.Split(new string[] { ",", }, StringSplitOptions.RemoveEmptyEntries).ToList();
             idstrings.RemoveAt(clickedrowindex);
+            parent.Strings.SetString("tabl_cs_selected", string.Join(",", idstrings));
+
+            //replace `selected` field
+            ObjRef[] newselected = new ObjRef[idstrings.Count];
+            for (int i = 0; i < idstrings.Count; i++)
+                newselected.SetValue(new ObjRef(new Guid(idstrings[i])), i);
+            selected = newselected;
+
+            RefreshDGVContent("", true);
+        }
+        // right click and remove highlit rows handler
+        private void removeRowsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //first eliminate from doc string
+            string raw = parent.Strings.GetValue("tabl_cs_selected");
+            List<string> idstrings = raw.Split(new string[] { ",", }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            List<int> ri = new List<int>();
+            foreach (DataGridViewRow row in dataGridView1.SelectedRows)
+                ri.Add(row.Index);
+            ri.Sort();
+            ri.Reverse(); // these two are to guarantee no index out of range while removing
+            foreach (int i in ri)
+                idstrings.RemoveAt(i);
             parent.Strings.SetString("tabl_cs_selected", string.Join(",", idstrings));
 
             //replace `selected` field
@@ -828,7 +866,23 @@ namespace Tabl_cs
         // settings button click
         private void button4_Click(object sender, EventArgs e)
         {
+            popup.Location = Cursor.Position;
             popup.ShowDialog(this); // showmodal doesn't dispose on close
         }
+
+        // place this table in rhino model click
+        private void button5_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("you'll have to hunt down this lazy bum Will", "well...", MessageBoxButtons.OK, MessageBoxIcon.Question);
+        }
+
+        // click to show about window
+        private void button12_Click(object sender, EventArgs e)
+        {
+            AboutTabl_ about = new AboutTabl_();
+            about.ShowDialog(this);
+        }
+
+        
     }
 }

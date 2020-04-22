@@ -6,12 +6,12 @@ using Rhino.PlugIns;
 // Plug-in Description Attributes - all of these are optional.
 // These will show in Rhino's option dialog, in the tab Plug-ins.
 [assembly: PlugInDescription(DescriptionType.Address, "-")]
-[assembly: PlugInDescription(DescriptionType.Country, "-")]
-[assembly: PlugInDescription(DescriptionType.Email, "-")]
+[assembly: PlugInDescription(DescriptionType.Country, "USA")]
+[assembly: PlugInDescription(DescriptionType.Email, "hotcoffeegroup@gmail.com")]
 [assembly: PlugInDescription(DescriptionType.Phone, "-")]
 [assembly: PlugInDescription(DescriptionType.Fax, "-")]
 [assembly: PlugInDescription(DescriptionType.Organization, "-")]
-[assembly: PlugInDescription(DescriptionType.UpdateUrl, "-")]
+[assembly: PlugInDescription(DescriptionType.UpdateUrl, "https://www.food4rhino.com/app/tabl")]
 [assembly: PlugInDescription(DescriptionType.WebSite, "-")]
 
 // Icons should be Windows .ico files and contain 32-bit images in the following sizes: 16, 24, 32, 48, and 256.
@@ -21,19 +21,30 @@ using Rhino.PlugIns;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Tabl_cs")]
+[assembly: AssemblyTitle("Tabl_")]
 
 // This will be used also for the plug-in description.
-[assembly: AssemblyDescription(@"Tabl_cs utility plug-in
-This is an early alpha written by Will Wang
-Totally Tim Williams idea
-If you are neither of these two person, you really shouldn't be using this
-Go check out Tim's original version")]
+[assembly: AssemblyDescription(@"Tabl_ is a spreadsheet interface within Rhino for the viewing, editing, and exporting of object properties
+
+This version was ported by Will Wang
+
+For more information see repo
+https://github.com/tmwarchitecture/Tabl_
+
+See link on Food4Rhino
+https://www.food4rhino.com/app/tabl
+
+ - Architecture schedules
+ - Area take-offs
+ - Object queries based on properties
+ - Examining large number of geometries
+ - Object information extraction
+")]
 
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Tabl_cs")]
-[assembly: AssemblyCopyright("Copyright ©  Will Wang 2020")]
+[assembly: AssemblyProduct("Tabl_")]
+[assembly: AssemblyCopyright("Copyright ©  Tim Williams 2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -56,8 +67,8 @@ Go check out Tim's original version")]
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 
-[assembly: AssemblyVersion("0.0.1")]
-[assembly: AssemblyFileVersion("0.0.1")]
+[assembly: AssemblyVersion("1.0")]
+[assembly: AssemblyFileVersion("1.0")]
 
 // Make compatible with Rhino Installer Engine
 [assembly: AssemblyInformationalVersion("2")]

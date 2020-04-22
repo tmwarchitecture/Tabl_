@@ -36,42 +36,14 @@ namespace Tabl_cs
         protected override Result RunCommand(RhinoDoc doc, RunMode mode)
         {
             /*
-            // launch winform with dup check
-            string sessopen;
-            try
-            {
-                sessopen = RhinoDoc.ActiveDoc.Strings.GetValue("tabl_cs_session");
-                if (sessopen == "open")
-                {
-                    RhinoApp.WriteLine(" session already open");
-                    bool reopen = false;
-                    RhinoGet.GetBool(" force new session? duplicate sessions may override each other", true, "no", "yes", ref reopen);
-                    if (reopen)
-                    {
-                        var wf = new MainForm(RhinoDoc.ActiveDoc);
-                        wf.Show(RhinoWinApp.MainWindow);
-                    }
-                }
-                else
-                {
-                    var wf = new MainForm(RhinoDoc.ActiveDoc);
-                    wf.Show(RhinoWinApp.MainWindow);
-                }
-            }
-            catch (KeyNotFoundException)
-            {
-                var wf = new MainForm(RhinoDoc.ActiveDoc);
-                wf.Show(RhinoWinApp.MainWindow);
-            }
-            */
-
             // once instantiated, app window is never disposed until rhino closes
             if (app == null) app = new MainForm(RhinoDoc.ActiveDoc);
             try { app.Show(RhinoWinApp.MainWindow); }
             catch (InvalidOperationException) { RhinoApp.WriteLine(" dialog is already open"); }
             RhinoDoc.ModifyObjectAttributes += app.AutoRefresh;
             EndCommand += app.AutoRefresh; // static event, bond to all command endings
-            
+            */
+            RhinoApp.WriteLine(" deprecated... try \"TablDock\"");
             return Result.Success;
         }
 
