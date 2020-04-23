@@ -32,8 +32,11 @@ namespace Tabl_cs
         private bool[] options = new bool[] { false, false, false };
         private int clickedrowindex; // see event handler OnRowHeaderRightClick
 
+        private DataTable dt = new DataTable();
+
         private Settings popup = new Settings();
 
+        // constructor
         public DockPanel()
         {
             parent = RhinoDoc.ActiveDoc;
@@ -66,8 +69,13 @@ namespace Tabl_cs
 
             dataGridView1.ColumnCount = checkedListBox1.CheckedItems.Count;
             for (int i = 0; i < dataGridView1.ColumnCount; i++)
+            {
                 dataGridView1.Columns[i].Name = checkedListBox1.CheckedItems[i].ToString();
+                dt.Columns.Add(dataGridView1.Columns[i].Name);
+            }
             dataGridView1.CellMouseClick += OnDGVRightClick;
+
+
         }
 
         public static Guid PanelId
@@ -141,17 +149,21 @@ namespace Tabl_cs
             LoadORefs(); // this eidts "selected" field
             if (headers.Length == 0) return; // no columns, no data should show
             string[,] meta = GetMeta(selected, headers);
+
             for (int i = 0; i <= meta.GetUpperBound(0); i++)
             {
                 string[] row = new string[meta.GetUpperBound(1) + 1];
                 for (int j = 0; j <= meta.GetUpperBound(1); j++)
                     row.SetValue(meta[i, j], j);
 
+                
                 dataGridView1.Rows.Add(row);
                 // enumerate row # and set in row header
                 int last = dataGridView1.Rows.GetLastRow(DataGridViewElementStates.None);
                 dataGridView1.Rows[last].HeaderCell.Value = i.ToString();
+                
             }
+
 
             if (options[1])
                 DBVTotal();
@@ -226,13 +238,23 @@ namespace Tabl_cs
         private string[,] GetMeta(ObjRef[] orefs, string[] propkeys)
         {
             string[,] matrix = new string[orefs.Length, propkeys.Length];
+
+            Parallel.For(0, orefs.Length, i =>
+            {
+                ObjRef oref = orefs[i];
+                string[] props = GetProp(oref, propkeys);
+                object locker = new object();
+                for (int j = 0; j < props.Length; j++)
+                    lock (locker) { matrix.SetValue(props[j], i, j); }
+            });
+            /* uncomment below block to go back to single thread query
             for (int i = 0; i < orefs.Length; i++)
             {
                 ObjRef oref = orefs[i];
                 string[] props = GetProp(oref, propkeys);
                 for (int j = 0; j < props.Length; j++)
                     matrix.SetValue(props[j], i, j);
-            }
+            }*/
 
             return matrix;
         }
@@ -609,8 +631,13 @@ namespace Tabl_cs
                 {
                     string val;
                     // TODO: make sure to take out unit when parsing
-                    try { val = dataGridView1.Rows[ri].Cells[ci].Value.ToString(); }
+                    try
+                    {
+                        val = dataGridView1.Rows[ri].Cells[ci].Value.ToString();
+                        val = val.TrimEnd("abcdefghijklmnopqrstuvwxyz".ToCharArray());
+                    }
                     catch (NullReferenceException) { val = null; }
+                    
                     if (double.TryParse(val, out double num))
                         colsum += num;
                 }
@@ -620,7 +647,7 @@ namespace Tabl_cs
             int last = dataGridView1.Rows.GetLastRow(DataGridViewElementStates.None);
             dataGridView1.Rows[last].HeaderCell.Value = "SUM";
         }
-
+        
         #endregion
 
         private void OnDockVisibleChanged(object sender, EventArgs e)

@@ -51,11 +51,16 @@
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.addMoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeRowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeHighlitRowsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.selectHighlightedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.recolorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.renameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.changeLayerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.addMoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -357,9 +362,22 @@
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addMoreToolStripMenuItem,
             this.removeRowToolStripMenuItem,
-            this.removeHighlitRowsToolStripMenuItem});
+            this.removeHighlitRowsToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.selectHighlightedToolStripMenuItem,
+            this.recolorToolStripMenuItem,
+            this.renameToolStripMenuItem,
+            this.changeLayerToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(182, 92);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(182, 164);
+            // 
+            // addMoreToolStripMenuItem
+            // 
+            this.addMoreToolStripMenuItem.Image = global::Tabl_cs.Properties.Resources.addicon;
+            this.addMoreToolStripMenuItem.Name = "addMoreToolStripMenuItem";
+            this.addMoreToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.addMoreToolStripMenuItem.Text = "Add more";
+            this.addMoreToolStripMenuItem.Click += new System.EventHandler(this.addMoreToolStripMenuItem_Click);
             // 
             // removeRowToolStripMenuItem
             // 
@@ -378,13 +396,34 @@
             this.removeHighlitRowsToolStripMenuItem.ToolTipText = "must have entire row highlighted";
             this.removeHighlitRowsToolStripMenuItem.Click += new System.EventHandler(this.removeRowsToolStripMenuItem_Click);
             // 
-            // addMoreToolStripMenuItem
+            // toolStripSeparator1
             // 
-            this.addMoreToolStripMenuItem.Image = global::Tabl_cs.Properties.Resources.addicon;
-            this.addMoreToolStripMenuItem.Name = "addMoreToolStripMenuItem";
-            this.addMoreToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.addMoreToolStripMenuItem.Text = "Add more";
-            this.addMoreToolStripMenuItem.Click += new System.EventHandler(this.addMoreToolStripMenuItem_Click);
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(178, 6);
+            // 
+            // selectHighlightedToolStripMenuItem
+            // 
+            this.selectHighlightedToolStripMenuItem.Name = "selectHighlightedToolStripMenuItem";
+            this.selectHighlightedToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.selectHighlightedToolStripMenuItem.Text = "Select highlighted";
+            // 
+            // recolorToolStripMenuItem
+            // 
+            this.recolorToolStripMenuItem.Name = "recolorToolStripMenuItem";
+            this.recolorToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.recolorToolStripMenuItem.Text = "Recolor";
+            // 
+            // renameToolStripMenuItem
+            // 
+            this.renameToolStripMenuItem.Name = "renameToolStripMenuItem";
+            this.renameToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.renameToolStripMenuItem.Text = "Rename";
+            // 
+            // changeLayerToolStripMenuItem
+            // 
+            this.changeLayerToolStripMenuItem.Name = "changeLayerToolStripMenuItem";
+            this.changeLayerToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.changeLayerToolStripMenuItem.Text = "Change layer";
             // 
             // DockPanel
             // 
@@ -436,5 +475,10 @@
         private System.Windows.Forms.Button button12;
         private System.Windows.Forms.ToolStripMenuItem removeHighlitRowsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addMoreToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem selectHighlightedToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem recolorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem renameToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem changeLayerToolStripMenuItem;
     }
 }
