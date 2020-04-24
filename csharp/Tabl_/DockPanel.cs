@@ -20,6 +20,12 @@ namespace Tabl_cs
     [Guid("FA291E46-C13B-47A5-9B59-46C578A74EA3")]
     public partial class DockPanel : UserControl
     {
+        #region overhead for redraw disable
+        [DllImport("user32.dll")]
+        private static extern int SendMessage(IntPtr hWnd, Int32 wMsg, bool wParam, Int32 lParam);
+        private const int WM_SETREDRAW = 11;
+        #endregion
+
         private RhinoDoc parent;
         private ObjRef[] selected;
 
@@ -28,13 +34,14 @@ namespace Tabl_cs
         private double atol_deg;
         private double atol_rad;
         private string docunit;
-        // 0 - show units; 1 - show total; 2 - export headers
+        // [0] show units; [1] show total; [2] export headers
         private bool[] options = new bool[] { false, false, false };
+
+        private bool mod = false; // see OnAttrMod
         private int clickedrowindex; // see event handler OnRowHeaderRightClick
 
-        private DataTable dt = new DataTable();
-
         private Settings popup = new Settings();
+        private WaitScreen waitform = new WaitScreen() { TopMost = true };
 
         // constructor
         public DockPanel()
@@ -50,13 +57,15 @@ namespace Tabl_cs
 
             InitializeComponent();
             Tabl_cs.Instance.TablPanel = this;
-            VisibleChanged += OnDockVisibleChanged;
+            //VisibleChanged += OnDockVisibleChanged;
             Disposed += OnDisposed;
             Resize += OnResize;
 
             popup.FormClosing += button3_Click;
             Command.EndCommand += OnRhDocChange;
-            RhinoDoc.ModifyObjectAttributes += OnRhDocChange;
+            RhinoApp.Idle += OnIdlePostMod; // handle idle right after all attribute mod finish
+            RhinoDoc.ModifyObjectAttributes += OnAttrMod; // first mod trigger
+            
             // set default checked items on properties
             checkedListBox1.SetItemChecked(3, true);
             checkedListBox1.SetItemChecked(4, true);
@@ -69,12 +78,8 @@ namespace Tabl_cs
 
             dataGridView1.ColumnCount = checkedListBox1.CheckedItems.Count;
             for (int i = 0; i < dataGridView1.ColumnCount; i++)
-            {
                 dataGridView1.Columns[i].Name = checkedListBox1.CheckedItems[i].ToString();
-                dt.Columns.Add(dataGridView1.Columns[i].Name);
-            }
             dataGridView1.CellMouseClick += OnDGVRightClick;
-
 
         }
 
@@ -85,6 +90,59 @@ namespace Tabl_cs
 
         #region user methods
 
+        /// <summary>
+        /// update the datagridview
+        /// </summary>
+        /// <param name="header">header to modify; use empty to skip</param>
+        /// <param name="add">add or remove header; irrelevatn if `header` is empty string</param>
+        /// <param name="orefs">selected rhino object references</param>
+        internal void RefreshDGVContent(string header, bool add)
+        {
+            if (header != "")
+                RefreshDGVHeaders(header, add);
+
+            dataGridView1.Rows.Clear();
+            string[] headers = new string[dataGridView1.Columns.Count];
+            for (int i = 0; i < dataGridView1.Columns.Count; i++)
+            {
+                DataGridViewColumn c = dataGridView1.Columns[i];
+                headers.SetValue(c.Name, i);
+            }
+
+            LoadORefs(); // this eidts "selected" field
+            if (headers.Length == 0) return; // no columns, no data should show
+            string[,] meta = GetMeta(selected, headers);
+            
+            SendMessage(dataGridView1.Handle, WM_SETREDRAW, false, 0); // disable redraw with windows api
+            for (int i = 0; i <= meta.GetUpperBound(0); i++)
+            {
+                string[] row = new string[meta.GetUpperBound(1) + 1];
+                for (int j = 0; j <= meta.GetUpperBound(1); j++)
+                    row.SetValue(meta[i, j], j);
+
+                
+                dataGridView1.Rows.Add(row);
+                // enumerate row # and set in row header
+                int last = dataGridView1.Rows.GetLastRow(DataGridViewElementStates.None);
+                dataGridView1.Rows[last].HeaderCell.Value = i.ToString();
+
+            }
+
+            SendMessage(dataGridView1.Handle, WM_SETREDRAW, true, 0); // enable redraw with windows api
+            dataGridView1.Refresh();
+
+            if (options[1])
+            {
+                if (dataGridView1.RowCount > 100)
+                {
+                    waitform.Location = Cursor.Position;
+                    waitform.Show();
+                }
+                DBVTotal();
+            }
+            
+
+        }
         /// <summary>
         /// refresh datagridview headers; call RefreshDGVContent instead
         /// </summary>
@@ -127,47 +185,6 @@ namespace Tabl_cs
             for (int j = 0; j < headers.Count; j++)
                 dataGridView1.Columns[j].Name = headers[j];
         }
-        /// <summary>
-        /// update the datagridview
-        /// </summary>
-        /// <param name="header">header to modify; use empty to skip</param>
-        /// <param name="add">add or remove header; irrelevatn if `header` is empty string</param>
-        /// <param name="orefs">selected rhino object references</param>
-        internal void RefreshDGVContent(string header, bool add)
-        {
-            if (header != "")
-                RefreshDGVHeaders(header, add);
-
-            dataGridView1.Rows.Clear();
-            string[] headers = new string[dataGridView1.Columns.Count];
-            for (int i = 0; i < dataGridView1.Columns.Count; i++)
-            {
-                DataGridViewColumn c = dataGridView1.Columns[i];
-                headers.SetValue(c.Name, i);
-            }
-
-            LoadORefs(); // this eidts "selected" field
-            if (headers.Length == 0) return; // no columns, no data should show
-            string[,] meta = GetMeta(selected, headers);
-
-            for (int i = 0; i <= meta.GetUpperBound(0); i++)
-            {
-                string[] row = new string[meta.GetUpperBound(1) + 1];
-                for (int j = 0; j <= meta.GetUpperBound(1); j++)
-                    row.SetValue(meta[i, j], j);
-
-                
-                dataGridView1.Rows.Add(row);
-                // enumerate row # and set in row header
-                int last = dataGridView1.Rows.GetLastRow(DataGridViewElementStates.None);
-                dataGridView1.Rows[last].HeaderCell.Value = i.ToString();
-                
-            }
-
-
-            if (options[1])
-                DBVTotal();
-        }
 
         /// <summary>
         /// load "tabl_cs_selected" into obj refs
@@ -191,6 +208,19 @@ namespace Tabl_cs
                 return false;
             }
 
+        }
+        /// <summary>
+        /// reload tabl_cs_selected into obj refs
+        /// </summary>
+        /// <param name="idstrings">each id strings split from tabl_cs_selected</param>
+        /// <returns>true on success</returns>
+        private bool ReloadRefs(List<string> idstrings)
+        {
+            ObjRef[] newselected = new ObjRef[idstrings.Count];
+            for (int i = 0; i < idstrings.Count; i++)
+                newselected.SetValue(new ObjRef(new Guid(idstrings[i])), i);
+            selected = newselected;
+            return true;
         }
 
         /// <summary>
@@ -271,9 +301,11 @@ namespace Tabl_cs
 
             // catch when user delete object in doc but tabl_ still has reference
             // oref can still return guid string, use it to remove in selected and docstr
-            if (obj == null || oref == null)
+            if (obj == null)
             {
-                line.SetValue("MISSING OBJECT", 0);
+                try { line.SetValue("MISSING! Please refresh table", 0); }
+                catch (IndexOutOfRangeException) { }
+                RemoveById(oref.ObjectId.ToString());
                 return line;
             }
 
@@ -619,36 +651,84 @@ namespace Tabl_cs
         }
 
         /// <summary>
+        /// remove single object by id from tabl 
+        /// DO NOT use in a loop
+        /// </summary>
+        /// <param name="guid">object guid</param>
+        /// <returns>true if success</returns>
+        private bool RemoveById (string guid)
+        {
+            //first eliminate from doc string
+            string raw = parent.Strings.GetValue("tabl_cs_selected");
+            List<string> idstrings = raw.Split(new string[] { ",", }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            idstrings.Remove(guid);
+            parent.Strings.SetString("tabl_cs_selected", string.Join(",", idstrings));
+
+            //replace `selected` field
+            ReloadRefs(idstrings);
+
+            return true;
+        }
+
+        /// <summary>
         /// add total at bottom of datagridview
         /// </summary>
-        private void DBVTotal()
+        private async void DBVTotal()
         {
             string[] totalrow = new string[dataGridView1.ColumnCount];
-            for (int ci = 0; ci < dataGridView1.ColumnCount; ci++)
+            string[] txts = new string[] { "GUID", "Type", "Name", "Layer", "Color", "LineType", "PrintColor", "Material", "IsPlanar", "IsClosed", "Comments", };
+            await Task.Run(() =>
             {
-                double colsum = 0.0;
-                for (int ri = 0; ri < dataGridView1.RowCount; ri++)
+                for (int ci = 0; ci < dataGridView1.ColumnCount; ci++)
                 {
-                    string val;
-                    // TODO: make sure to take out unit when parsing
-                    try
+                    double colsum = 0.0;
+                    for (int ri = 0; ri < dataGridView1.RowCount; ri++)
                     {
-                        val = dataGridView1.Rows[ri].Cells[ci].Value.ToString();
-                        val = val.TrimEnd("abcdefghijklmnopqrstuvwxyz".ToCharArray());
+                        if (txts.Contains(dataGridView1.Columns[ci].Name)) break; // skip non-numeric columns
+                        string val;
+                        try
+                        {
+                            val = dataGridView1.Rows[ri].Cells[ci].Value.ToString();
+                            val = val.TrimEnd("abcdefghijklmnopqrstuvwxyz".ToCharArray());
+                        }
+                        catch (NullReferenceException) { val = null; }
+
+                        if (double.TryParse(val, out double num))
+                            colsum += num;
                     }
-                    catch (NullReferenceException) { val = null; }
-                    
-                    if (double.TryParse(val, out double num))
-                        colsum += num;
+                    totalrow.SetValue(colsum.ToString(), ci);
                 }
-                totalrow.SetValue(colsum.ToString(), ci);
-            }
+
+                if (waitform.InvokeRequired) // cross thread condition
+                    waitform.Invoke((Action)delegate { waitform.Hide(); });
+                else waitform.Hide();
+            });
+            
             dataGridView1.Rows.Add(totalrow);
             int last = dataGridView1.Rows.GetLastRow(DataGridViewElementStates.None);
             dataGridView1.Rows[last].HeaderCell.Value = "SUM";
         }
-        
+
         #endregion
+
+        // first mod event handled
+        private void OnAttrMod(object sender, RhinoModifyObjectAttributesEventArgs e)
+        {
+            mod = true;
+            RhinoDoc.ModifyObjectAttributes -= OnAttrMod;
+            // unbind so subsequent events do not trigger until idle
+        }
+
+        // handle idle after all attr mod
+        private void OnIdlePostMod(object sender, EventArgs e)
+        {
+            if (mod)
+            {
+                RefreshDGVContent("", true);
+                mod = false;
+                RhinoDoc.ModifyObjectAttributes += OnAttrMod;
+            }
+        }
 
         private void OnDockVisibleChanged(object sender, EventArgs e)
         {
@@ -670,6 +750,7 @@ namespace Tabl_cs
         // bind automatic refresh
         private void OnRhDocChange(object sender, EventArgs e)
         {
+            
             if (popup.update)
                 RefreshDGVContent("", true);
         }
@@ -733,10 +814,7 @@ namespace Tabl_cs
             parent.Strings.SetString("tabl_cs_selected", string.Join(",", idstrings));
 
             //replace `selected` field
-            ObjRef[] newselected = new ObjRef[idstrings.Count];
-            for (int i = 0; i < idstrings.Count; i++)
-                newselected.SetValue(new ObjRef(new Guid(idstrings[i])), i);
-            selected = newselected;
+            ReloadRefs(idstrings);
 
             PickFilter(userlocked.ToArray(), true);
             RefreshDGVContent("", true);
@@ -792,10 +870,7 @@ namespace Tabl_cs
             parent.Strings.SetString("tabl_cs_selected", string.Join(",", idstrings));
 
             //replace `selected` field
-            ObjRef[] newselected = new ObjRef[idstrings.Count];
-            for (int i = 0; i < idstrings.Count; i++)
-                newselected.SetValue(new ObjRef(new Guid(idstrings[i])), i);
-            selected = newselected;
+            ReloadRefs(idstrings);
 
             RefreshDGVContent("", true);
         }
@@ -815,10 +890,7 @@ namespace Tabl_cs
             parent.Strings.SetString("tabl_cs_selected", string.Join(",", idstrings));
 
             //replace `selected` field
-            ObjRef[] newselected = new ObjRef[idstrings.Count];
-            for (int i = 0; i < idstrings.Count; i++)
-                newselected.SetValue(new ObjRef(new Guid(idstrings[i])), i);
-            selected = newselected;
+            ReloadRefs(idstrings);
 
             RefreshDGVContent("", true);
         }

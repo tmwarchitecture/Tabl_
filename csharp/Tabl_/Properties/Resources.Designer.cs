@@ -143,6 +143,16 @@ namespace Tabl_cs.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap plopicon {
+            get {
+                object obj = ResourceManager.GetObject("plopicon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap refreshicon {
             get {
                 object obj = ResourceManager.GetObject("refreshicon", resourceCulture);

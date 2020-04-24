@@ -256,7 +256,6 @@ namespace Tabl_cs
         {
             string[] line = new string[propkeys.Length];
             RhinoObject obj = oref.Object();
-            //TODO: obj could be null if user deleted something referenced in "selected"
             for (int i = 0; i < propkeys.Length; i++)
             {
                 string k = propkeys[i];
@@ -589,7 +588,6 @@ namespace Tabl_cs
                 for (int ri = 0; ri < dataGridView1.RowCount; ri++)
                 {
                     string val;
-                    // TODO: make sure to take out unit when parsing
                     try { val = dataGridView1.Rows[ri].Cells[ci].Value.ToString(); }
                     catch (NullReferenceException) { val = null; }
                     if (double.TryParse(val, out double num))

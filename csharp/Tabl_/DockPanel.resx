@@ -198,16 +198,6 @@
         rkJggg==
 </value>
   </data>
-  <data name="button6.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAL
-        EwAACxMBAJqcGAAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAADCSURBVEhLtdTR
-        CcMwEIPhjJARMkJGyGgZpSNklI6SDVxdsOAa/vil14MPimzL4NJOrbW/wrAShpUwrIRhJQwrYfhEM8tC
-        a08wJL38LaestIdgSDSbxIew0x6CIdG80gUH7SEYZho/jcstspnOZBhmUdLLcnn4/QLNKvH290uucom1
-        4ReOoWlc6Ev2zuXX+v1chqG5QDZYK71g6H4uw9A08aP6KgMnnTUMTbNIPMXI8K8Dw0oYVsKwEoaVMKyE
-        YZ02fQD9NvEGVGSEHwAAAABJRU5ErkJggg==
-</value>
-  </data>
   <metadata name="contextMenuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>

@@ -32,16 +32,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DockPanel));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.button12 = new System.Windows.Forms.Button();
-            this.button11 = new System.Windows.Forms.Button();
-            this.button10 = new System.Windows.Forms.Button();
-            this.button9 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button6 = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.button8 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
@@ -51,9 +42,6 @@
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.addMoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.removeRowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.removeHighlitRowsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.selectHighlightedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.recolorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -61,6 +49,18 @@
             this.changeLayerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.button12 = new System.Windows.Forms.Button();
+            this.button11 = new System.Windows.Forms.Button();
+            this.button10 = new System.Windows.Forms.Button();
+            this.button9 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
+            this.button6 = new System.Windows.Forms.Button();
+            this.addMoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeRowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeHighlitRowsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -108,119 +108,17 @@
             this.panel1.Size = new System.Drawing.Size(540, 28);
             this.panel1.TabIndex = 14;
             // 
-            // button12
-            // 
-            this.button12.Image = ((System.Drawing.Image)(resources.GetObject("button12.Image")));
-            this.button12.Location = new System.Drawing.Point(305, 2);
-            this.button12.Name = "button12";
-            this.button12.Size = new System.Drawing.Size(25, 25);
-            this.button12.TabIndex = 14;
-            this.toolTip1.SetToolTip(this.button12, "about this plugin");
-            this.button12.UseVisualStyleBackColor = true;
-            this.button12.Click += new System.EventHandler(this.button12_Click);
-            // 
-            // button11
-            // 
-            this.button11.Image = ((System.Drawing.Image)(resources.GetObject("button11.Image")));
-            this.button11.Location = new System.Drawing.Point(119, 2);
-            this.button11.Name = "button11";
-            this.button11.Size = new System.Drawing.Size(25, 25);
-            this.button11.TabIndex = 13;
-            this.toolTip1.SetToolTip(this.button11, "clear table");
-            this.button11.UseVisualStyleBackColor = true;
-            this.button11.Click += new System.EventHandler(this.button11_Click);
-            // 
-            // button10
-            // 
-            this.button10.Image = ((System.Drawing.Image)(resources.GetObject("button10.Image")));
-            this.button10.Location = new System.Drawing.Point(243, 2);
-            this.button10.Name = "button10";
-            this.button10.Size = new System.Drawing.Size(25, 25);
-            this.button10.TabIndex = 12;
-            this.toolTip1.SetToolTip(this.button10, "save GUIDs to file");
-            this.button10.UseVisualStyleBackColor = true;
-            // 
-            // button9
-            // 
-            this.button9.Image = ((System.Drawing.Image)(resources.GetObject("button9.Image")));
-            this.button9.Location = new System.Drawing.Point(274, 2);
-            this.button9.Name = "button9";
-            this.button9.Size = new System.Drawing.Size(25, 25);
-            this.button9.TabIndex = 11;
-            this.toolTip1.SetToolTip(this.button9, "import GUIDs");
-            this.button9.UseVisualStyleBackColor = true;
-            // 
-            // button1
-            // 
-            this.button1.Image = ((System.Drawing.Image)(resources.GetObject("button1.Image")));
-            this.button1.Location = new System.Drawing.Point(2, 2);
-            this.button1.Margin = new System.Windows.Forms.Padding(2);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(25, 25);
-            this.button1.TabIndex = 5;
-            this.toolTip1.SetToolTip(this.button1, "add from model");
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // button2
-            // 
-            this.button2.Image = ((System.Drawing.Image)(resources.GetObject("button2.Image")));
-            this.button2.Location = new System.Drawing.Point(31, 2);
-            this.button2.Margin = new System.Windows.Forms.Padding(2);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(25, 25);
-            this.button2.TabIndex = 6;
-            this.toolTip1.SetToolTip(this.button2, "remove from model");
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // button3
-            // 
-            this.button3.Image = ((System.Drawing.Image)(resources.GetObject("button3.Image")));
-            this.button3.Location = new System.Drawing.Point(60, 2);
-            this.button3.Margin = new System.Windows.Forms.Padding(2);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(25, 25);
-            this.button3.TabIndex = 7;
-            this.toolTip1.SetToolTip(this.button3, "refresh");
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
             // button5
             // 
+            this.button5.Image = global::Tabl_cs.Properties.Resources.plopicon;
             this.button5.Location = new System.Drawing.Point(149, 2);
             this.button5.Margin = new System.Windows.Forms.Padding(2);
             this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(60, 25);
+            this.button5.Size = new System.Drawing.Size(25, 25);
             this.button5.TabIndex = 9;
-            this.button5.Text = "Place";
-            this.toolTip1.SetToolTip(this.button5, "NOT IMPLEMENTED");
+            this.toolTip1.SetToolTip(this.button5, "place table in rhino");
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.button5_Click);
-            // 
-            // button4
-            // 
-            this.button4.Image = ((System.Drawing.Image)(resources.GetObject("button4.Image")));
-            this.button4.Location = new System.Drawing.Point(89, 2);
-            this.button4.Margin = new System.Windows.Forms.Padding(2);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(25, 25);
-            this.button4.TabIndex = 8;
-            this.toolTip1.SetToolTip(this.button4, "settings");
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
-            // 
-            // button6
-            // 
-            this.button6.Image = ((System.Drawing.Image)(resources.GetObject("button6.Image")));
-            this.button6.Location = new System.Drawing.Point(213, 2);
-            this.button6.Margin = new System.Windows.Forms.Padding(2);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(25, 25);
-            this.button6.TabIndex = 10;
-            this.toolTip1.SetToolTip(this.button6, "export CSV");
-            this.button6.UseVisualStyleBackColor = true;
-            this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
             // groupBox1
             // 
@@ -348,11 +246,12 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dataGridView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.dataGridView1.Location = new System.Drawing.Point(4, 16);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
+            this.dataGridView1.RowHeadersWidth = 70;
             this.dataGridView1.RowTemplate.Height = 28;
             this.dataGridView1.Size = new System.Drawing.Size(402, 450);
             this.dataGridView1.TabIndex = 0;
@@ -370,31 +269,6 @@
             this.changeLayerToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.Size = new System.Drawing.Size(182, 164);
-            // 
-            // addMoreToolStripMenuItem
-            // 
-            this.addMoreToolStripMenuItem.Image = global::Tabl_cs.Properties.Resources.addicon;
-            this.addMoreToolStripMenuItem.Name = "addMoreToolStripMenuItem";
-            this.addMoreToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
-            this.addMoreToolStripMenuItem.Text = "Add more";
-            this.addMoreToolStripMenuItem.Click += new System.EventHandler(this.addMoreToolStripMenuItem_Click);
-            // 
-            // removeRowToolStripMenuItem
-            // 
-            this.removeRowToolStripMenuItem.Image = global::Tabl_cs.Properties.Resources.removeicon;
-            this.removeRowToolStripMenuItem.Name = "removeRowToolStripMenuItem";
-            this.removeRowToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
-            this.removeRowToolStripMenuItem.Text = "Remove this";
-            this.removeRowToolStripMenuItem.Click += new System.EventHandler(this.removeRowToolStripMenuItem_Click);
-            // 
-            // removeHighlitRowsToolStripMenuItem
-            // 
-            this.removeHighlitRowsToolStripMenuItem.Image = global::Tabl_cs.Properties.Resources.removeicon;
-            this.removeHighlitRowsToolStripMenuItem.Name = "removeHighlitRowsToolStripMenuItem";
-            this.removeHighlitRowsToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
-            this.removeHighlitRowsToolStripMenuItem.Text = "Remove highlighted";
-            this.removeHighlitRowsToolStripMenuItem.ToolTipText = "must have entire row highlighted";
-            this.removeHighlitRowsToolStripMenuItem.Click += new System.EventHandler(this.removeRowsToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -424,6 +298,133 @@
             this.changeLayerToolStripMenuItem.Name = "changeLayerToolStripMenuItem";
             this.changeLayerToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.changeLayerToolStripMenuItem.Text = "Change layer";
+            // 
+            // button12
+            // 
+            this.button12.Image = ((System.Drawing.Image)(resources.GetObject("button12.Image")));
+            this.button12.Location = new System.Drawing.Point(270, 2);
+            this.button12.Name = "button12";
+            this.button12.Size = new System.Drawing.Size(25, 25);
+            this.button12.TabIndex = 14;
+            this.toolTip1.SetToolTip(this.button12, "about this plugin");
+            this.button12.UseVisualStyleBackColor = true;
+            this.button12.Click += new System.EventHandler(this.button12_Click);
+            // 
+            // button11
+            // 
+            this.button11.Image = ((System.Drawing.Image)(resources.GetObject("button11.Image")));
+            this.button11.Location = new System.Drawing.Point(119, 2);
+            this.button11.Name = "button11";
+            this.button11.Size = new System.Drawing.Size(25, 25);
+            this.button11.TabIndex = 13;
+            this.toolTip1.SetToolTip(this.button11, "clear table");
+            this.button11.UseVisualStyleBackColor = true;
+            this.button11.Click += new System.EventHandler(this.button11_Click);
+            // 
+            // button10
+            // 
+            this.button10.Image = ((System.Drawing.Image)(resources.GetObject("button10.Image")));
+            this.button10.Location = new System.Drawing.Point(208, 2);
+            this.button10.Name = "button10";
+            this.button10.Size = new System.Drawing.Size(25, 25);
+            this.button10.TabIndex = 12;
+            this.toolTip1.SetToolTip(this.button10, "save GUIDs to file");
+            this.button10.UseVisualStyleBackColor = true;
+            // 
+            // button9
+            // 
+            this.button9.Image = ((System.Drawing.Image)(resources.GetObject("button9.Image")));
+            this.button9.Location = new System.Drawing.Point(239, 2);
+            this.button9.Name = "button9";
+            this.button9.Size = new System.Drawing.Size(25, 25);
+            this.button9.TabIndex = 11;
+            this.toolTip1.SetToolTip(this.button9, "import GUIDs");
+            this.button9.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            this.button1.Image = ((System.Drawing.Image)(resources.GetObject("button1.Image")));
+            this.button1.Location = new System.Drawing.Point(2, 2);
+            this.button1.Margin = new System.Windows.Forms.Padding(2);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(25, 25);
+            this.button1.TabIndex = 5;
+            this.toolTip1.SetToolTip(this.button1, "add from model");
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // button2
+            // 
+            this.button2.Image = ((System.Drawing.Image)(resources.GetObject("button2.Image")));
+            this.button2.Location = new System.Drawing.Point(31, 2);
+            this.button2.Margin = new System.Windows.Forms.Padding(2);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(25, 25);
+            this.button2.TabIndex = 6;
+            this.toolTip1.SetToolTip(this.button2, "remove from model");
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // button3
+            // 
+            this.button3.Image = ((System.Drawing.Image)(resources.GetObject("button3.Image")));
+            this.button3.Location = new System.Drawing.Point(60, 2);
+            this.button3.Margin = new System.Windows.Forms.Padding(2);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(25, 25);
+            this.button3.TabIndex = 7;
+            this.toolTip1.SetToolTip(this.button3, "refresh");
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // button4
+            // 
+            this.button4.Image = ((System.Drawing.Image)(resources.GetObject("button4.Image")));
+            this.button4.Location = new System.Drawing.Point(89, 2);
+            this.button4.Margin = new System.Windows.Forms.Padding(2);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(25, 25);
+            this.button4.TabIndex = 8;
+            this.toolTip1.SetToolTip(this.button4, "settings");
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // button6
+            // 
+            this.button6.Image = global::Tabl_cs.Properties.Resources.csvouticon;
+            this.button6.Location = new System.Drawing.Point(178, 2);
+            this.button6.Margin = new System.Windows.Forms.Padding(2);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(25, 25);
+            this.button6.TabIndex = 10;
+            this.toolTip1.SetToolTip(this.button6, "export CSV");
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
+            // 
+            // addMoreToolStripMenuItem
+            // 
+            this.addMoreToolStripMenuItem.Image = global::Tabl_cs.Properties.Resources.addicon;
+            this.addMoreToolStripMenuItem.Name = "addMoreToolStripMenuItem";
+            this.addMoreToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.addMoreToolStripMenuItem.Text = "Add more";
+            this.addMoreToolStripMenuItem.Click += new System.EventHandler(this.addMoreToolStripMenuItem_Click);
+            // 
+            // removeRowToolStripMenuItem
+            // 
+            this.removeRowToolStripMenuItem.Image = global::Tabl_cs.Properties.Resources.removeicon;
+            this.removeRowToolStripMenuItem.Name = "removeRowToolStripMenuItem";
+            this.removeRowToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.removeRowToolStripMenuItem.Text = "Remove this";
+            this.removeRowToolStripMenuItem.Click += new System.EventHandler(this.removeRowToolStripMenuItem_Click);
+            // 
+            // removeHighlitRowsToolStripMenuItem
+            // 
+            this.removeHighlitRowsToolStripMenuItem.Image = global::Tabl_cs.Properties.Resources.removeicon;
+            this.removeHighlitRowsToolStripMenuItem.Name = "removeHighlitRowsToolStripMenuItem";
+            this.removeHighlitRowsToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.removeHighlitRowsToolStripMenuItem.Text = "Remove highlighted";
+            this.removeHighlitRowsToolStripMenuItem.ToolTipText = "must have entire row highlighted";
+            this.removeHighlitRowsToolStripMenuItem.Click += new System.EventHandler(this.removeRowsToolStripMenuItem_Click);
             // 
             // DockPanel
             // 

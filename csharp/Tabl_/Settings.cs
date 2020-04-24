@@ -68,7 +68,7 @@ namespace Tabl_cs
             if (radioButton1.Checked) cf = 0;
             else if (radioButton2.Checked) cf = 1;
             else if (radioButton3.Checked) cf = 2;
-            else cf = 0; //TODO: should never reach this; add debug message
+            else MessageBox.Show("color format radio buttons error");
             update = radioButton5.Checked;
             su = (double)numericUpDown2.Value;
             cun = textBox1.Text.Trim();

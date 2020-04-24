@@ -178,7 +178,7 @@
             this.radioButton5.TabIndex = 1;
             this.radioButton5.TabStop = true;
             this.radioButton5.Text = "Automatic";
-            this.toolTip1.SetToolTip(this.radioButton5, "beware of computing time");
+            this.toolTip1.SetToolTip(this.radioButton5, "any change in Rhino will trigger data refresh\r\nbeware of computing time");
             this.radioButton5.UseVisualStyleBackColor = true;
             // 
             // radioButton4
