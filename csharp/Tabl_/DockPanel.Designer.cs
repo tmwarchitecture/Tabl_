@@ -32,7 +32,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DockPanel));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.button5 = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.button8 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
@@ -49,6 +48,8 @@
             this.changeLayerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.colorDialog1 = new System.Windows.Forms.ColorDialog();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.button12 = new System.Windows.Forms.Button();
             this.button11 = new System.Windows.Forms.Button();
             this.button10 = new System.Windows.Forms.Button();
@@ -56,6 +57,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
+            this.button5 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
             this.addMoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -72,6 +74,9 @@
             // 
             // tableLayoutPanel1
             // 
+            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 130F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -86,7 +91,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 400F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(544, 510);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(558, 519);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // panel1
@@ -107,18 +112,6 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(540, 28);
             this.panel1.TabIndex = 14;
-            // 
-            // button5
-            // 
-            this.button5.Image = global::Tabl_cs.Properties.Resources.plopicon;
-            this.button5.Location = new System.Drawing.Point(149, 2);
-            this.button5.Margin = new System.Windows.Forms.Padding(2);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(25, 25);
-            this.button5.TabIndex = 9;
-            this.toolTip1.SetToolTip(this.button5, "place table in rhino");
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // groupBox1
             // 
@@ -199,7 +192,7 @@
             this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox2.Size = new System.Drawing.Size(126, 72);
+            this.groupBox2.Size = new System.Drawing.Size(126, 80);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Options";
@@ -233,7 +226,7 @@
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
             this.tableLayoutPanel1.SetRowSpan(this.groupBox3, 2);
-            this.groupBox3.Size = new System.Drawing.Size(410, 472);
+            this.groupBox3.Size = new System.Drawing.Size(424, 481);
             this.groupBox3.TabIndex = 4;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Tabl_";
@@ -253,7 +246,7 @@
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RowHeadersWidth = 70;
             this.dataGridView1.RowTemplate.Height = 28;
-            this.dataGridView1.Size = new System.Drawing.Size(402, 450);
+            this.dataGridView1.Size = new System.Drawing.Size(416, 459);
             this.dataGridView1.TabIndex = 0;
             // 
             // contextMenuStrip1
@@ -280,6 +273,7 @@
             this.selectHighlightedToolStripMenuItem.Name = "selectHighlightedToolStripMenuItem";
             this.selectHighlightedToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.selectHighlightedToolStripMenuItem.Text = "Select highlighted";
+            this.selectHighlightedToolStripMenuItem.Click += new System.EventHandler(this.selectHighlightedToolStripMenuItem_Click);
             // 
             // recolorToolStripMenuItem
             // 
@@ -298,6 +292,19 @@
             this.changeLayerToolStripMenuItem.Name = "changeLayerToolStripMenuItem";
             this.changeLayerToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.changeLayerToolStripMenuItem.Text = "Change layer";
+            // 
+            // saveFileDialog1
+            // 
+            this.saveFileDialog1.Filter = "Comma Separated Values|*.csv|Plain Text|*.txt|All Files|*.*";
+            // 
+            // colorDialog1
+            // 
+            this.colorDialog1.Color = System.Drawing.Color.Lime;
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog1";
+            this.openFileDialog1.Filter = "Plain Text|*.txt";
             // 
             // button12
             // 
@@ -330,6 +337,7 @@
             this.button10.TabIndex = 12;
             this.toolTip1.SetToolTip(this.button10, "save GUIDs to file");
             this.button10.UseVisualStyleBackColor = true;
+            this.button10.Click += new System.EventHandler(this.button10_Click);
             // 
             // button9
             // 
@@ -340,6 +348,7 @@
             this.button9.TabIndex = 11;
             this.toolTip1.SetToolTip(this.button9, "import GUIDs");
             this.button9.UseVisualStyleBackColor = true;
+            this.button9.Click += new System.EventHandler(this.button9_Click);
             // 
             // button1
             // 
@@ -376,6 +385,18 @@
             this.toolTip1.SetToolTip(this.button3, "refresh");
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // button5
+            // 
+            this.button5.Image = global::Tabl_cs.Properties.Resources.plopicon;
+            this.button5.Location = new System.Drawing.Point(149, 2);
+            this.button5.Margin = new System.Windows.Forms.Padding(2);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(25, 25);
+            this.button5.TabIndex = 9;
+            this.toolTip1.SetToolTip(this.button5, "place table in rhino");
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // button4
             // 
@@ -431,11 +452,12 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
+            this.AutoScrollMinSize = new System.Drawing.Size(560, 525);
             this.Controls.Add(this.tableLayoutPanel1);
-            this.Margin = new System.Windows.Forms.Padding(2);
+            this.Margin = new System.Windows.Forms.Padding(0);
             this.Name = "DockPanel";
             this.Padding = new System.Windows.Forms.Padding(5);
-            this.Size = new System.Drawing.Size(560, 526);
+            this.Size = new System.Drawing.Size(574, 535);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.panel1.ResumeLayout(false);
@@ -481,5 +503,7 @@
         private System.Windows.Forms.ToolStripMenuItem recolorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem renameToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem changeLayerToolStripMenuItem;
+        private System.Windows.Forms.ColorDialog colorDialog1;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
     }
 }

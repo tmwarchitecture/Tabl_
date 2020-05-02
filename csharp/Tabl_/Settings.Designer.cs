@@ -133,7 +133,7 @@
             this.radioButton3.Size = new System.Drawing.Size(54, 17);
             this.radioButton3.TabIndex = 2;
             this.radioButton3.TabStop = true;
-            this.radioButton3.Text = "R G B";
+            this.radioButton3.Text = "R,G,B";
             this.radioButton3.UseVisualStyleBackColor = true;
             // 
             // radioButton2

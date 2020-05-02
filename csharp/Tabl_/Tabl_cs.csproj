@@ -78,6 +78,12 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="PlaceSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PlaceSettings.Designer.cs">
+      <DependentUpon>PlaceSettings.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -110,6 +116,9 @@
     <EmbeddedResource Include="EmbeddedResources\plugin-utility.ico" />
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PlaceSettings.resx">
+      <DependentUpon>PlaceSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

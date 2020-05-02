@@ -33,7 +33,7 @@ namespace Tabl_cs
         protected override LoadReturnCode OnLoad(ref string errorMessage)
         {
             Type paneltype = typeof(DockPanel);
-            Panels.RegisterPanel(this, paneltype, "Tabl_dock", Properties.Resources.main);
+            Panels.RegisterPanel(this, paneltype, "Tabl_", Properties.Resources.main);
             return LoadReturnCode.Success;
         }
 

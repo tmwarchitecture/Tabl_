@@ -26,7 +26,7 @@ using Rhino.PlugIns;
 // This will be used also for the plug-in description.
 [assembly: AssemblyDescription(@"Tabl_ is a spreadsheet interface within Rhino for the viewing, editing, and exporting of object properties
 
-This version was ported by Will Wang
+This version was ported by Will Wang, in reference to Rhino SR 6.24
 
 For more information see repo
 https://github.com/tmwarchitecture/Tabl_
@@ -44,7 +44,7 @@ https://www.food4rhino.com/app/tabl
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Tabl_")]
-[assembly: AssemblyCopyright("Copyright ©  Tim Williams 2020")]
+[assembly: AssemblyCopyright("Copyright ©  Timothy Williams 2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

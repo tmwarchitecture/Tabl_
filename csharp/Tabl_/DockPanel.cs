@@ -22,7 +22,7 @@ namespace Tabl_cs
     {
         #region overhead for redraw disable
         [DllImport("user32.dll")]
-        private static extern int SendMessage(IntPtr hWnd, Int32 wMsg, bool wParam, Int32 lParam);
+        private static extern int SendMessage(IntPtr hWnd, int wMsg, bool wParam, int lParam);
         private const int WM_SETREDRAW = 11;
         #endregion
 
@@ -42,6 +42,7 @@ namespace Tabl_cs
 
         private Settings popup = new Settings();
         private WaitScreen waitform = new WaitScreen() { TopMost = true };
+        private PlaceSettings placepopup = new PlaceSettings();
 
         // constructor
         public DockPanel()
@@ -59,9 +60,9 @@ namespace Tabl_cs
             Tabl_cs.Instance.TablPanel = this;
             //VisibleChanged += OnDockVisibleChanged;
             Disposed += OnDisposed;
-            Resize += OnResize;
 
             popup.FormClosing += button3_Click;
+            placepopup.FormClosing += OnPlaceClose;
             Command.EndCommand += OnRhDocChange;
             RhinoApp.Idle += OnIdlePostMod; // handle idle right after all attribute mod finish
             RhinoDoc.ModifyObjectAttributes += OnAttrMod; // first mod trigger
@@ -124,7 +125,7 @@ namespace Tabl_cs
                 dataGridView1.Rows.Add(row);
                 // enumerate row # and set in row header
                 int last = dataGridView1.Rows.GetLastRow(DataGridViewElementStates.None);
-                dataGridView1.Rows[last].HeaderCell.Value = i.ToString();
+                dataGridView1.Rows[last].HeaderCell.Value = (i+1).ToString();
 
             }
 
@@ -142,6 +143,13 @@ namespace Tabl_cs
             }
             
 
+        }
+        /// <summary>
+        /// simple refresh
+        /// </summary>
+        internal void RefreshDGVContent()
+        {
+            RefreshDGVContent("", true);
         }
         /// <summary>
         /// refresh datagridview headers; call RefreshDGVContent instead
@@ -268,7 +276,7 @@ namespace Tabl_cs
         private string[,] GetMeta(ObjRef[] orefs, string[] propkeys)
         {
             string[,] matrix = new string[orefs.Length, propkeys.Length];
-
+            // [row index, col index]
             Parallel.For(0, orefs.Length, i =>
             {
                 ObjRef oref = orefs[i];
@@ -277,14 +285,6 @@ namespace Tabl_cs
                 for (int j = 0; j < props.Length; j++)
                     lock (locker) { matrix.SetValue(props[j], i, j); }
             });
-            /* uncomment below block to go back to single thread query
-            for (int i = 0; i < orefs.Length; i++)
-            {
-                ObjRef oref = orefs[i];
-                string[] props = GetProp(oref, propkeys);
-                for (int j = 0; j < props.Length; j++)
-                    matrix.SetValue(props[j], i, j);
-            }*/
 
             return matrix;
         }
@@ -339,7 +339,7 @@ namespace Tabl_cs
                         else if (popup.cf == 1)
                             line.SetValue(string.Format("{0}-{1}-{2}", c.R, c.G, c.B), i);
                         else
-                            line.SetValue(string.Format("{0} {1} {2}", c.R, c.G, c.B), i);
+                            line.SetValue(string.Format("{0},{1},{2}", c.R, c.G, c.B), i);
                         break;
                     case "LineType":
                         var lti = parent.Linetypes.LinetypeIndexForObject(obj);
@@ -389,11 +389,11 @@ namespace Tabl_cs
                             var len_num = Math.Round(oref.Curve().GetLength(), popup.dp); //decimal
                             len_num *= popup.su; //custom scale
                             if (popup.ts == ",")
-                                len = len_num.ToString("#,##0.00");
+                                len = KMarker(len_num, ',');
                             else if (popup.ts == ".")
-                                len = len_num.ToString("#.##0.00");
+                                len = KMarker(len_num,'.');
                             else if (popup.ts == " ")
-                                len = len_num.ToString("# ##0.00");
+                                len = KMarker(len_num, ' ');
                             else len = len_num.ToString();
                         }
                         if (options[0] && len != null) len += docunit; // with unit
@@ -418,18 +418,18 @@ namespace Tabl_cs
                             area_num *= popup.su;
                             string area;
                             if (popup.ts == ",")
-                                area = area_num.ToString("#,##0.00");
+                                area = KMarker(area_num, ',');
                             else if (popup.ts == ".")
-                                area = area_num.ToString("#.##0.00");
+                                area = KMarker(area_num,'.');
                             else if (popup.ts == " ")
-                                area = area_num.ToString("# ##0.00");
+                                area = KMarker(area_num, ' ');
                             else area = area_num.ToString();
 
                             if (options[0])
                             {
                                 if (popup.cun != "" && popup.cun != null)
-                                    line.SetValue(area + popup.cun + "sq", i);
-                                else line.SetValue(area + docunit + "sq", i);
+                                    line.SetValue(area + popup.cun + "\xB2", i);
+                                else line.SetValue(area + docunit + "\xB2", i);
                             }
                             else line.SetValue(area, i);
                         }
@@ -445,19 +445,19 @@ namespace Tabl_cs
                                 vol_num = Math.Round(vol_num, popup.dp);
                                 vol_num *= popup.su;
                                 if (popup.ts == ",")
-                                    vol = vol_num.ToString("#,##0.00");
+                                    vol = KMarker(vol_num, ',');
                                 else if (popup.ts == ".")
-                                    vol = vol_num.ToString("#.##0.00");
+                                    vol = KMarker(vol_num, '.');
                                 else if (popup.ts == " ")
-                                    vol = vol_num.ToString("# ##0.00");
+                                    vol = KMarker(vol_num, ' ');
                                 else vol = vol_num.ToString();
                             }
                             else
-                                vol = "open brep";
+                                vol = "0";
                         else if (obj.ObjectType == ObjectType.Extrusion)
                         {
                             Brep b = Brep.TryConvertBrep(obj.Geometry);
-                            if (b == null) vol = "invalid extrusion";
+                            if (b == null) vol = "0";
                             else
                             {
                                 if (b.IsSolid)
@@ -466,14 +466,14 @@ namespace Tabl_cs
                                     vol_num = Math.Round(vol_num, popup.dp);
                                     vol_num *= popup.su;
                                     if (popup.ts == ",")
-                                        vol = vol_num.ToString("#,##0.00");
+                                        vol = KMarker(vol_num, ',');
                                     else if (popup.ts == ".")
-                                        vol = vol_num.ToString("#.##0.00");
+                                        vol = KMarker(vol_num, '.');
                                     else if (popup.ts == " ")
-                                        vol = vol_num.ToString("# ##0.00");
+                                        vol = KMarker(vol_num, ' ');
                                     else vol = vol_num.ToString();
                                 }
-                                else vol = "open brep";
+                                else vol = "0";
                             }
                         }
 
@@ -481,8 +481,8 @@ namespace Tabl_cs
                         else if (vol != "open brep" && vol != "invalid extrusion")
                         {
                             if (popup.cun != "" && popup.cun != null)
-                                line.SetValue(vol + popup.cun + "cu", i);
-                            else line.SetValue(vol + docunit + "cu", i);
+                                line.SetValue(vol + popup.cun + "\xB3", i);
+                            else line.SetValue(vol + docunit + "\xB3", i);
                         }
                         break;
                     case "NumPts":
@@ -679,9 +679,12 @@ namespace Tabl_cs
             string[] txts = new string[] { "GUID", "Type", "Name", "Layer", "Color", "LineType", "PrintColor", "Material", "IsPlanar", "IsClosed", "Comments", };
             await Task.Run(() =>
             {
-                for (int ci = 0; ci < dataGridView1.ColumnCount; ci++)
+                object locker = new object();
+
+                Parallel.For(0, dataGridView1.ColumnCount, ci =>
                 {
                     double colsum = 0.0;
+
                     for (int ri = 0; ri < dataGridView1.RowCount; ri++)
                     {
                         if (txts.Contains(dataGridView1.Columns[ci].Name)) break; // skip non-numeric columns
@@ -689,6 +692,8 @@ namespace Tabl_cs
                         try
                         {
                             val = dataGridView1.Rows[ri].Cells[ci].Value.ToString();
+                            // remove superscript and then unit mark
+                            val = val.TrimEnd(new char[] { '\xB2', '\xB3', });
                             val = val.TrimEnd("abcdefghijklmnopqrstuvwxyz".ToCharArray());
                         }
                         catch (NullReferenceException) { val = null; }
@@ -696,8 +701,33 @@ namespace Tabl_cs
                         if (double.TryParse(val, out double num))
                             colsum += num;
                     }
+                    lock (locker)
+                        totalrow.SetValue(colsum.ToString(), ci);
+                });
+                /*
+                for (int ci = 0; ci < dataGridView1.ColumnCount; ci++)
+                {
+                    double colsum = 0.0;
+                    
+                    for (int ri = 0; ri < dataGridView1.RowCount; ri++)
+                    {
+                        if (txts.Contains(dataGridView1.Columns[ci].Name)) break; // skip non-numeric columns
+                        string val;
+                        try
+                        {
+                            val = dataGridView1.Rows[ri].Cells[ci].Value.ToString();
+                            // remove superscript and then unit mark
+                            val = val.TrimEnd(new char[] { '\xB2', '\xB3', });
+                            val = val.TrimEnd("abcdefghijklmnopqrstuvwxyz".ToCharArray());
+                        }
+                        catch (NullReferenceException) { val = null; }
+
+                        if (double.TryParse(val, out double num))
+                            colsum += num;
+                    }
+
                     totalrow.SetValue(colsum.ToString(), ci);
-                }
+                }*/
 
                 if (waitform.InvokeRequired) // cross thread condition
                     waitform.Invoke((Action)delegate { waitform.Hide(); });
@@ -707,6 +737,144 @@ namespace Tabl_cs
             dataGridView1.Rows.Add(totalrow);
             int last = dataGridView1.Rows.GetLastRow(DataGridViewElementStates.None);
             dataGridView1.Rows[last].HeaderCell.Value = "SUM";
+        }
+
+        /// <summary>
+        /// custom format of thousand separators
+        /// </summary>
+        /// <param name="num">the number to format</param>
+        /// <param name="marker">separator marker</param>
+        /// <returns>string with proper separator inserted</returns>
+        private string KMarker(double num, char marker)
+        {
+            string nums = num.ToString();
+            string[] parts = nums.Split(new char[] { '.', });
+            string whole = parts[0];
+            // int/int is an integral devision, same as "//" in python
+            int ng = whole.Length % 3 == 0 ? whole.Length / 3 : whole.Length / 3 + 1;
+            string[] groups = new string[ng];
+            for (int i = 0; i < ng; i++)
+            {
+                if (i != ng - 1)
+                {
+                    groups.SetValue(whole.Substring(whole.Length - 3), i);
+                    whole = whole.Remove(whole.Length - 3);
+                }
+                else groups.SetValue(whole, i);
+            }
+            nums = string.Join(marker.ToString(), groups.Reverse());
+            nums += "." + parts[1];
+            return nums;
+        }
+        private string KMarker(int num, char marker)
+        {
+            return KMarker((double)num, marker);
+        }
+        private string KMarker(decimal num, char marker)
+        {
+            return KMarker((double)num, marker);
+        }
+
+        /// <summary>
+        /// plop a table in RhinoDoc
+        /// </summary>
+        /// <param name="anchor">mouse clicked location, top left of table</param>
+        private void TableInDoc(Point3d anchor)
+        {
+            // calculate how to come back to clicked location
+            Point3d trueanchor = new Point3d(anchor);
+            Point3d mappedanchor = new Point3d(anchor);
+            Transform remap = Transform.PlaneToPlane(Plane.WorldXY, placepopup.BasePlane);
+            mappedanchor.Transform(remap);
+            Transform comeback = Transform.Translation(new Vector3d(trueanchor - mappedanchor));
+
+            // load matrix
+            List<TextEntity[]> tablcontent = new List<TextEntity[]>();
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+            {
+                TextEntity[] line = new TextEntity[row.Cells.Count];
+                for (int i = 0; i < line.Length; i++)
+                {
+                    string txt;
+                    try { txt = row.Cells[i].Value.ToString(); }
+                    catch (NullReferenceException) { txt = "no_value"; }
+                    TextEntity txtobj = new TextEntity()
+                    {
+                        PlainText = txt,
+                        Justification = TextJustification.Center,
+                        TextHeight = placepopup.fs,
+                        Font = new Rhino.DocObjects.Font(placepopup.fn),
+                        Plane = Plane.WorldXY, // overridden later in text placement block
+                    };
+                    line.SetValue(txtobj, i);
+                }
+                tablcontent.Add(line);
+            }
+            // column widths
+            double[] cws = new double[tablcontent[0].Length];
+            if (placepopup.fitting == 3)
+                for (int n = 0; n < cws.Length; n++) cws.SetValue(placepopup.cw, n);
+            else
+            {
+                for (int n = 0; n < cws.Length; n++) cws.SetValue(0, n);
+                for (int ri = 0; ri < tablcontent.Count; ri++)
+                    for (int ci = 0; ci < tablcontent[ri].Length; ci++)
+                        cws.SetValue(
+                            tablcontent[ri][ci].TextModelWidth > cws[ci] ?
+                            tablcontent[ri][ci].TextModelWidth + (double)placepopup.cellpad * 2 :
+                            cws[ci] + (double)placepopup.cellpad * 2,
+                            ci);
+            }
+
+            // furnish collection to be placed in doc later
+            List<GeometryBase> tablobjs = new List<GeometryBase>(); //collect what's added
+            Line h0 = new Line(anchor, anchor + new Point3d(cws.Sum(), 0, 0)); // first horizontal
+            double vdim = tablcontent.Count * (placepopup.fs + (double)placepopup.cellpad * 2);
+            Line v0 = new Line(anchor, anchor + new Point3d(0, -vdim, 0)); // first vertical
+            tablobjs.AddRange(new GeometryBase[] { h0.ToNurbsCurve(), v0.ToNurbsCurve() });
+            // all horizontals
+            for (int i=0;i<tablcontent.Count;i++)
+            {
+                Point3d dy = new Point3d(0, -(i + 1) * (placepopup.fs + (double)placepopup.cellpad * 2), 0);
+                Point3d start = anchor + dy;
+                Point3d end = anchor + new Point3d(cws.Sum(), 0, 0) +dy;
+                Line hl = new Line(start, end);
+                tablobjs.Add(hl.ToNurbsCurve());
+            }
+            // all verticals
+            double xnow = 0;
+            for (int i = 0; i < cws.Length; i++)
+            {
+                xnow += cws[i];
+                Point3d dx = new Point3d(xnow, 0, 0);
+                Point3d start = anchor + dx;
+                Point3d end = anchor + new Point3d(0, -vdim, 0) + dx;
+                Line vl = new Line(start, end);
+                tablobjs.Add(vl.ToNurbsCurve());
+            }
+            // texts placments
+            for (int ri=0; ri<tablcontent.Count; ri++)
+            {
+                double rowY = ri * ((double)placepopup.cellpad * 2 + placepopup.fs) + (double)placepopup.cellpad;
+                TextEntity[] ts = tablcontent[ri];
+                double txtX = 0;
+                for (int ci=0; ci<ts.Length; ci++)
+                {
+                    TextEntity te = ts[ci];
+                    if (ci == 0) txtX = cws[0] / 2;
+                    else txtX += cws[ci - 1] / 2 + cws[ci] / 2;
+                    te.Plane = new Plane(anchor + new Point3d(txtX, -rowY, 0), Plane.WorldXY.ZAxis);
+                    tablobjs.Add(te); // TextEntity inherits from GeometryBase
+                }
+            }
+
+            // tranform and place
+            Parallel.For(0, tablobjs.Count, i =>
+            {
+                tablobjs[i].Transform(remap);
+                tablobjs[i].Transform(comeback);
+            });
+            foreach (GeometryBase g in tablobjs) parent.Objects.Add(g); // add to doc
         }
 
         #endregion
@@ -724,7 +892,7 @@ namespace Tabl_cs
         {
             if (mod)
             {
-                RefreshDGVContent("", true);
+                RefreshDGVContent();
                 mod = false;
                 RhinoDoc.ModifyObjectAttributes += OnAttrMod;
             }
@@ -741,18 +909,12 @@ namespace Tabl_cs
             Tabl_cs.Instance.TablPanel = null;
         }
 
-        private void OnResize(object sender, EventArgs e)
-        {
-            tableLayoutPanel1.Width = Width - 10;
-            tableLayoutPanel1.Height = Height - 10;
-        }
-
         // bind automatic refresh
         private void OnRhDocChange(object sender, EventArgs e)
         {
             
             if (popup.update)
-                RefreshDGVContent("", true);
+                RefreshDGVContent();
         }
 
         // click add
@@ -782,7 +944,7 @@ namespace Tabl_cs
             catch (NullReferenceException) { parent.Strings.SetString("tabl_cs_selected", string.Join(",", guids)); }
 
             PickFilter(false);
-            RefreshDGVContent("", true);
+            RefreshDGVContent();
         }
 
         // click to remove
@@ -817,13 +979,13 @@ namespace Tabl_cs
             ReloadRefs(idstrings);
 
             PickFilter(userlocked.ToArray(), true);
-            RefreshDGVContent("", true);
+            RefreshDGVContent();
         }
 
         // refresh meta, shared between Click and Settings.FormClosing
         private void button3_Click(object sender, EventArgs e)
         {
-            RefreshDGVContent("", true);
+            RefreshDGVContent();
         }
 
         // properties check change
@@ -841,7 +1003,7 @@ namespace Tabl_cs
             if (e.NewValue == CheckState.Checked)
                 options.SetValue(true, e.Index);
             else options.SetValue(false, e.Index);
-            RefreshDGVContent("", true);
+            RefreshDGVContent();
         }
 
         // right click context menu within datagridview
@@ -872,17 +1034,22 @@ namespace Tabl_cs
             //replace `selected` field
             ReloadRefs(idstrings);
 
-            RefreshDGVContent("", true);
+            RefreshDGVContent();
         }
         // right click and remove highlit rows handler
         private void removeRowsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //first eliminate from doc string
-            string raw = parent.Strings.GetValue("tabl_cs_selected");
-            List<string> idstrings = raw.Split(new string[] { ",", }, StringSplitOptions.RemoveEmptyEntries).ToList();
             List<int> ri = new List<int>();
             foreach (DataGridViewRow row in dataGridView1.SelectedRows)
                 ri.Add(row.Index);
+            if (ri.Count==0)
+            {
+                MessageBox.Show("no row highlighted");
+                return;
+            }
+            string raw = parent.Strings.GetValue("tabl_cs_selected");
+            List<string> idstrings = raw.Split(new string[] { ",", }, StringSplitOptions.RemoveEmptyEntries).ToList();
             ri.Sort();
             ri.Reverse(); // these two are to guarantee no index out of range while removing
             foreach (int i in ri)
@@ -891,8 +1058,18 @@ namespace Tabl_cs
 
             //replace `selected` field
             ReloadRefs(idstrings);
-
-            RefreshDGVContent("", true);
+            
+            RefreshDGVContent();
+        }
+        // select highlighted rows in model
+        private void selectHighlightedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (dataGridView1.SelectedRows.Count == 0)
+                MessageBox.Show("no row highlighted");
+            else
+                foreach (DataGridViewRow row in dataGridView1.SelectedRows)
+                    selected[row.Index].Object().Select(true);
+            parent.Views.Redraw();
         }
 
         // export csv click
@@ -912,7 +1089,12 @@ namespace Tabl_cs
                         }
                         var row = dataGridView1.Rows[ri];
                         for (int ci = 0; ci < dataGridView1.ColumnCount; ci++)
-                            try { linetxt.SetValue(row.Cells[ci].Value.ToString(), ci); }
+                            try
+                            {
+                                string v = row.Cells[ci].Value.ToString();
+                                string properv = v.Contains(",") ? "\"" + v + "\"" : v;
+                                linetxt.SetValue(properv, ci);
+                            }
                             catch (NullReferenceException) { linetxt.SetValue("no-value", ci); }
                         sw.WriteLine(string.Join(",", linetxt));
                     }
@@ -922,9 +1104,12 @@ namespace Tabl_cs
         // click clear datagridview and doctstring
         private void button11_Click(object sender, EventArgs e)
         {
-            parent.Strings.Delete("tabl_cs_selected");
-            selected = new ObjRef[] { };
-            RefreshDGVContent("", true);
+            if (MessageBox.Show("Are you sure to clear all?","Confirm", MessageBoxButtons.YesNo)== DialogResult.Yes)
+            {
+                parent.Strings.Delete("tabl_cs_selected");
+                selected = new ObjRef[] { };
+                RefreshDGVContent();
+            }
         }
 
         // check all properties click
@@ -972,7 +1157,22 @@ namespace Tabl_cs
         // place this table in rhino model click
         private void button5_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("you'll have to hunt down this lazy bum Will", "well...", MessageBoxButtons.OK, MessageBoxIcon.Question);
+            placepopup.Location = Cursor.Position;
+            placepopup.Show(this);
+            tableLayoutPanel1.Enabled = false;
+        }
+        private void OnPlaceClose(object sender, FormClosingEventArgs e)
+        {
+            Form s = sender as Form;
+            s.Hide();
+            e.Cancel = true;
+            tableLayoutPanel1.Enabled = true;
+            if (placepopup.ok)
+            {
+                placepopup.ok = false;
+                Result r = RhinoGet.GetPoint("pick table top left corner", true, out Point3d anchor);
+                if (r == Result.Success) TableInDoc(anchor);
+            }
         }
 
         // click to show about window
@@ -980,6 +1180,89 @@ namespace Tabl_cs
         {
             AboutTabl_ about = new AboutTabl_();
             about.ShowDialog(this);
+        }
+
+        // click to export GUID
+        private void button10_Click(object sender, EventArgs e)
+        {
+            if (saveFileDialog1.ShowDialog(this) == DialogResult.OK)
+                using (StreamWriter sw = new StreamWriter(saveFileDialog1.FileName))
+                {
+                    for (int ri = 0; ri < dataGridView1.RowCount; ri++)
+                    {
+                        ObjRef oref = selected[ri];
+                        sw.WriteLine(oref.ObjectId.ToString());
+                    }
+                }
+        }
+
+        // click to import GUID
+        private void button9_Click(object sender, EventArgs e)
+        {
+            if (openFileDialog1.ShowDialog(this) == DialogResult.OK)
+            {
+                string[] guids; string[] idstrings; string raw;
+                using (StreamReader sr = new StreamReader(openFileDialog1.FileName))
+                    guids = sr.ReadToEnd().TrimEnd('\r','\n').Split(new char[] { '\n', });
+                try { raw = parent.Strings.GetValue("tabl_cs_selected"); }
+                catch (NullReferenceException) { raw = null; }
+
+                List<string> errors = new List<string>();
+                List<string> validstrs = new List<string>();
+                ObjRef[] added;
+                if (raw!=null) // condition where tabl_cs_selected already in
+                {
+                    idstrings = raw.Split(new string[] { ",", }, StringSplitOptions.RemoveEmptyEntries);
+                    List<string> newids = new List<string>(idstrings);
+                    foreach (string guid in guids)
+                    {
+                        string clean = guid.TrimEnd('\r', '\n');
+                        if (!idstrings.Contains(clean))
+                            newids.Add(clean);
+                    }
+                        
+
+                    added = new ObjRef[newids.Count];
+                    for (int i = 0; i < newids.Count; i++)
+                    {
+                        ObjRef oref;
+                        try
+                        {
+                            oref = new ObjRef(new Guid(newids[i]));
+                            added.SetValue(oref, i);
+                            validstrs.Add(newids[i]);
+                        }
+                        catch (Exception exc)
+                        {
+                            errors.Add(exc.Message);
+                        }
+                    }
+                    
+                }
+                else // import guid into blank doc
+                {
+                    added = new ObjRef[guids.Length];
+                    for (int i = 0; i < guids.Length; i++)
+                    {
+                        ObjRef oref;
+                        string guid = guids[i].TrimEnd('\r', '\n');
+                        try
+                        {
+                            oref = new ObjRef(new Guid(guid));
+                            added.SetValue(oref, i);
+                            validstrs.Add(guid);
+                        }
+                        catch (Exception exc)
+                        {
+                            errors.Add(exc.Message);
+                        }
+                    }
+                }
+                if (errors.Count != 0) MessageBox.Show("guid import error detected\ncheck source");
+                parent.Strings.SetString("tabl_cs_selected", string.Join(",", validstrs));
+                selected = added;
+                RefreshDGVContent();
+            }
         }
 
         
