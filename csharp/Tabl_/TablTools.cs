@@ -6,7 +6,6 @@ using Rhino.Geometry;
 using Rhino.Input;
 using Rhino.Input.Custom;
 using Rhino.DocObjects;
-using RhinoWindows;
 
 namespace Tabl_cs
 {
