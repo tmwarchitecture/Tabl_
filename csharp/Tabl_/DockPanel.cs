@@ -8,12 +8,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
+using System.Collections;
 using Rhino.DocObjects;
 using Rhino;
 using Rhino.Input;
 using Rhino.Geometry;
 using Rhino.Commands;
-using System.IO;
 
 namespace Tabl_cs
 {
@@ -81,12 +82,20 @@ namespace Tabl_cs
             for (int i = 0; i < dataGridView1.ColumnCount; i++)
                 dataGridView1.Columns[i].Name = checkedListBox1.CheckedItems[i].ToString();
             dataGridView1.CellMouseClick += OnDGVRightClick;
-
+            dataGridView1.SortCompare += OnSort;
         }
 
         public static Guid PanelId
         {
             get { return typeof(DockPanel).GUID; }
+        }
+
+        private class SortComparer : IComparer
+        {
+            public int Compare(object x, object y)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         #region user methods
@@ -1265,6 +1274,27 @@ namespace Tabl_cs
             }
         }
 
-        
+        // custom sort logic as compare event handler
+        private void OnSort(object sender, DataGridViewSortCompareEventArgs e)
+        {
+            string v1 = e.CellValue1 as string;
+            string v2 = e.CellValue2 as string;
+
+            if (string.IsNullOrEmpty(v1) && string.IsNullOrEmpty(v2))
+                e.SortResult = 0;
+            else if (string.IsNullOrEmpty(v1) && !string.IsNullOrEmpty(v2))
+                e.SortResult = -1;
+            else if (!string.IsNullOrEmpty(v1) && string.IsNullOrEmpty(v2))
+                e.SortResult = 1;
+            else
+            {
+                if (double.TryParse(v1, out double n1) && double.TryParse(v2, out double n2))
+                    e.SortResult = n1 >= n2 ? 1 : -1;
+                else
+                    e.SortResult = string.Compare(v1, v2);
+            }
+            e.Handled = true;
+        }
+
     }
 }
