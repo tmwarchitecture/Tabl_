@@ -44,6 +44,7 @@ namespace Tabl_cs
         private Settings popup = new Settings();
         private WaitScreen waitform = new WaitScreen() { TopMost = true };
         private PlaceSettings placepopup = new PlaceSettings();
+        private TextboxDialog txtinput = new TextboxDialog();
 
         // constructor
         public DockPanel()
@@ -90,13 +91,6 @@ namespace Tabl_cs
             get { return typeof(DockPanel).GUID; }
         }
 
-        private class SortComparer : IComparer
-        {
-            public int Compare(object x, object y)
-            {
-                throw new NotImplementedException();
-            }
-        }
 
         #region user methods
 
@@ -1015,6 +1009,7 @@ namespace Tabl_cs
             RefreshDGVContent();
         }
 
+        #region datagridview context menu handlers
         // right click context menu within datagridview
         private void OnDGVRightClick(object sender, DataGridViewCellMouseEventArgs e)
         {
@@ -1080,6 +1075,67 @@ namespace Tabl_cs
                     selected[row.Index].Object().Select(true);
             parent.Views.Redraw();
         }
+        // recolor objects
+        private void recolorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (colorDialog1.ShowDialog() == DialogResult.OK)
+            {
+                List<int> ri = new List<int>();
+                foreach (DataGridViewRow row in dataGridView1.SelectedRows)
+                    ri.Add(row.Index);
+                if (ri.Count == 0) ri.Add(clickedrowindex);
+                foreach (int i in ri)
+                {
+                    RhinoObject o = selected[i].Object();
+                    o.Attributes.ColorSource = ObjectColorSource.ColorFromObject;
+                    o.Attributes.ObjectColor = colorDialog1.Color;
+                    if (!o.CommitChanges()) MessageBox.Show("unknown internal error");
+                }
+                parent.Views.Redraw();
+            }
+        }
+        // rename objects
+        private void renameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            txtinput.Location = Cursor.Position;
+            txtinput.ShowDialog();
+            if (txtinput.commited)
+            {
+                List<int> ri = new List<int>();
+                foreach (DataGridViewRow row in dataGridView1.SelectedRows)
+                    ri.Add(row.Index);
+                if (ri.Count == 0) ri.Add(clickedrowindex);
+                foreach (int i in ri)
+                {
+                    RhinoObject o = selected[i].Object();
+                    o.Attributes.Name = txtinput.txtval;
+                    if (!o.CommitChanges()) MessageBox.Show("unknown internal error");
+                }
+                txtinput.commited = false;
+            }
+        }
+        // change layers
+        private void changeLayerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int li = -1;
+            bool current = false;
+            bool r = Rhino.UI.Dialogs.ShowSelectLayerDialog(ref li, "Select layer", false, false, ref current);
+            if (r && li != -1)
+            {
+                List<int> ri = new List<int>();
+                foreach (DataGridViewRow row in dataGridView1.SelectedRows)
+                    ri.Add(row.Index);
+                if (ri.Count == 0) ri.Add(clickedrowindex);
+                foreach (int i in ri)
+                {
+                    RhinoObject o = selected[i].Object();
+                    o.Attributes.LayerIndex = li;
+                    if (!o.CommitChanges()) MessageBox.Show("unknown internal error");
+                }
+                parent.Views.Redraw();
+            }
+        }
+        #endregion
 
         // export csv click
         private void button6_Click(object sender, EventArgs e)
@@ -1296,5 +1352,6 @@ namespace Tabl_cs
             e.Handled = true;
         }
 
+        
     }
 }

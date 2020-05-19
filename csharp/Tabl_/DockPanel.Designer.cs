@@ -280,18 +280,24 @@
             this.recolorToolStripMenuItem.Name = "recolorToolStripMenuItem";
             this.recolorToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.recolorToolStripMenuItem.Text = "Recolor";
+            this.recolorToolStripMenuItem.ToolTipText = "This modifies object in document.\r\nNo undos. Beware.";
+            this.recolorToolStripMenuItem.Click += new System.EventHandler(this.recolorToolStripMenuItem_Click);
             // 
             // renameToolStripMenuItem
             // 
             this.renameToolStripMenuItem.Name = "renameToolStripMenuItem";
             this.renameToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.renameToolStripMenuItem.Text = "Rename";
+            this.renameToolStripMenuItem.ToolTipText = "This modifies object in document.\r\nNo undos. Beware.";
+            this.renameToolStripMenuItem.Click += new System.EventHandler(this.renameToolStripMenuItem_Click);
             // 
             // changeLayerToolStripMenuItem
             // 
             this.changeLayerToolStripMenuItem.Name = "changeLayerToolStripMenuItem";
             this.changeLayerToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.changeLayerToolStripMenuItem.Text = "Change layer";
+            this.changeLayerToolStripMenuItem.ToolTipText = "This modifies object in document.\r\nNo undos. Beware.";
+            this.changeLayerToolStripMenuItem.Click += new System.EventHandler(this.changeLayerToolStripMenuItem_Click);
             // 
             // saveFileDialog1
             // 
