@@ -191,9 +191,14 @@ namespace Tabl_
             Loaded = newselected;
         }
 
-        private void RefreshTabl()
+        /// <summary>
+        /// refresh spreadsheet
+        /// </summary>
+        /// <param name="th">true if threaded computing</param>
+        private void RefreshTabl(bool th = false)
         {
             lvTabl.Clear();
+            // set up headers
             List<string> keys = headers.Keys.ToList();
             keys.Sort(HeaderSorter); // this guarantees header order matching with menustrip's
             if (linecounter)
@@ -205,14 +210,20 @@ namespace Tabl_
                     lvTabl.Columns.Add(ch);
                 }
 
-            List<ListViewItem> lis = new List<ListViewItem>();
+            // fill spreadsheet
+            List<ListViewItem> lines = new List<ListViewItem>(); 
             // serial
             for (int oi =0; oi<Loaded.Length; oi++)
             {
-                if (linecounter)
                 string[] infos = TablLineItem(oi);
-                lis.Add(new ListViewItem(infos));
-                
+                if (!linecounter)
+                    lines.Add(new ListViewItem(infos));
+                else
+                {
+                    List<string> infolist = new List<string> { (oi+1).ToString(), };
+                    infolist.AddRange(infos);
+                    lines.Add(new ListViewItem(infolist.ToArray()));
+                }
             }
             // parallel
             /*
@@ -225,18 +236,28 @@ namespace Tabl_
                 }
             });*/
             
-            lvTabl.Items.AddRange(lis.ToArray());
-            lvTabl.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+            lvTabl.Items.AddRange(lines.ToArray()); // faster with addrange rather than add in a loop
+            // TODO: only resize on first load
+            if (lvTabl.Items.Count>0)
+                lvTabl.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+            else
+                lvTabl.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
         }
 
         /// <summary>
         /// get the line item for tabl
         /// </summary>
         /// <param name="refi">index of objref in loaded</param>
+        /// <param name="th">true if threaded computing</param>
         /// <returns>array of the obj properties</returns>
         private string[] TablLineItem(int refi, bool th = false)
         {
-            string[] infos = new string[lvTabl.Columns.Count];
+            string[] infos;
+            if (linecounter)
+                infos = new string[lvTabl.Columns.Count - 1];
+            else
+                infos = new string[lvTabl.Columns.Count];
+
             if (th)
             {
                 // TODO: finish this
@@ -245,7 +266,12 @@ namespace Tabl_
             else
             {
                 for (int ci = 0; ci < infos.Length; ci++)
-                    infos.SetValue(ExtractObjInfo(lvTabl.Columns[ci].Text, refi), ci);
+                {
+                    if (linecounter)
+                        infos.SetValue(ExtractObjInfo(lvTabl.Columns[ci + 1].Text, refi), ci);
+                    else
+                        infos.SetValue(ExtractObjInfo(lvTabl.Columns[ci].Text, refi), ci);
+                }
                 return infos;
             }
         }
