@@ -48,9 +48,9 @@
             this.label3 = new System.Windows.Forms.Label();
             this.btnOK = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.ttipSettings = new System.Windows.Forms.ToolTip(this.components);
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.chklSpreadsheet = new System.Windows.Forms.CheckedListBox();
+            this.chklTablDisplay = new System.Windows.Forms.CheckedListBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudDP)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -68,7 +68,7 @@
             this.groupBox1.Controls.Add(this.nudDP);
             this.groupBox1.Location = new System.Drawing.Point(245, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(227, 81);
+            this.groupBox1.Size = new System.Drawing.Size(227, 86);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Number Format";
@@ -76,7 +76,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(7, 50);
+            this.label2.Location = new System.Drawing.Point(8, 53);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(125, 15);
             this.label2.TabIndex = 3;
@@ -90,7 +90,7 @@
             "dot \".\"",
             "space",
             "None"});
-            this.cbThousand.Location = new System.Drawing.Point(143, 46);
+            this.cbThousand.Location = new System.Drawing.Point(144, 49);
             this.cbThousand.Name = "cbThousand";
             this.cbThousand.Size = new System.Drawing.Size(76, 23);
             this.cbThousand.TabIndex = 2;
@@ -98,7 +98,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(7, 18);
+            this.label1.Location = new System.Drawing.Point(7, 24);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(93, 15);
             this.label1.TabIndex = 1;
@@ -106,7 +106,7 @@
             // 
             // nudDP
             // 
-            this.nudDP.Location = new System.Drawing.Point(143, 16);
+            this.nudDP.Location = new System.Drawing.Point(143, 22);
             this.nudDP.Name = "nudDP";
             this.nudDP.Size = new System.Drawing.Size(77, 21);
             this.nudDP.TabIndex = 0;
@@ -181,7 +181,7 @@
             this.rbAutoUpdate.TabIndex = 1;
             this.rbAutoUpdate.TabStop = true;
             this.rbAutoUpdate.Text = "Automatic";
-            this.toolTip1.SetToolTip(this.rbAutoUpdate, "any change in Rhino will trigger data refresh\r\nbeware of computing time");
+            this.ttipSettings.SetToolTip(this.rbAutoUpdate, "any change in Rhino will trigger data refresh\r\nbeware of computing time");
             this.rbAutoUpdate.UseVisualStyleBackColor = true;
             // 
             // rbManual
@@ -214,7 +214,7 @@
             this.tbUnitName.Name = "tbUnitName";
             this.tbUnitName.Size = new System.Drawing.Size(76, 21);
             this.tbUnitName.TabIndex = 3;
-            this.toolTip1.SetToolTip(this.tbUnitName, "leave blank to use default units");
+            this.ttipSettings.SetToolTip(this.tbUnitName, "leave blank to use default units");
             // 
             // label4
             // 
@@ -237,7 +237,7 @@
             this.nudUnitScale.Name = "nudUnitScale";
             this.nudUnitScale.Size = new System.Drawing.Size(77, 21);
             this.nudUnitScale.TabIndex = 1;
-            this.toolTip1.SetToolTip(this.nudUnitScale, "multiplies all numbers");
+            this.ttipSettings.SetToolTip(this.nudUnitScale, "multiplies all numbers");
             this.nudUnitScale.Value = new decimal(new int[] {
             1,
             0,
@@ -255,9 +255,9 @@
             // 
             // btnOK
             // 
-            this.btnOK.Location = new System.Drawing.Point(348, 184);
+            this.btnOK.Location = new System.Drawing.Point(245, 184);
             this.btnOK.Name = "btnOK";
-            this.btnOK.Size = new System.Drawing.Size(58, 27);
+            this.btnOK.Size = new System.Drawing.Size(111, 27);
             this.btnOK.TabIndex = 4;
             this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
@@ -265,9 +265,9 @@
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(414, 184);
+            this.btnCancel.Location = new System.Drawing.Point(361, 184);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(58, 27);
+            this.btnCancel.Size = new System.Drawing.Size(111, 27);
             this.btnCancel.TabIndex = 5;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
@@ -275,28 +275,31 @@
             // 
             // groupBox5
             // 
-            this.groupBox5.Controls.Add(this.chklSpreadsheet);
-            this.groupBox5.Location = new System.Drawing.Point(245, 100);
+            this.groupBox5.Controls.Add(this.chklTablDisplay);
+            this.groupBox5.Location = new System.Drawing.Point(245, 104);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(227, 78);
+            this.groupBox5.Size = new System.Drawing.Size(227, 74);
             this.groupBox5.TabIndex = 6;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Spreadsheet";
             // 
-            // chklSpreadsheet
+            // chklTablDisplay
             // 
-            this.chklSpreadsheet.BackColor = System.Drawing.SystemColors.Menu;
-            this.chklSpreadsheet.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.chklSpreadsheet.CheckOnClick = true;
-            this.chklSpreadsheet.FormattingEnabled = true;
-            this.chklSpreadsheet.Items.AddRange(new object[] {
-            "Show units in cells",
-            "Show total at baseline",
-            "Export headers"});
-            this.chklSpreadsheet.Location = new System.Drawing.Point(6, 20);
-            this.chklSpreadsheet.Name = "chklSpreadsheet";
-            this.chklSpreadsheet.Size = new System.Drawing.Size(213, 48);
-            this.chklSpreadsheet.TabIndex = 0;
+            this.chklTablDisplay.BackColor = System.Drawing.SystemColors.Menu;
+            this.chklTablDisplay.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.chklTablDisplay.CheckOnClick = true;
+            this.chklTablDisplay.ColumnWidth = 102;
+            this.chklTablDisplay.FormattingEnabled = true;
+            this.chklTablDisplay.Items.AddRange(new object[] {
+            "Show units",
+            "Show total",
+            "Export headers",
+            "Threaded"});
+            this.chklTablDisplay.Location = new System.Drawing.Point(6, 20);
+            this.chklTablDisplay.MultiColumn = true;
+            this.chklTablDisplay.Name = "chklTablDisplay";
+            this.chklTablDisplay.Size = new System.Drawing.Size(215, 32);
+            this.chklTablDisplay.TabIndex = 0;
             // 
             // Settings
             // 
@@ -353,8 +356,8 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.Button btnCancel;
-        private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.ToolTip ttipSettings;
         private System.Windows.Forms.GroupBox groupBox5;
-        private System.Windows.Forms.CheckedListBox chklSpreadsheet;
+        private System.Windows.Forms.CheckedListBox chklTablDisplay;
     }
 }

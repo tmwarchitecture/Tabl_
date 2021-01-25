@@ -18,7 +18,8 @@ namespace Tabl_
         internal bool update = false; // true as automatic
         internal double su = 1.0; // scale units
         internal string cun = ""; // custom unit name
-
+        internal bool[] displayopt;
+        // thousand separators
         private string[] tsvalues = new string[] { ",", ".", " ", "", };
 
         //constructor
@@ -26,6 +27,9 @@ namespace Tabl_
         {
             InitializeComponent();
             Icon = Properties.Resources.main;
+            displayopt = new bool[chklTablDisplay.Items.Count];
+            for (int i = 0; i < chklTablDisplay.Items.Count; i++)
+                displayopt.SetValue(false, i);
 
             Shown += OnPopUp;
         }
@@ -58,6 +62,14 @@ namespace Tabl_
             nudUnitScale.Value = (decimal)su;
 
             tbUnitName.Text = cun;
+
+            for (int i = 0; i < displayopt.Length; i++)
+            {
+                if (displayopt[i])
+                    chklTablDisplay.SetItemChecked(i, true);
+                else
+                    chklTablDisplay.SetItemChecked(i, false);
+            }
         }
 
         // commit changes
@@ -72,6 +84,13 @@ namespace Tabl_
             update = rbAutoUpdate.Checked;
             su = (double)nudUnitScale.Value;
             cun = tbUnitName.Text.Trim();
+            for (int i = 0; i < chklTablDisplay.Items.Count; i++)
+            {
+                if (chklTablDisplay.CheckedIndices.Contains(i))
+                    displayopt[i] = true;
+                else
+                    displayopt[i] = false;
+            }
 
             // must be shown modal and therefore not disposed after below call
             Close(); 

@@ -20,17 +20,20 @@ namespace Tabl_
     {
         internal RhinoDoc ParentDoc { get; private set; }
         internal ObjRef[] Loaded { get; set; } = new ObjRef[] { };
+        internal static object locker = new object();
 
         private double tol;
+        private double rtol;
         private bool in_mod = false; // whether doc is modifying attr, see OnAttrMod
         private bool menustripaction = false; // whether user (un)checked in header menustrip
 
         // settings popup
         private Settings settings = new Settings();
+        // whether tabl has left most column that counts line items
+        private bool linecounter = false;
         // tracking header visibilities
         private Dictionary<string, bool> headers = new Dictionary<string, bool>
         {
-            { "#", false},
             {"GUID", true },
             { "Type", false},
             { "Name", true },
@@ -55,7 +58,7 @@ namespace Tabl_
         // header order
         private string[] ho = new string[]
         {
-            "#","GUID","Type","Name","Layer","Color","LineType", "PrintColor","PrintWidth","Material","Length","Area", "Volume","NumPts","NumEdges","NumFaces", "Degree","CenterPt","IsPlanar","IsClosed","Comments",
+            "GUID","Type","Name","Layer","Color","LineType", "PrintColor","PrintWidth","Material","Length","Area", "Volume","NumPts","NumEdges","NumFaces", "Degree","CenterPt","IsPlanar","IsClosed","Comments",
         };
         // comparer
         private int HeaderSorter(string a, string b)
@@ -77,12 +80,15 @@ namespace Tabl_
 
             ParentDoc = RhinoDoc.ActiveDoc;
             tol = ParentDoc.ModelAbsoluteTolerance;
+            rtol = ParentDoc.ModelAngleToleranceRadians;
             settings.FormClosing += Refresh_Click;
             Command.EndCommand += OnDocChange;
             // set up first mod trigger, unlistened during event itself
             RhinoDoc.ModifyObjectAttributes += OnAttrMod;
             // will relisten attr mod after all mod finish
             RhinoApp.Idle += OnRhIdle;
+
+            lvTabl.ColumnClick += TablColClick;
         }
 
         #region non-UI events
@@ -140,7 +146,7 @@ namespace Tabl_
         private void Add_Click(object sender, EventArgs e)
         {
             SetPickFilter(true);
-            var orefs = PickObj();
+            ObjRef[] orefs = PickObj(); // launch interactive pick
             if (orefs == null)
             {
                 SetPickFilter(false);
@@ -149,19 +155,21 @@ namespace Tabl_
 
             List<string> loadedids = new List<string>();
             Guid[] guids = orefs.Select(i => i.ObjectId).ToArray();
+            string raw; string[] idstrs; // get existing in tabl_cs_selected, if any
             try
             {
-                // try to append to existing
-                string raw = ParentDoc.Strings.GetValue("tabl_cs_selected");
-                string[] idstrings = raw.Split(new string[] { ",", }, StringSplitOptions.RemoveEmptyEntries);
-                loadedids.AddRange(idstrings);
-                loadedids.AddRange(guids.Select(i=>i.ToString()));
-                ParentDoc.Strings.SetString("tabl_cs_selected", string.Join(",", loadedids));
+                raw = ParentDoc.Strings.GetValue("tabl_cs_selected");
+                idstrs = raw.Split(new string[] { ",", }, StringSplitOptions.RemoveEmptyEntries);
             }
             catch (NullReferenceException)
             {
-                ParentDoc.Strings.SetString("tabl_cs_selected", string.Join(",", guids.Select(i => i.ToString())));
+                raw = "";
+                idstrs = new string[] { };
             }
+            loadedids.AddRange(idstrs);
+            loadedids.AddRange(guids.Select(i => i.ToString()));
+            ParentDoc.Strings.SetString("tabl_cs_selected", string.Join(",", loadedids)); // push back to talb_cs_selected
+            ReloadRefs(loadedids); // sync docstr and loaded
 
             SetPickFilter(false);
             RefreshTabl();
@@ -180,7 +188,7 @@ namespace Tabl_
                 if (ro.IsLocked)
                     userlocked.Add(ro);
 
-            SetPickFilter(userlocked.ToArray());
+            SetPickFilter(userlocked.ToArray(), true);
             ObjRef[] picked = PickObj();
             if (picked == null)
             {
