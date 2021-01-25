@@ -1,0 +1,11 @@
+D:\ww_personal\Tabl_\cs\2.0\bin\Tabl_2.dll
+D:\ww_personal\Tabl_\cs\2.0\bin\Tabl_2.pdb
+D:\ww_personal\Tabl_\cs\2.0\obj\Debug\Tabl_.csprojAssemblyReference.cache
+D:\ww_personal\Tabl_\cs\2.0\obj\Debug\Tabl_.AboutTabl_.resources
+D:\ww_personal\Tabl_\cs\2.0\obj\Debug\Tabl_.DockPanel.resources
+D:\ww_personal\Tabl_\cs\2.0\obj\Debug\Tabl_.Properties.Resources.resources
+D:\ww_personal\Tabl_\cs\2.0\obj\Debug\Tabl_.Settings.resources
+D:\ww_personal\Tabl_\cs\2.0\obj\Debug\Tabl_.csproj.GenerateResource.cache
+D:\ww_personal\Tabl_\cs\2.0\obj\Debug\Tabl_.csproj.CoreCompileInputs.cache
+D:\ww_personal\Tabl_\cs\2.0\obj\Debug\Tabl_2.dll
+D:\ww_personal\Tabl_\cs\2.0\obj\Debug\Tabl_2.pdb

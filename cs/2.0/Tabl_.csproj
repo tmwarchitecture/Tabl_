@@ -68,6 +68,9 @@
     <Compile Include="DockPanel.Designer.cs">
       <DependentUpon>DockPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="DockPanelUtil.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
