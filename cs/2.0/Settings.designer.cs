@@ -49,8 +49,8 @@
             this.btnOK = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.ttipSettings = new System.Windows.Forms.ToolTip(this.components);
-            this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.chklTablDisplay = new System.Windows.Forms.CheckedListBox();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudDP)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -273,22 +273,12 @@
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.Cancel_Click);
             // 
-            // groupBox5
-            // 
-            this.groupBox5.Controls.Add(this.chklTablDisplay);
-            this.groupBox5.Location = new System.Drawing.Point(245, 104);
-            this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(227, 74);
-            this.groupBox5.TabIndex = 6;
-            this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Spreadsheet";
-            // 
             // chklTablDisplay
             // 
             this.chklTablDisplay.BackColor = System.Drawing.SystemColors.Menu;
             this.chklTablDisplay.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.chklTablDisplay.CheckOnClick = true;
-            this.chklTablDisplay.ColumnWidth = 102;
+            this.chklTablDisplay.ColumnWidth = 110;
             this.chklTablDisplay.FormattingEnabled = true;
             this.chklTablDisplay.Items.AddRange(new object[] {
             "Show units",
@@ -298,8 +288,20 @@
             this.chklTablDisplay.Location = new System.Drawing.Point(6, 20);
             this.chklTablDisplay.MultiColumn = true;
             this.chklTablDisplay.Name = "chklTablDisplay";
-            this.chklTablDisplay.Size = new System.Drawing.Size(215, 32);
+            this.chklTablDisplay.Size = new System.Drawing.Size(220, 32);
             this.chklTablDisplay.TabIndex = 0;
+            this.ttipSettings.SetToolTip(this.chklTablDisplay, "enabling thread increases overhead\r\nfaster only if there are myriad of line items" +
+        "");
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Controls.Add(this.chklTablDisplay);
+            this.groupBox5.Location = new System.Drawing.Point(245, 104);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(227, 74);
+            this.groupBox5.TabIndex = 6;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Spreadsheet";
             // 
             // Settings
             // 

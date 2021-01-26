@@ -131,32 +131,28 @@ namespace Tabl_
         }
 
         /// <summary>
-        /// lock or unlock objects within Tabl_ loaded
+        /// lock or unlock objects within Tabl_ loaded, should be called in pairs
         /// </summary>
         /// <param name="l">set true to lock already in tabl_</param>
-        private void SetPickFilter(bool l)
+        private void AddPickFilter(bool l)
         {
+            ParentDoc.Views.RedrawEnabled = false;
+
             if (l)
-            {
-                ParentDoc.Views.RedrawEnabled = false;
                 foreach (ObjRef r in Loaded)
                     ParentDoc.Objects.Lock(r.ObjectId, false);
-                ParentDoc.Views.RedrawEnabled = true;
-            }
             else
-            {
-                ParentDoc.Views.RedrawEnabled = false;
                 foreach (ObjRef r in Loaded)
                     ParentDoc.Objects.Unlock(r.ObjectId, false);
-                ParentDoc.Views.RedrawEnabled = true;
-            }
+            
+            ParentDoc.Views.RedrawEnabled = true;
         }
         /// <summary>
-        /// lock or unlock objects outside the Tabl_ loaded objects
+        /// lock or unlock objects outside the Tabl_ loaded objects, should be called in pairs
         /// </summary>
         /// <param name="expt">exempt objects, lock status won't alter</param>
-        /// <param name="l">set true to lock</param>
-        private void SetPickFilter(RhinoObject[] expt, bool l = true)
+        /// <param name="l">set true to lock (enter picking)</param>
+        private void RmvPickFilter(RhinoObject[] expt, bool l = true)
         {
             Guid[] loadedids = Loaded.Select(i => i.ObjectId).ToArray();
             Guid[] exptids = expt.Select(i => i.Id).ToArray();
@@ -250,7 +246,7 @@ namespace Tabl_
         /// <param name="refi">index of objref in loaded</param>
         /// <param name="th">true if threaded computing</param>
         /// <returns>array of the obj properties</returns>
-        private string[] TablLineItem(int refi, bool th = false)
+        private string[] TablLineItem(int refi)
         {
             string[] infos;
             if (linecounter)
@@ -258,9 +254,16 @@ namespace Tabl_
             else
                 infos = new string[lvTabl.Columns.Count];
 
-            if (th)
+            if (settings.ssopt[3])
             {
-                // TODO: finish this
+                // TODO: simple Parallel.For() doesn't help, alter ExtractObjInfo()
+                for (int ci = 0; ci < infos.Length; ci++)
+                {
+                    if (linecounter)
+                        infos.SetValue(ExtractObjInfo(lvTabl.Columns[ci + 1].Text, refi), ci);
+                    else
+                        infos.SetValue(ExtractObjInfo(lvTabl.Columns[ci].Text, refi), ci);
+                }
                 return infos;
             }
             else
@@ -334,7 +337,7 @@ namespace Tabl_
                         pw = l.PlotWeight;
                     }
                     else pw = obj.Attributes.PlotWeight;
-                    if (settings.displayopt[0]) info = pw.ToString() + "pt";
+                    if (settings.ssopt[0]) info = pw.ToString() + "pt";
                     else info = pw.ToString();
                     break;
                 case "PrintColor":
@@ -373,7 +376,7 @@ namespace Tabl_
                             len = KMarker(len_num, ' ');
                         else len = len_num.ToString();
                     }
-                    if (settings.displayopt[0] && len != null) len += LenUnit(); // with unit
+                    if (settings.ssopt[0] && len != null) len += LenUnit(); // with unit
                     info = len;
                     break;
                 case "Area":
@@ -402,7 +405,7 @@ namespace Tabl_
                             area = KMarker(area_num, ' ');
                         else area = area_num.ToString();
 
-                        if (settings.displayopt[0])
+                        if (settings.ssopt[0])
                         {
                             if (settings.cun != "" && settings.cun != null)
                                 info = area + settings.cun + "\xB2";
@@ -453,7 +456,7 @@ namespace Tabl_
                         }
                     }
 
-                    if (!settings.displayopt[0] || vol == null) info = vol;
+                    if (!settings.ssopt[0] || vol == null) info = vol;
                     else if (vol != "open brep" && vol != "invalid extrusion")
                     {
                         if (settings.cun != "" && settings.cun != null)
@@ -561,10 +564,8 @@ namespace Tabl_
 
         /// <summary>
         /// remove single object by id from tabl 
-        /// DO NOT use in a loop
         /// </summary>
         /// <param name="guid">object guid string</param>
-        /// <returns>true if success</returns>
         private void RemoveById(string guid)
         {
             //first eliminate from doc string

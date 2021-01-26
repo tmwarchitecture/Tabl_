@@ -18,9 +18,10 @@ namespace Tabl_
     [Guid("FA271E46-C13B-47A5-9B69-46C578A74EA4")]
     public partial class DockPanel : UserControl
     {
+        internal static object locker = new object();
+
         internal RhinoDoc ParentDoc { get; private set; }
         internal ObjRef[] Loaded { get; set; } = new ObjRef[] { };
-        internal static object locker = new object();
 
         private double tol;
         private double rtol;
@@ -89,6 +90,7 @@ namespace Tabl_
             RhinoApp.Idle += OnRhIdle;
 
             lvTabl.ColumnClick += TablColClick;
+            lvTabl.MouseClick += TablMouseClick;
         }
 
         #region non-UI events
@@ -110,7 +112,8 @@ namespace Tabl_
         {
             if (in_mod)
             {
-                RefreshTabl();
+                if (settings.update)
+                    RefreshTabl();
                 in_mod = false;
                 RhinoDoc.ModifyObjectAttributes += OnAttrMod;
             }
@@ -121,6 +124,15 @@ namespace Tabl_
         private void TablColClick(object s, ColumnClickEventArgs e)
         {
             MessageBox.Show("sorting not implemented");
+        }
+        private void TablMouseClick(object s, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                var hit = lvTabl.HitTest(e.Location);
+                if (hit.Item != null)
+                    lvCtxtMenu.Show(Cursor.Position);
+            }
         }
         private void HeaderStripClosing(object s, ToolStripDropDownClosingEventArgs e)
         {
@@ -145,11 +157,11 @@ namespace Tabl_
 
         private void Add_Click(object sender, EventArgs e)
         {
-            SetPickFilter(true);
+            AddPickFilter(true);
             ObjRef[] orefs = PickObj(); // launch interactive pick
             if (orefs == null)
             {
-                SetPickFilter(false);
+                AddPickFilter(false);
                 return;
             }
 
@@ -171,8 +183,8 @@ namespace Tabl_
             ParentDoc.Strings.SetString("tabl_cs_selected", string.Join(",", loadedids)); // push back to talb_cs_selected
             ReloadRefs(loadedids); // sync docstr and loaded
 
-            SetPickFilter(false);
-            RefreshTabl();
+            AddPickFilter(false);
+            if (!settings.update) RefreshTabl();
         }
 
         private void Remove_Click(object sender, EventArgs e)
@@ -183,16 +195,17 @@ namespace Tabl_
                 return;
             }
 
+            // these are user locked, exempt from lock status change
             List<RhinoObject> userlocked = new List<RhinoObject>();
             foreach (RhinoObject ro in ParentDoc.Objects)
                 if (ro.IsLocked)
                     userlocked.Add(ro);
 
-            SetPickFilter(userlocked.ToArray(), true);
+            RmvPickFilter(userlocked.ToArray(), true);
             ObjRef[] picked = PickObj();
             if (picked == null)
             {
-                SetPickFilter(userlocked.ToArray(), false);
+                RmvPickFilter(userlocked.ToArray(), false);
                 return;
             }
 
@@ -206,8 +219,8 @@ namespace Tabl_
             //refresh Loaded property
             ReloadRefs(idstrs);
 
-            SetPickFilter(userlocked.ToArray(), false);
-            RefreshTabl();
+            RmvPickFilter(userlocked.ToArray(), false);
+            if (!settings.update) RefreshTabl(); // cuz PickObj() triggers OnRhIdle post-command
         }
 
         private void Refresh_Click(object sender, EventArgs e)

@@ -18,7 +18,7 @@ namespace Tabl_
         internal bool update = false; // true as automatic
         internal double su = 1.0; // scale units
         internal string cun = ""; // custom unit name
-        internal bool[] displayopt;
+        internal bool[] ssopt; // spreadsheet options, 0-unit, 1-total, 2-export headers, 3-threaded
         // thousand separators
         private string[] tsvalues = new string[] { ",", ".", " ", "", };
 
@@ -27,9 +27,9 @@ namespace Tabl_
         {
             InitializeComponent();
             Icon = Properties.Resources.main;
-            displayopt = new bool[chklTablDisplay.Items.Count];
+            ssopt = new bool[chklTablDisplay.Items.Count];
             for (int i = 0; i < chklTablDisplay.Items.Count; i++)
-                displayopt.SetValue(false, i);
+                ssopt.SetValue(false, i);
 
             Shown += OnPopUp;
         }
@@ -63,9 +63,9 @@ namespace Tabl_
 
             tbUnitName.Text = cun;
 
-            for (int i = 0; i < displayopt.Length; i++)
+            for (int i = 0; i < ssopt.Length; i++)
             {
-                if (displayopt[i])
+                if (ssopt[i])
                     chklTablDisplay.SetItemChecked(i, true);
                 else
                     chklTablDisplay.SetItemChecked(i, false);
@@ -87,9 +87,9 @@ namespace Tabl_
             for (int i = 0; i < chklTablDisplay.Items.Count; i++)
             {
                 if (chklTablDisplay.CheckedIndices.Contains(i))
-                    displayopt[i] = true;
+                    ssopt[i] = true;
                 else
-                    displayopt[i] = false;
+                    ssopt[i] = false;
             }
 
             // must be shown modal and therefore not disposed after below call
