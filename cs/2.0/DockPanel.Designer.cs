@@ -33,6 +33,8 @@
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.lvCtxtMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.thisWorkedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.msHeaders = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.gUIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -55,6 +57,17 @@
             this.isPlanarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.isClosedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.commentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editHighlightedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.msEdits = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.cToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.changeLayerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.colorToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.lineTypeToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.printColorToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.printWidthToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.materialToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.lengthToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyTextsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnAdd = new System.Windows.Forms.Button();
             this.btnRemove = new System.Windows.Forms.Button();
             this.btnRefresh = new System.Windows.Forms.Button();
@@ -65,11 +78,12 @@
             this.btnImport = new System.Windows.Forms.Button();
             this.btnExport = new System.Windows.Forms.Button();
             this.btnInfo = new System.Windows.Forms.Button();
-            this.lvCtxtMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.thisWorkedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.editHighlightedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.msHeaders.SuspendLayout();
+            this.ttipBtns = new System.Windows.Forms.ToolTip(this.components);
+            this.dlogExport = new System.Windows.Forms.SaveFileDialog();
+            this.dlogImport = new System.Windows.Forms.OpenFileDialog();
             this.lvCtxtMenu.SuspendLayout();
+            this.msHeaders.SuspendLayout();
+            this.msEdits.SuspendLayout();
             this.SuspendLayout();
             // 
             // lvTabl
@@ -109,6 +123,22 @@
             this.columnHeader3.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.columnHeader3.Width = 148;
             // 
+            // lvCtxtMenu
+            // 
+            this.lvCtxtMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.thisWorkedToolStripMenuItem,
+            this.editHighlightedToolStripMenuItem,
+            this.copyTextsToolStripMenuItem});
+            this.lvCtxtMenu.Name = "lvCtxtMenu";
+            this.lvCtxtMenu.Size = new System.Drawing.Size(161, 70);
+            // 
+            // thisWorkedToolStripMenuItem
+            // 
+            this.thisWorkedToolStripMenuItem.DropDown = this.msHeaders;
+            this.thisWorkedToolStripMenuItem.Name = "thisWorkedToolStripMenuItem";
+            this.thisWorkedToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.thisWorkedToolStripMenuItem.Text = "Show Columns";
+            // 
             // msHeaders
             // 
             this.msHeaders.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -134,9 +164,10 @@
             this.isClosedToolStripMenuItem,
             this.commentsToolStripMenuItem});
             this.msHeaders.Name = "msHeader";
+            this.msHeaders.OwnerItem = this.thisWorkedToolStripMenuItem;
             this.msHeaders.ShowCheckMargin = true;
             this.msHeaders.ShowImageMargin = false;
-            this.msHeaders.Size = new System.Drawing.Size(181, 488);
+            this.msHeaders.Size = new System.Drawing.Size(134, 466);
             // 
             // toolStripMenuItem2
             // 
@@ -211,7 +242,7 @@
             // 
             this.areaToolStripMenuItem.ForeColor = System.Drawing.Color.Firebrick;
             this.areaToolStripMenuItem.Name = "areaToolStripMenuItem";
-            this.areaToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.areaToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
             this.areaToolStripMenuItem.Text = "Area";
             this.areaToolStripMenuItem.ToolTipText = "this uses much computing resource\r\nrecommend turning off auto-update before enabl" +
     "ing";
@@ -220,7 +251,7 @@
             // 
             this.volumeToolStripMenuItem.ForeColor = System.Drawing.Color.Firebrick;
             this.volumeToolStripMenuItem.Name = "volumeToolStripMenuItem";
-            this.volumeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.volumeToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
             this.volumeToolStripMenuItem.Text = "Volume";
             this.volumeToolStripMenuItem.ToolTipText = "this uses much computing resource\r\nrecommend turning off auto-update before enabl" +
     "ing";
@@ -273,6 +304,82 @@
             this.commentsToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
             this.commentsToolStripMenuItem.Text = "Comments";
             // 
+            // editHighlightedToolStripMenuItem
+            // 
+            this.editHighlightedToolStripMenuItem.DropDown = this.msEdits;
+            this.editHighlightedToolStripMenuItem.Name = "editHighlightedToolStripMenuItem";
+            this.editHighlightedToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.editHighlightedToolStripMenuItem.Text = "Edit Highlighted";
+            // 
+            // msEdits
+            // 
+            this.msEdits.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.cToolStripMenuItem,
+            this.changeLayerToolStripMenuItem,
+            this.colorToolStripMenuItem1,
+            this.lineTypeToolStripMenuItem1,
+            this.printColorToolStripMenuItem1,
+            this.printWidthToolStripMenuItem1,
+            this.materialToolStripMenuItem1,
+            this.lengthToolStripMenuItem1});
+            this.msEdits.Name = "msEdits";
+            this.msEdits.OwnerItem = this.editHighlightedToolStripMenuItem;
+            this.msEdits.Size = new System.Drawing.Size(134, 180);
+            // 
+            // cToolStripMenuItem
+            // 
+            this.cToolStripMenuItem.Name = "cToolStripMenuItem";
+            this.cToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
+            this.cToolStripMenuItem.Text = "Name";
+            // 
+            // changeLayerToolStripMenuItem
+            // 
+            this.changeLayerToolStripMenuItem.Name = "changeLayerToolStripMenuItem";
+            this.changeLayerToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
+            this.changeLayerToolStripMenuItem.Text = "Layer";
+            // 
+            // colorToolStripMenuItem1
+            // 
+            this.colorToolStripMenuItem1.Name = "colorToolStripMenuItem1";
+            this.colorToolStripMenuItem1.Size = new System.Drawing.Size(133, 22);
+            this.colorToolStripMenuItem1.Text = "Color";
+            // 
+            // lineTypeToolStripMenuItem1
+            // 
+            this.lineTypeToolStripMenuItem1.Name = "lineTypeToolStripMenuItem1";
+            this.lineTypeToolStripMenuItem1.Size = new System.Drawing.Size(133, 22);
+            this.lineTypeToolStripMenuItem1.Text = "LineType";
+            // 
+            // printColorToolStripMenuItem1
+            // 
+            this.printColorToolStripMenuItem1.Name = "printColorToolStripMenuItem1";
+            this.printColorToolStripMenuItem1.Size = new System.Drawing.Size(133, 22);
+            this.printColorToolStripMenuItem1.Text = "PrintColor";
+            // 
+            // printWidthToolStripMenuItem1
+            // 
+            this.printWidthToolStripMenuItem1.Name = "printWidthToolStripMenuItem1";
+            this.printWidthToolStripMenuItem1.Size = new System.Drawing.Size(133, 22);
+            this.printWidthToolStripMenuItem1.Text = "PrintWidth";
+            // 
+            // materialToolStripMenuItem1
+            // 
+            this.materialToolStripMenuItem1.Name = "materialToolStripMenuItem1";
+            this.materialToolStripMenuItem1.Size = new System.Drawing.Size(133, 22);
+            this.materialToolStripMenuItem1.Text = "Material";
+            // 
+            // lengthToolStripMenuItem1
+            // 
+            this.lengthToolStripMenuItem1.Name = "lengthToolStripMenuItem1";
+            this.lengthToolStripMenuItem1.Size = new System.Drawing.Size(133, 22);
+            this.lengthToolStripMenuItem1.Text = "Comments";
+            // 
+            // copyTextsToolStripMenuItem
+            // 
+            this.copyTextsToolStripMenuItem.Name = "copyTextsToolStripMenuItem";
+            this.copyTextsToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.copyTextsToolStripMenuItem.Text = "Copy Texts";
+            // 
             // btnAdd
             // 
             this.btnAdd.Image = global::Tabl_.Properties.Resources.add;
@@ -281,6 +388,7 @@
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(25, 25);
             this.btnAdd.TabIndex = 1;
+            this.ttipBtns.SetToolTip(this.btnAdd, "Add from Rhino model");
             this.btnAdd.UseVisualStyleBackColor = true;
             this.btnAdd.Click += new System.EventHandler(this.Add_Click);
             // 
@@ -292,6 +400,7 @@
             this.btnRemove.Name = "btnRemove";
             this.btnRemove.Size = new System.Drawing.Size(25, 25);
             this.btnRemove.TabIndex = 1;
+            this.ttipBtns.SetToolTip(this.btnRemove, "Remove Rhino object from Tabl_");
             this.btnRemove.UseVisualStyleBackColor = true;
             this.btnRemove.Click += new System.EventHandler(this.Remove_Click);
             // 
@@ -303,6 +412,7 @@
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(25, 25);
             this.btnRefresh.TabIndex = 1;
+            this.ttipBtns.SetToolTip(this.btnRefresh, "Refresh Tabl_");
             this.btnRefresh.UseVisualStyleBackColor = true;
             this.btnRefresh.Click += new System.EventHandler(this.Refresh_Click);
             // 
@@ -314,6 +424,7 @@
             this.btnSettings.Name = "btnSettings";
             this.btnSettings.Size = new System.Drawing.Size(25, 25);
             this.btnSettings.TabIndex = 1;
+            this.ttipBtns.SetToolTip(this.btnSettings, "Settings");
             this.btnSettings.UseVisualStyleBackColor = true;
             this.btnSettings.Click += new System.EventHandler(this.Settings_Click);
             // 
@@ -325,6 +436,7 @@
             this.btnTrash.Name = "btnTrash";
             this.btnTrash.Size = new System.Drawing.Size(25, 25);
             this.btnTrash.TabIndex = 1;
+            this.ttipBtns.SetToolTip(this.btnTrash, "Clear Tabl_");
             this.btnTrash.UseVisualStyleBackColor = true;
             this.btnTrash.Click += new System.EventHandler(this.Trash_Click);
             // 
@@ -336,6 +448,7 @@
             this.btnPlace.Name = "btnPlace";
             this.btnPlace.Size = new System.Drawing.Size(25, 25);
             this.btnPlace.TabIndex = 1;
+            this.ttipBtns.SetToolTip(this.btnPlace, "Place spreadsheet in Rhino model");
             this.btnPlace.UseVisualStyleBackColor = true;
             this.btnPlace.Click += new System.EventHandler(this.Place_Click);
             // 
@@ -360,7 +473,9 @@
             this.btnImport.Name = "btnImport";
             this.btnImport.Size = new System.Drawing.Size(25, 25);
             this.btnImport.TabIndex = 1;
+            this.ttipBtns.SetToolTip(this.btnImport, "Import spreadsheet\r\nThis will clear current one");
             this.btnImport.UseVisualStyleBackColor = true;
+            this.btnImport.Click += new System.EventHandler(this.Import_Click);
             // 
             // btnExport
             // 
@@ -370,7 +485,9 @@
             this.btnExport.Name = "btnExport";
             this.btnExport.Size = new System.Drawing.Size(25, 25);
             this.btnExport.TabIndex = 1;
+            this.ttipBtns.SetToolTip(this.btnExport, "Export entire spreadsheet");
             this.btnExport.UseVisualStyleBackColor = true;
+            this.btnExport.Click += new System.EventHandler(this.Export_Click);
             // 
             // btnInfo
             // 
@@ -380,29 +497,20 @@
             this.btnInfo.Name = "btnInfo";
             this.btnInfo.Size = new System.Drawing.Size(25, 25);
             this.btnInfo.TabIndex = 1;
+            this.ttipBtns.SetToolTip(this.btnInfo, "About Tabl_");
             this.btnInfo.UseVisualStyleBackColor = true;
             this.btnInfo.Click += new System.EventHandler(this.Info_Click);
             // 
-            // lvCtxtMenu
+            // dlogExport
             // 
-            this.lvCtxtMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.thisWorkedToolStripMenuItem,
-            this.editHighlightedToolStripMenuItem});
-            this.lvCtxtMenu.Name = "lvCtxtMenu";
-            this.lvCtxtMenu.Size = new System.Drawing.Size(161, 48);
+            this.dlogExport.Filter = "Comma Separated Values|*.csv";
             // 
-            // thisWorkedToolStripMenuItem
+            // dlogImport
             // 
-            this.thisWorkedToolStripMenuItem.DropDown = this.msHeaders;
-            this.thisWorkedToolStripMenuItem.Name = "thisWorkedToolStripMenuItem";
-            this.thisWorkedToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
-            this.thisWorkedToolStripMenuItem.Text = "Show Columns";
-            // 
-            // editHighlightedToolStripMenuItem
-            // 
-            this.editHighlightedToolStripMenuItem.Name = "editHighlightedToolStripMenuItem";
-            this.editHighlightedToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.editHighlightedToolStripMenuItem.Text = "Edit Highlighted";
+            this.dlogImport.FileName = "select csv to import";
+            this.dlogImport.Filter = "Comma Separated Values|*.csv";
+            this.dlogImport.Multiselect = true;
+            this.dlogImport.ReadOnlyChecked = true;
             // 
             // DockPanel
             // 
@@ -424,8 +532,9 @@
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "DockPanel";
             this.Size = new System.Drawing.Size(548, 631);
-            this.msHeaders.ResumeLayout(false);
             this.lvCtxtMenu.ResumeLayout(false);
+            this.msHeaders.ResumeLayout(false);
+            this.msEdits.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -471,5 +580,18 @@
         private System.Windows.Forms.ContextMenuStrip lvCtxtMenu;
         private System.Windows.Forms.ToolStripMenuItem thisWorkedToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editHighlightedToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem copyTextsToolStripMenuItem;
+        private System.Windows.Forms.ToolTip ttipBtns;
+        private System.Windows.Forms.ContextMenuStrip msEdits;
+        private System.Windows.Forms.ToolStripMenuItem changeLayerToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem cToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem colorToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem lineTypeToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem printColorToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem printWidthToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem materialToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem lengthToolStripMenuItem1;
+        private System.Windows.Forms.SaveFileDialog dlogExport;
+        private System.Windows.Forms.OpenFileDialog dlogImport;
     }
 }

@@ -175,16 +175,43 @@ namespace Tabl_
         }
 
         /// <summary>
-        /// reload tabl_cs_selected into ObjRef
+        /// reload ObjRef[] by id strings
         /// </summary>
-        /// <param name="idstrings">each id strings split from tabl_cs_selected</param>
-        /// <returns>true on success</returns>
-        private void ReloadRefs(List<string> idstrings)
+        /// <param name="idstrings">each GUID strings</param>
+        private void ReloadRefs(IEnumerable<string> idstrings)
         {
-            ObjRef[] newselected = new ObjRef[idstrings.Count];
-            for (int i = 0; i < idstrings.Count; i++)
-                newselected.SetValue(new ObjRef(new Guid(idstrings[i])), i);
-            Loaded = newselected;
+            string[] strs = idstrings.ToArray();
+            ObjRef[] docstrrecord = new ObjRef[strs.Length];
+            for (int i = 0; i < strs.Length; i++)
+                docstrrecord.SetValue(new ObjRef(new Guid(strs[i])), i);
+            Loaded = docstrrecord;
+        }
+        /// <summary>
+        /// reload record on docstr into loaded ObjRef[], docstr key tabl_cs_selected
+        /// </summary>
+        private void ReloadRefs()
+        {
+            string raw = ParentDoc.Strings.GetValue("tabl_cs_selected");
+            List<string> idstrs = raw.Split(new string[] { ",", }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            ReloadRefs(idstrs);
+        }
+
+        /// <summary>
+        /// push guid strings to to docstr, key tabl_cs_selected
+        /// </summary>
+        /// <param name="idstrs">guid strings to push</param>
+        private void PushRefs(IEnumerable<string> idstrs)
+        {
+            string[] strs = idstrs.ToArray();
+            string raw = ParentDoc.Strings.GetValue("tabl_cs_selected");
+            List<string> docstrids = raw.Split(new string[] { ",", }, StringSplitOptions.RemoveEmptyEntries).ToList()
+        }
+        /// <summary>
+        /// push loaded ObjRef[] into docstr record, key tabl_cs_selected
+        /// </summary>
+        private void PushRefs()
+        {
+            string[] idstrs = Loaded.Select(o => o.ObjectId.ToString()).ToArray()
         }
 
         /// <summary>

@@ -10,7 +10,7 @@ using Rhino.PlugIns;
 [assembly: PlugInDescription(DescriptionType.Email, "hotcoffeegroup@gmail.com")]
 [assembly: PlugInDescription(DescriptionType.Phone, "-")]
 [assembly: PlugInDescription(DescriptionType.Fax, "-")]
-[assembly: PlugInDescription(DescriptionType.Organization, "two individuals named Tim and Will")]
+[assembly: PlugInDescription(DescriptionType.Organization, "two individuals Tim and Will")]
 [assembly: PlugInDescription(DescriptionType.UpdateUrl, "-")]
 [assembly: PlugInDescription(DescriptionType.WebSite, @"https://github.com/tmwarchitecture/Tabl_")]
 
@@ -27,7 +27,7 @@ using Rhino.PlugIns;
 [assembly: AssemblyDescription("Tabl_ spreadsheet interface")]
 
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("two individuals Tim and Will")]
 [assembly: AssemblyProduct("Tabl_")]
 [assembly: AssemblyCopyright("Copyright ©Timothy Williams  2021")]
 [assembly: AssemblyTrademark("")]

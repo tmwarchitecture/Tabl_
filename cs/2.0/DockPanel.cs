@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Microsoft.VisualBasic.FileIO;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -265,5 +266,109 @@ namespace Tabl_
             MessageBox.Show(msg);
         }
 
+        private void Export_Click(object sender, EventArgs e)
+        {
+            DialogResult r = dlogExport.ShowDialog(this);
+            if (r== DialogResult.OK)
+            {
+                using (StreamWriter sw = new StreamWriter(dlogExport.OpenFile()))
+                {
+                    if (settings.ssopt[2])
+                    {
+                        // write headers
+                        string[] htxts = new string[lvTabl.Columns.Count];
+                        for (int i = 0; i < lvTabl.Columns.Count; i++)
+                            htxts.SetValue(lvTabl.Columns[i].Text, i);
+                        sw.WriteLine(string.Join(",", htxts));
+                    }
+                    foreach (ListViewItem li in lvTabl.Items)
+                    {
+                        string[] fields = new string[li.SubItems.Count];
+                        for (int i = 0; i < li.SubItems.Count; i++)
+                            if (li.SubItems[i].Text.Contains(","))
+                                fields.SetValue("\"" + li.SubItems[i].Text + "\"", i);
+                            else
+                                fields.SetValue(li.SubItems[i].Text, i);
+                        sw.WriteLine(string.Join(",", fields));
+                    }
+                }
+                ToolStripMenuItem g = msHeaders.Items[1] as ToolStripMenuItem;
+                if (!g.Checked)
+                    MessageBox.Show("GUID column not enabled, exported csv will not be recognized upon re-import back here", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void Import_Click(object sender, EventArgs e)
+        {
+            DialogResult r = dlogImport.ShowDialog(this);
+            if (r == DialogResult.OK)
+            {
+                List<ObjRef> read = new List<ObjRef>();
+                List<string> errmsgs = new List<string>();
+                int idcol = -1; // where is guid column, -1 no id, 0 first col, 1 second col
+                foreach (string fn in dlogImport.FileNames)
+                    using(TextFieldParser tpar = new TextFieldParser(fn))
+                    {
+                        tpar.Delimiters = new string[] { ",", };
+                        string[] row;
+
+                        // -- process first line and see which column has GUID
+                        try { row = tpar.ReadFields(); } // read first line
+                        catch (MalformedLineException)
+                        {
+                            errmsgs.Add(Path.GetFileName(fn) + " --> " + "Bad first line, aborted");
+                            continue; //next file
+                        }
+                        string test0 = string.Empty;
+                        string test1 = string.Empty;
+                        if (row.Length == 1)
+                            test0 = row[0];
+                        else
+                        {
+                            test0 = row[0];
+                            test1 = row[1];
+                        }
+                        // if one of these satifies, we are good to proceed
+                        if (test0 == "GUID")
+                        {
+                            idcol = 0;
+                        }
+                        else if (test1 == "GUID")
+                        {
+                            idcol = 1;
+                        }
+                        else if (Guid.TryParse(test0, out Guid g0))
+                        {
+                            idcol = 0;
+                            read.Add(new ObjRef(g0));
+                        }
+                        else if (Guid.TryParse(test1, out Guid g1))
+                        {
+                            idcol = 1;
+                            read.Add(new ObjRef(g1));
+                        }
+                        else
+                        {
+                            errmsgs.Add(fn + "  --> " + "Missing GUID, aborted");
+                            continue; //next file
+                        }
+                        // end of first line process --
+
+                        while (!tpar.EndOfData)
+                        {
+                            try { row = tpar.ReadFields(); } // read current line
+                            catch (MalformedLineException)
+                            {
+                                string msg = string.Format("{0} --> Bad line {1}, line skipped", Path.GetFileName(fn), tpar.LineNumber);
+                                errmsgs.Add(msg);
+                                continue; //next line
+                            }
+                            read.Add(new ObjRef(new Guid(row[idcol])));
+                        }
+                    }
+                Loaded = read.ToArray();
+                RefreshTabl();
+            }
+        }
     }
 }
