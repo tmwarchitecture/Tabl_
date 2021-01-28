@@ -473,7 +473,7 @@
             this.btnImport.Name = "btnImport";
             this.btnImport.Size = new System.Drawing.Size(25, 25);
             this.btnImport.TabIndex = 1;
-            this.ttipBtns.SetToolTip(this.btnImport, "Import spreadsheet\r\nThis will clear current one");
+            this.ttipBtns.SetToolTip(this.btnImport, "Import spreadsheet\r\nWill append to existing list");
             this.btnImport.UseVisualStyleBackColor = true;
             this.btnImport.Click += new System.EventHandler(this.Import_Click);
             // 

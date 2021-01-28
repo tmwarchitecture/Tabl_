@@ -204,14 +204,23 @@ namespace Tabl_
         {
             string[] strs = idstrs.ToArray();
             string raw = ParentDoc.Strings.GetValue("tabl_cs_selected");
-            List<string> docstrids = raw.Split(new string[] { ",", }, StringSplitOptions.RemoveEmptyEntries).ToList()
+            List<string> docstrids;
+            if (raw == null)
+                docstrids = new List<string>();
+            else
+                docstrids = raw.Split(new string[] { ",", }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            foreach (string id in idstrs)
+                if (!docstrids.Contains(id))
+                    docstrids.Add(id);
+            ParentDoc.Strings.SetString("tabl_cs_selected", string.Join(",", docstrids.ToArray()));
         }
         /// <summary>
         /// push loaded ObjRef[] into docstr record, key tabl_cs_selected
         /// </summary>
         private void PushRefs()
         {
-            string[] idstrs = Loaded.Select(o => o.ObjectId.ToString()).ToArray()
+            IEnumerable<string> idstrs = Loaded.Select(o => o.ObjectId.ToString());
+            PushRefs(idstrs);
         }
 
         /// <summary>
@@ -234,12 +243,18 @@ namespace Tabl_
                 }
 
             // fill spreadsheet
-            List<ListViewItem> lines = new List<ListViewItem>(); 
+            List<ListViewItem> lines = new List<ListViewItem>();
+            List<int> badidx = new List<int>(); // missing in document but objref still references
             // serial
             for (int oi =0; oi<Loaded.Length; oi++)
             {
                 string[] infos = TablLineItem(oi);
-                if (!linecounter)
+                if (infos[0] == "MISSING! DELETE!")
+                {
+                    badidx.Add(oi);
+                    continue;
+                }
+                else if (!linecounter)
                     lines.Add(new ListViewItem(infos));
                 else
                 {
@@ -265,6 +280,14 @@ namespace Tabl_
                 lvTabl.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
             else
                 lvTabl.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+
+            if (badidx.Count != 0)
+            {
+                List<string> todelete = new List<string>();
+                foreach (int idx in badidx)
+                    todelete.Add(Loaded[idx].ObjectId.ToString());
+                RemoveById(todelete.ToArray());
+            }
         }
 
         /// <summary>
@@ -284,26 +307,37 @@ namespace Tabl_
             if (settings.ssopt[3])
             {
                 // TODO: simple Parallel.For() doesn't help, alter ExtractObjInfo()
+                // below is just a copy from else statement
                 for (int ci = 0; ci < infos.Length; ci++)
                 {
+                    string field;
                     if (linecounter)
-                        infos.SetValue(ExtractObjInfo(lvTabl.Columns[ci + 1].Text, refi), ci);
+                        field = ExtractObjInfo(lvTabl.Columns[ci + 1].Text, refi);
                     else
-                        infos.SetValue(ExtractObjInfo(lvTabl.Columns[ci].Text, refi), ci);
+                        field = ExtractObjInfo(lvTabl.Columns[ci].Text, refi);
+
+                    infos.SetValue(field, ci);
+                    if (field == "MISSING! This will be removed after refresh...")
+                        return infos;
                 }
-                return infos;
             }
             else
             {
                 for (int ci = 0; ci < infos.Length; ci++)
                 {
+                    string field;
                     if (linecounter)
-                        infos.SetValue(ExtractObjInfo(lvTabl.Columns[ci + 1].Text, refi), ci);
+                        field = ExtractObjInfo(lvTabl.Columns[ci + 1].Text, refi);
                     else
-                        infos.SetValue(ExtractObjInfo(lvTabl.Columns[ci].Text, refi), ci);
+                        field = ExtractObjInfo(lvTabl.Columns[ci].Text, refi);
+
+                    if (field == "MISSING! DELETE!")
+                        return new string[] { "MISSING! DELETE!", };
+                    
+                    infos.SetValue(field, ci);
                 }
-                return infos;
             }
+            return infos;
         }
         /// <summary>
         /// extract object information from loaded objref
@@ -319,12 +353,8 @@ namespace Tabl_
             // catches when user delete object in doc but tabl_ still has reference
             // objref can still return a guid, use it to remove in loaded and docstr
             if (obj == null)
-            {
-                info = "MISSING! Please refresh table";
-                RemoveById(obj.Id.ToString());
-                return info;
-            }
-
+                return "MISSING! DELETE!";
+            
             switch (htxt)
             {
                 case "GUID":
@@ -590,15 +620,16 @@ namespace Tabl_
         }
 
         /// <summary>
-        /// remove single object by id from tabl 
+        /// remove from tabl
         /// </summary>
-        /// <param name="guid">object guid string</param>
-        private void RemoveById(string guid)
+        /// <param name="guids">object guid strings</param>
+        private void RemoveById(string[] guids)
         {
             //first eliminate from doc string
             string raw = ParentDoc.Strings.GetValue("tabl_cs_selected");
             List<string> idstrings = raw.Split(new string[] { ",", }, StringSplitOptions.RemoveEmptyEntries).ToList();
-            idstrings.Remove(guid);
+            foreach (string id in guids)
+                idstrings.Remove(id);
             ParentDoc.Strings.SetString("tabl_cs_selected", string.Join(",", idstrings));
 
             //replace Loaded

@@ -91,7 +91,9 @@ namespace Tabl_
             RhinoApp.Idle += OnRhIdle;
 
             lvTabl.ColumnClick += TablColClick;
-            lvTabl.MouseClick += TablMouseClick;
+
+            ReloadRefs();
+            if (Loaded.Length != 0) RefreshTabl();
         }
 
         #region non-UI events
@@ -125,15 +127,6 @@ namespace Tabl_
         private void TablColClick(object s, ColumnClickEventArgs e)
         {
             MessageBox.Show("sorting not implemented");
-        }
-        private void TablMouseClick(object s, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                var hit = lvTabl.HitTest(e.Location);
-                if (hit.Item != null)
-                    lvCtxtMenu.Show(Cursor.Position);
-            }
         }
         private void HeaderStripClosing(object s, ToolStripDropDownClosingEventArgs e)
         {
@@ -255,13 +248,16 @@ namespace Tabl_
             AboutTabl_ about = new AboutTabl_();
             about.ShowDialog(this);
         }
-
+        // TODO: delete in production
         private void Env_Click(object sender, EventArgs e)
         {
             // this is debug popup
-            // TODO: delete in production
             string msg = "";
             msg += string.Format("Loaded: {0}", Loaded.Length);
+            string[] keys = new string[ParentDoc.Strings.Count];
+            for (int i = 0; i < keys.Length; i++)
+                keys.SetValue(ParentDoc.Strings.GetKey(i), i);
+            msg += "\n\r" + "docstr keys: " + string.Join(",", keys);
 
             MessageBox.Show(msg);
         }
@@ -367,7 +363,10 @@ namespace Tabl_
                         }
                     }
                 Loaded = read.ToArray();
+                PushRefs();
                 RefreshTabl();
+                if (errmsgs.Count != 0)
+                    MessageBox.Show(string.Join("\n\r", errmsgs), "Import errors", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
     }
