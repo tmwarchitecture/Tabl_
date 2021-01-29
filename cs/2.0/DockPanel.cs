@@ -13,6 +13,7 @@ using System.Windows.Forms;
 using Rhino;
 using Rhino.Commands;
 using Rhino.DocObjects;
+using Rhino.Geometry;
 
 namespace Tabl_
 {
@@ -78,12 +79,13 @@ namespace Tabl_
         public DockPanel()
         {
             InitializeComponent();
-            InitializeCLMS();
+            InitializeLVMS();
 
             ParentDoc = RhinoDoc.ActiveDoc;
             tol = ParentDoc.ModelAbsoluteTolerance;
             rtol = ParentDoc.ModelAngleToleranceRadians;
             settings.FormClosing += Refresh_Click;
+            settings.highlighter.Enabled = true; // start display conduit
             Command.EndCommand += OnDocChange;
             // set up first mod trigger, unlistened during event itself
             RhinoDoc.ModifyObjectAttributes += OnAttrMod;
@@ -91,6 +93,7 @@ namespace Tabl_
             RhinoApp.Idle += OnRhIdle;
 
             lvTabl.ColumnClick += TablColClick;
+            lvTabl.ItemSelectionChanged += TablSelectedChanged;
 
             ReloadRefs();
             if (Loaded.Length != 0) RefreshTabl();
@@ -147,6 +150,31 @@ namespace Tabl_
         private void HeaderStripOpening(object s, EventArgs e)
         {
             MirrorHeaders();
+        }
+        private void TablSelectedChanged(object s, ListViewItemSelectionChangedEventArgs e)
+        {
+            List<Curve> wires = new List<Curve>();
+            foreach (int hli in lvTabl.SelectedIndices)
+            {
+                GeometryBase g = Loaded[hli].Geometry();
+                if (g.HasBrepForm)
+                {
+                    Brep brep = Brep.TryConvertBrep(g);
+                    foreach (BrepEdge edge in brep.Edges)
+                        wires.Add(edge.ToNurbsCurve());
+                }
+                else if (g is Curve c)
+                    wires.Add(c);
+                else if (g is Mesh m)
+                    for (int ei = 0; ei < m.TopologyEdges.Count; ei++)
+                        wires.Add(m.TopologyEdges.EdgeLine(ei).ToNurbsCurve());
+                else
+                { 
+                    //TODO: more to preview
+                }
+            }
+            settings.highlighter.crvs = wires.ToArray();
+            ParentDoc.Views.Redraw();
         }
 
         private void Add_Click(object sender, EventArgs e)

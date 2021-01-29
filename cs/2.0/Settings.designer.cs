@@ -51,6 +51,11 @@
             this.ttipSettings = new System.Windows.Forms.ToolTip(this.components);
             this.chklTablDisplay = new System.Windows.Forms.CheckedListBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.clrPicker = new System.Windows.Forms.ColorDialog();
+            this.btnHLClr = new System.Windows.Forms.Button();
+            this.nudHLLW = new System.Windows.Forms.NumericUpDown();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudDP)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -58,6 +63,7 @@
             this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudUnitScale)).BeginInit();
             this.groupBox5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudHLLW)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -255,7 +261,7 @@
             // 
             // btnOK
             // 
-            this.btnOK.Location = new System.Drawing.Point(245, 184);
+            this.btnOK.Location = new System.Drawing.Point(245, 217);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(111, 27);
             this.btnOK.TabIndex = 4;
@@ -265,7 +271,7 @@
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(361, 184);
+            this.btnCancel.Location = new System.Drawing.Point(360, 217);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(111, 27);
             this.btnCancel.TabIndex = 5;
@@ -295,19 +301,76 @@
             // 
             // groupBox5
             // 
+            this.groupBox5.Controls.Add(this.label6);
+            this.groupBox5.Controls.Add(this.label5);
+            this.groupBox5.Controls.Add(this.nudHLLW);
+            this.groupBox5.Controls.Add(this.btnHLClr);
             this.groupBox5.Controls.Add(this.chklTablDisplay);
-            this.groupBox5.Location = new System.Drawing.Point(245, 104);
+            this.groupBox5.Location = new System.Drawing.Point(245, 100);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(227, 74);
+            this.groupBox5.Size = new System.Drawing.Size(227, 111);
             this.groupBox5.TabIndex = 6;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Spreadsheet";
+            // 
+            // btnHLClr
+            // 
+            this.btnHLClr.BackColor = System.Drawing.Color.HotPink;
+            this.btnHLClr.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnHLClr.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnHLClr.Location = new System.Drawing.Point(103, 59);
+            this.btnHLClr.Name = "btnHLClr";
+            this.btnHLClr.Size = new System.Drawing.Size(34, 27);
+            this.btnHLClr.TabIndex = 1;
+            this.btnHLClr.Text = " ";
+            this.btnHLClr.UseVisualStyleBackColor = false;
+            this.btnHLClr.Click += new System.EventHandler(this.HLClr_Click);
+            // 
+            // nudHLLW
+            // 
+            this.nudHLLW.Location = new System.Drawing.Point(181, 63);
+            this.nudHLLW.Maximum = new decimal(new int[] {
+            99,
+            0,
+            0,
+            0});
+            this.nudHLLW.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudHLLW.Name = "nudHLLW";
+            this.nudHLLW.Size = new System.Drawing.Size(40, 21);
+            this.nudHLLW.TabIndex = 2;
+            this.nudHLLW.Value = new decimal(new int[] {
+            3,
+            0,
+            0,
+            0});
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(143, 65);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(32, 15);
+            this.label5.TabIndex = 3;
+            this.label5.Text = "Wire";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 65);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(91, 15);
+            this.label6.TabIndex = 3;
+            this.label6.Text = "Hightlight Color";
             // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(483, 220);
+            this.ClientSize = new System.Drawing.Size(483, 255);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
@@ -333,6 +396,8 @@
             this.groupBox4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudUnitScale)).EndInit();
             this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudHLLW)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -361,5 +426,10 @@
         private System.Windows.Forms.ToolTip ttipSettings;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.CheckedListBox chklTablDisplay;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.NumericUpDown nudHLLW;
+        private System.Windows.Forms.Button btnHLClr;
+        private System.Windows.Forms.ColorDialog clrPicker;
     }
 }

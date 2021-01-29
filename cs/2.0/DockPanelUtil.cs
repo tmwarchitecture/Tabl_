@@ -3,15 +3,50 @@ using Rhino.Input;
 using Rhino.Commands;
 using Rhino.DocObjects;
 using Rhino.Geometry;
+using Rhino.Display;
 using System;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace Tabl_
 {
+    internal class Highlighter : DisplayConduit
+    {
+        public Curve[] crvs = null;
+        public Color clr = Color.HotPink;
+        public int w=3; // wire line width in pixels
+        public Highlighter()
+        {
+        }
+
+        protected override void CalculateBoundingBox(CalculateBoundingBoxEventArgs e)
+        {
+            if (crvs == null)
+            {
+                base.CalculateBoundingBox(e);
+                return;
+            }
+            foreach (Curve c in crvs)
+                e.IncludeBoundingBox(c.GetBoundingBox(false));
+        }
+
+        protected override void PostDrawObjects(DrawEventArgs e)
+        {
+            if (crvs == null)
+            {
+                base.PostDrawObjects(e);
+                return;
+            }
+            foreach (Curve c in crvs)
+                e.Display.DrawCurve(c, clr, w);
+        }
+
+    }
+
     public partial class DockPanel : UserControl
     {
 
@@ -56,11 +91,10 @@ namespace Tabl_
             return nums;
         }
 
-
         /// <summary>
-        /// initialize checklistbox's menu strip
+        /// initialize listview tabl's menu strip
         /// </summary>
-        private void InitializeCLMS()
+        private void InitializeLVMS()
         {
             msHeaders.Closing += HeaderStripClosing;
             msHeaders.Opening += HeaderStripOpening;
@@ -636,4 +670,5 @@ namespace Tabl_
             ReloadRefs(idstrings);
         }
     }
+
 }
