@@ -12,7 +12,7 @@ namespace Tabl_
 {
     public partial class Settings : Form
     {
-        internal Highlighter highlighter;
+        internal Highlighter docmarker;
 
         internal int dp = 2; // decimal place
         internal string ts =""; // thousands separater
@@ -34,8 +34,8 @@ namespace Tabl_
                 ssopt.SetValue(false, i);
 
             Shown += OnPopUp;
-            highlighter = new Highlighter();
-            clrPicker.Color = highlighter.clr;
+            docmarker = new Highlighter();
+            clrPicker.Color = docmarker.clr;
         }
 
         // cancel
@@ -75,8 +75,8 @@ namespace Tabl_
                     chklTablDisplay.SetItemChecked(i, false);
             }
 
-            btnHLClr.BackColor = highlighter.clr;
-            nudHLLW.Value = highlighter.w;
+            btnHLClr.BackColor = docmarker.clr;
+            nudHLLW.Value = docmarker.w;
         }
 
         // commit changes
@@ -98,7 +98,7 @@ namespace Tabl_
                 else
                     ssopt[i] = false;
             }
-            highlighter.w = (int)nudHLLW.Value;
+            docmarker.w = (int)nudHLLW.Value;
 
             // must be shown modal and therefore not disposed after below call
             Close(); 
@@ -107,8 +107,11 @@ namespace Tabl_
         private void HLClr_Click(object sender, EventArgs e)
         {
             DialogResult r = clrPicker.ShowDialog(this);
-            if (r== DialogResult.OK)
-                highlighter.clr = clrPicker.Color;
+            if (r == DialogResult.OK)
+            {
+                docmarker.clr = clrPicker.Color;
+                btnHLClr.BackColor = clrPicker.Color;
+            }
         }
     }
 }

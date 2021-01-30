@@ -23,47 +23,29 @@ namespace Tabl_
         internal static object locker = new object();
 
         internal RhinoDoc ParentDoc { get; private set; }
+        // loaded objref order must always be the same as tabl line items
         internal ObjRef[] Loaded { get; set; } = new ObjRef[] { };
 
         private double tol;
         private double rtol;
         private bool in_mod = false; // whether doc is modifying attr, see OnAttrMod
         private bool menustripaction = false; // whether user (un)checked in header menustrip
+        private bool shiftselected = false; // whether lvTabl select was multi select previously
+        private int sorthdr = 0; // index of column to sort
+        private int sortord = 0; // order, 0 none, 1 small to large, -1 reverse
 
         // settings popup
         private Settings settings = new Settings();
         // whether tabl has left most column that counts line items
         private bool linecounter = false;
-        // tracking header visibilities
-        private Dictionary<string, bool> headers = new Dictionary<string, bool>
-        {
-            {"GUID", true },
-            { "Type", false},
-            { "Name", true },
-            { "Layer", false},
-            { "Color", false},
-            { "LineType", true},
-            { "PrintColor", false},
-            { "PrintWidth", false},
-            {"Material", false },
-            {"Length", false },
-            {"Area" ,false},
-            {"Volume", false },
-            {"NumPts", false },
-            {"NumEdges", false },
-            {"NumFaces" , false},
-            {"Degree",false },
-            {"CenterPt",false },
-            {"IsPlanar",false },
-            {"IsClosed", false },
-            {"Comments",false },
-        };
+        // header visibilities, dict data type has no order
+        private Dictionary<string, bool> headers;
         // header order
         private string[] ho = new string[]
         {
             "GUID","Type","Name","Layer","Color","LineType", "PrintColor","PrintWidth","Material","Length","Area", "Volume","NumPts","NumEdges","NumFaces", "Degree","CenterPt","IsPlanar","IsClosed","Comments",
         };
-        // comparer
+        // comparer, used to sort dict keys
         private int HeaderSorter(string a, string b)
         {
             if (Array.IndexOf(ho, a) > Array.IndexOf(ho, b)) return 1;
@@ -80,12 +62,34 @@ namespace Tabl_
         {
             InitializeComponent();
             InitializeLVMS();
+            headers = new Dictionary<string, bool> {
+                {"GUID", false },
+                { "Type", true},
+                { "Name", false },
+                { "Layer", true},
+                { "Color", false},
+                { "LineType", false},
+                { "PrintColor", false},
+                { "PrintWidth", false},
+                {"Material", false },
+                {"Length", false },
+                {"Area" ,false},
+                {"Volume", false },
+                {"NumPts", false },
+                {"NumEdges", false },
+                {"NumFaces" , false},
+                {"Degree",false },
+                {"CenterPt",false },
+                {"IsPlanar",false },
+                {"IsClosed", false },
+                {"Comments",false },
+            };
 
             ParentDoc = RhinoDoc.ActiveDoc;
             tol = ParentDoc.ModelAbsoluteTolerance;
             rtol = ParentDoc.ModelAngleToleranceRadians;
             settings.FormClosing += Refresh_Click;
-            settings.highlighter.Enabled = true; // start display conduit
+            settings.docmarker.Enabled = true; // start display conduit
             Command.EndCommand += OnDocChange;
             // set up first mod trigger, unlistened during event itself
             RhinoDoc.ModifyObjectAttributes += OnAttrMod;
@@ -93,7 +97,8 @@ namespace Tabl_
             RhinoApp.Idle += OnRhIdle;
 
             lvTabl.ColumnClick += TablColClick;
-            lvTabl.ItemSelectionChanged += TablSelectedChanged;
+            lvTabl.MouseUp += TablShiftSelect; // multiple select, mark altogether
+            lvTabl.ItemSelectionChanged += TablSelectedChanged; // one item, mark individually
 
             ReloadRefs();
             if (Loaded.Length != 0) RefreshTabl();
@@ -129,7 +134,16 @@ namespace Tabl_
 
         private void TablColClick(object s, ColumnClickEventArgs e)
         {
-            MessageBox.Show("sorting not implemented");
+            sorthdr = e.Column;
+            if (sortord == 0)
+                sortord = 1;
+            else if (sortord == 1)
+                sortord = -1;
+            else
+                sortord = 0;
+            
+            TablSort();
+
         }
         private void HeaderStripClosing(object s, ToolStripDropDownClosingEventArgs e)
         {
@@ -153,28 +167,36 @@ namespace Tabl_
         }
         private void TablSelectedChanged(object s, ListViewItemSelectionChangedEventArgs e)
         {
-            List<Curve> wires = new List<Curve>();
-            foreach (int hli in lvTabl.SelectedIndices)
-            {
-                GeometryBase g = Loaded[hli].Geometry();
-                if (g.HasBrepForm)
-                {
-                    Brep brep = Brep.TryConvertBrep(g);
-                    foreach (BrepEdge edge in brep.Edges)
-                        wires.Add(edge.ToNurbsCurve());
-                }
-                else if (g is Curve c)
-                    wires.Add(c);
-                else if (g is Mesh m)
-                    for (int ei = 0; ei < m.TopologyEdges.Count; ei++)
-                        wires.Add(m.TopologyEdges.EdgeLine(ei).ToNurbsCurve());
-                else
-                { 
-                    //TODO: more to preview
-                }
-            }
-            settings.highlighter.crvs = wires.ToArray();
+            if (ModifierKeys == Keys.Shift) // shift + click
+                return; // making sure handler not triggered for each of the multi-select
+            else if (shiftselected) // click following a shift+click
+                return; // skip redraw
+
+            int hli = e.ItemIndex;
+            if (e.IsSelected)
+                settings.docmarker.AddMarkerGeometry(hli, Loaded);
+            else
+                settings.docmarker.crvs[hli] = new Curve[] { };
             ParentDoc.Views.Redraw();
+        }
+        private async void TablShiftSelect(object s, MouseEventArgs e)
+        {
+            if (ModifierKeys == Keys.Shift) //shift + click
+            {
+                shiftselected = true;
+                settings.docmarker.Empty();
+                settings.docmarker.AddMarkerGeometries(lvTabl, Loaded);
+                ParentDoc.Views.Redraw();
+            }
+            else if (shiftselected == true) // no shift this time but following a shift+click
+            {
+                // following a shift select
+                await Task.Delay(50); // give arbitrary amount of time to docmarker unselecting
+                shiftselected = false;
+                settings.docmarker.Empty();
+                settings.docmarker.AddMarkerGeometries(lvTabl, Loaded);
+                ParentDoc.Views.Redraw();
+            }
         }
 
         private void Add_Click(object sender, EventArgs e)

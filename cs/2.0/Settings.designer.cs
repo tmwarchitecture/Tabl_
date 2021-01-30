@@ -38,7 +38,6 @@
             this.rbClrComma = new System.Windows.Forms.RadioButton();
             this.rbClrDash = new System.Windows.Forms.RadioButton();
             this.rbClrName = new System.Windows.Forms.RadioButton();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.rbAutoUpdate = new System.Windows.Forms.RadioButton();
             this.rbManual = new System.Windows.Forms.RadioButton();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
@@ -51,15 +50,15 @@
             this.ttipSettings = new System.Windows.Forms.ToolTip(this.components);
             this.chklTablDisplay = new System.Windows.Forms.CheckedListBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.clrPicker = new System.Windows.Forms.ColorDialog();
-            this.btnHLClr = new System.Windows.Forms.Button();
-            this.nudHLLW = new System.Windows.Forms.NumericUpDown();
-            this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.nudHLLW = new System.Windows.Forms.NumericUpDown();
+            this.btnHLClr = new System.Windows.Forms.Button();
+            this.clrPicker = new System.Windows.Forms.ColorDialog();
+            this.label7 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudDP)).BeginInit();
             this.groupBox2.SuspendLayout();
-            this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudUnitScale)).BeginInit();
             this.groupBox5.SuspendLayout();
@@ -72,7 +71,7 @@
             this.groupBox1.Controls.Add(this.cbThousand);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.nudDP);
-            this.groupBox1.Location = new System.Drawing.Point(245, 12);
+            this.groupBox1.Location = new System.Drawing.Point(12, 99);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(227, 86);
             this.groupBox1.TabIndex = 0;
@@ -127,7 +126,7 @@
             this.groupBox2.Controls.Add(this.rbClrComma);
             this.groupBox2.Controls.Add(this.rbClrDash);
             this.groupBox2.Controls.Add(this.rbClrName);
-            this.groupBox2.Location = new System.Drawing.Point(12, 12);
+            this.groupBox2.Location = new System.Drawing.Point(245, 12);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(227, 52);
             this.groupBox2.TabIndex = 1;
@@ -167,21 +166,10 @@
             this.rbClrName.Text = "Name";
             this.rbClrName.UseVisualStyleBackColor = true;
             // 
-            // groupBox3
-            // 
-            this.groupBox3.Controls.Add(this.rbAutoUpdate);
-            this.groupBox3.Controls.Add(this.rbManual);
-            this.groupBox3.Location = new System.Drawing.Point(12, 71);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(227, 52);
-            this.groupBox3.TabIndex = 2;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Update";
-            // 
             // rbAutoUpdate
             // 
             this.rbAutoUpdate.AutoSize = true;
-            this.rbAutoUpdate.Location = new System.Drawing.Point(87, 22);
+            this.rbAutoUpdate.Location = new System.Drawing.Point(142, 90);
             this.rbAutoUpdate.Name = "rbAutoUpdate";
             this.rbAutoUpdate.Size = new System.Drawing.Size(79, 19);
             this.rbAutoUpdate.TabIndex = 1;
@@ -193,7 +181,7 @@
             // rbManual
             // 
             this.rbManual.AutoSize = true;
-            this.rbManual.Location = new System.Drawing.Point(10, 22);
+            this.rbManual.Location = new System.Drawing.Point(65, 90);
             this.rbManual.Name = "rbManual";
             this.rbManual.Size = new System.Drawing.Size(67, 19);
             this.rbManual.TabIndex = 0;
@@ -207,7 +195,7 @@
             this.groupBox4.Controls.Add(this.label4);
             this.groupBox4.Controls.Add(this.nudUnitScale);
             this.groupBox4.Controls.Add(this.label3);
-            this.groupBox4.Location = new System.Drawing.Point(12, 130);
+            this.groupBox4.Location = new System.Drawing.Point(12, 12);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(227, 81);
             this.groupBox4.TabIndex = 3;
@@ -261,7 +249,7 @@
             // 
             // btnOK
             // 
-            this.btnOK.Location = new System.Drawing.Point(245, 217);
+            this.btnOK.Location = new System.Drawing.Point(245, 191);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(111, 27);
             this.btnOK.TabIndex = 4;
@@ -271,7 +259,7 @@
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(360, 217);
+            this.btnCancel.Location = new System.Drawing.Point(361, 191);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(111, 27);
             this.btnCancel.TabIndex = 5;
@@ -301,30 +289,38 @@
             // 
             // groupBox5
             // 
+            this.groupBox5.Controls.Add(this.rbAutoUpdate);
+            this.groupBox5.Controls.Add(this.rbManual);
+            this.groupBox5.Controls.Add(this.label7);
             this.groupBox5.Controls.Add(this.label6);
             this.groupBox5.Controls.Add(this.label5);
             this.groupBox5.Controls.Add(this.nudHLLW);
             this.groupBox5.Controls.Add(this.btnHLClr);
             this.groupBox5.Controls.Add(this.chklTablDisplay);
-            this.groupBox5.Location = new System.Drawing.Point(245, 100);
+            this.groupBox5.Location = new System.Drawing.Point(245, 70);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(227, 111);
+            this.groupBox5.Size = new System.Drawing.Size(227, 115);
             this.groupBox5.TabIndex = 6;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Spreadsheet";
             // 
-            // btnHLClr
+            // label6
             // 
-            this.btnHLClr.BackColor = System.Drawing.Color.HotPink;
-            this.btnHLClr.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnHLClr.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnHLClr.Location = new System.Drawing.Point(103, 59);
-            this.btnHLClr.Name = "btnHLClr";
-            this.btnHLClr.Size = new System.Drawing.Size(34, 27);
-            this.btnHLClr.TabIndex = 1;
-            this.btnHLClr.Text = " ";
-            this.btnHLClr.UseVisualStyleBackColor = false;
-            this.btnHLClr.Click += new System.EventHandler(this.HLClr_Click);
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 65);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(84, 15);
+            this.label6.TabIndex = 3;
+            this.label6.Text = "Mark selected";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(143, 65);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(32, 15);
+            this.label5.TabIndex = 3;
+            this.label5.Text = "Wire";
             // 
             // nudHLLW
             // 
@@ -348,34 +344,38 @@
             0,
             0});
             // 
-            // label5
+            // btnHLClr
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(143, 65);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(32, 15);
-            this.label5.TabIndex = 3;
-            this.label5.Text = "Wire";
+            this.btnHLClr.BackColor = System.Drawing.Color.HotPink;
+            this.btnHLClr.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnHLClr.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnHLClr.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnHLClr.Location = new System.Drawing.Point(96, 63);
+            this.btnHLClr.Name = "btnHLClr";
+            this.btnHLClr.Size = new System.Drawing.Size(41, 21);
+            this.btnHLClr.TabIndex = 1;
+            this.btnHLClr.Text = "color";
+            this.btnHLClr.UseVisualStyleBackColor = false;
+            this.btnHLClr.Click += new System.EventHandler(this.HLClr_Click);
             // 
-            // label6
+            // label7
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 65);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(91, 15);
-            this.label6.TabIndex = 3;
-            this.label6.Text = "Hightlight Color";
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 92);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(50, 15);
+            this.label7.TabIndex = 3;
+            this.label7.Text = "Refresh";
             // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(483, 255);
+            this.ClientSize = new System.Drawing.Size(485, 227);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
             this.Controls.Add(this.groupBox4);
-            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -390,8 +390,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudDP)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudUnitScale)).EndInit();
@@ -413,7 +411,6 @@
         private System.Windows.Forms.RadioButton rbClrComma;
         private System.Windows.Forms.RadioButton rbClrDash;
         private System.Windows.Forms.RadioButton rbClrName;
-        private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.RadioButton rbAutoUpdate;
         private System.Windows.Forms.RadioButton rbManual;
         private System.Windows.Forms.GroupBox groupBox4;
@@ -431,5 +428,6 @@
         private System.Windows.Forms.NumericUpDown nudHLLW;
         private System.Windows.Forms.Button btnHLClr;
         private System.Windows.Forms.ColorDialog clrPicker;
+        private System.Windows.Forms.Label label7;
     }
 }

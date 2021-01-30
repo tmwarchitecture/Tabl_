@@ -16,11 +16,64 @@ namespace Tabl_
 {
     internal class Highlighter : DisplayConduit
     {
-        public Curve[] crvs = null;
-        public Color clr = Color.HotPink;
-        public int w=3; // wire line width in pixels
+        // groups of curves, each group is from an object
+        public List<Curve[]> crvs;
+        public Color clr;
+        public int w; // wire line width in pixels
+
         public Highlighter()
         {
+            crvs = null;
+            clr = Color.HotPink;
+            w = 3;
+        }
+
+        /// <summary>
+        /// empty preview geometries
+        /// </summary>
+        public void Empty()
+        {
+            for (int i = 0; i < crvs.Count; i++)
+                crvs[i] = new Curve[] { };
+        }
+
+        /// <summary>
+        /// add geometries selected in listview to mark in rhino doc
+        /// </summary>
+        /// <param name="lv">ListView where items are pulled</param>
+        /// <param name="loaded">objrefs corresponding to the provided listview items</param>
+        public void AddMarkerGeometries(ListView lv, ObjRef[] loaded)
+        {
+            foreach (int hli in lv.SelectedIndices)
+                AddMarkerGeometry(hli, loaded);
+        }
+        /// <summary>
+        /// add specific geometries from loaded ObjRef[] to preview markers. you should check if listview items and loaded match order and capacity
+        /// </summary>
+        /// <param name="idx">index in the loaded collection</param>
+        /// <param name="loaded">loaded collection</param>
+        public void AddMarkerGeometry(int idx, ObjRef[] loaded)
+        {
+            GeometryBase g = loaded[idx].Geometry();
+            if (g.HasBrepForm)
+            {
+                Brep brep = Brep.TryConvertBrep(g);
+                BrepEdge[] group = brep.Edges.ToArray();
+                crvs[idx] = group.Select(edge => edge.ToNurbsCurve()).ToArray();
+            }
+            else if (g is Curve c)
+                crvs[idx] = new Curve[] { c, };
+            else if (g is Mesh m)
+            {
+                Curve[] edges = new Curve[m.TopologyEdges.Count];
+                for (int ei = 0; ei < edges.Length; ei++)
+                    edges.SetValue(m.TopologyEdges.EdgeLine(ei).ToNurbsCurve(), ei);
+                crvs[idx] = edges;
+            }
+            else
+            {
+                //TODO: more to preview
+            }
         }
 
         protected override void CalculateBoundingBox(CalculateBoundingBoxEventArgs e)
@@ -30,8 +83,9 @@ namespace Tabl_
                 base.CalculateBoundingBox(e);
                 return;
             }
-            foreach (Curve c in crvs)
-                e.IncludeBoundingBox(c.GetBoundingBox(false));
+            foreach (Curve[] cg in crvs)
+                foreach (Curve c in cg)
+                    e.IncludeBoundingBox(c.GetBoundingBox(false));
         }
 
         protected override void PostDrawObjects(DrawEventArgs e)
@@ -41,8 +95,9 @@ namespace Tabl_
                 base.PostDrawObjects(e);
                 return;
             }
-            foreach (Curve c in crvs)
-                e.Display.DrawCurve(c, clr, w);
+            foreach (Curve[] cg in crvs)
+                foreach (Curve c in cg)
+                    e.Display.DrawCurve(c, clr, w);
         }
 
     }
@@ -279,9 +334,22 @@ namespace Tabl_
             // fill spreadsheet
             List<ListViewItem> lines = new List<ListViewItem>();
             List<int> badidx = new List<int>(); // missing in document but objref still references
-            // serial
+
+            /*
+            if (settings.ssopt[3])
+                Parallel.For(0, Loaded.Length, oi =>
+                {
+                    lock (locker)
+                    {
+                        string[] infos = TablLineItem(oi);
+                        lis.Add(new ListViewItem(infos));
+                    }
+                });
+            else
+             */
             for (int oi =0; oi<Loaded.Length; oi++)
             {
+                // serial
                 string[] infos = TablLineItem(oi);
                 if (infos[0] == "MISSING! DELETE!")
                 {
@@ -297,31 +365,35 @@ namespace Tabl_
                     lines.Add(new ListViewItem(infolist.ToArray()));
                 }
             }
-            // parallel
-            /*
-            Parallel.For(0, Loaded.Length, oi =>
-            {
-                lock (locker)
-                {
-                    string[] infos = TablLineItem(oi);
-                    lis.Add(new ListViewItem(infos));
-                }
-            });*/
             
+
             lvTabl.Items.AddRange(lines.ToArray()); // faster with addrange rather than add in a loop
-            // TODO: only resize on first load
-            if (lvTabl.Items.Count>0)
-                lvTabl.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
-            else
-                lvTabl.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+            TablColAutoSize();
 
             if (badidx.Count != 0)
             {
                 List<string> todelete = new List<string>();
                 foreach (int idx in badidx)
                     todelete.Add(Loaded[idx].ObjectId.ToString());
-                RemoveById(todelete.ToArray());
+                RemoveByIds(todelete.ToArray());
             }
+            // prep for click-n-mark
+            settings.docmarker.crvs = new List<Curve[]>(lvTabl.Items.Count);
+            for (int n = 0; n < lvTabl.Items.Count; n++)
+                settings.docmarker.crvs.Add(new Curve[] { });
+
+            ParentDoc.Views.Redraw();
+        }
+
+        /// <summary>
+        /// autosize column width of tabl
+        /// </summary>
+        private void TablColAutoSize()
+        {
+            if (lvTabl.Items.Count > 0)
+                lvTabl.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+            else
+                lvTabl.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
         }
 
         /// <summary>
@@ -338,39 +410,20 @@ namespace Tabl_
             else
                 infos = new string[lvTabl.Columns.Count];
 
-            if (settings.ssopt[3])
+            for (int ci = 0; ci < infos.Length; ci++)
             {
-                // TODO: simple Parallel.For() doesn't help, alter ExtractObjInfo()
-                // below is just a copy from else statement
-                for (int ci = 0; ci < infos.Length; ci++)
-                {
-                    string field;
-                    if (linecounter)
-                        field = ExtractObjInfo(lvTabl.Columns[ci + 1].Text, refi);
-                    else
-                        field = ExtractObjInfo(lvTabl.Columns[ci].Text, refi);
+                string field;
+                if (linecounter)
+                    field = ExtractObjInfo(lvTabl.Columns[ci + 1].Text, refi);
+                else
+                    field = ExtractObjInfo(lvTabl.Columns[ci].Text, refi);
 
-                    infos.SetValue(field, ci);
-                    if (field == "MISSING! This will be removed after refresh...")
-                        return infos;
-                }
-            }
-            else
-            {
-                for (int ci = 0; ci < infos.Length; ci++)
-                {
-                    string field;
-                    if (linecounter)
-                        field = ExtractObjInfo(lvTabl.Columns[ci + 1].Text, refi);
-                    else
-                        field = ExtractObjInfo(lvTabl.Columns[ci].Text, refi);
-
-                    if (field == "MISSING! DELETE!")
-                        return new string[] { "MISSING! DELETE!", };
+                if (field == "MISSING! DELETE!")
+                    return new string[] { "MISSING! DELETE!", };
                     
-                    infos.SetValue(field, ci);
-                }
+                infos.SetValue(field, ci);
             }
+            
             return infos;
         }
         /// <summary>
@@ -657,7 +710,7 @@ namespace Tabl_
         /// remove from tabl
         /// </summary>
         /// <param name="guids">object guid strings</param>
-        private void RemoveById(string[] guids)
+        private void RemoveByIds(string[] guids)
         {
             //first eliminate from doc string
             string raw = ParentDoc.Strings.GetValue("tabl_cs_selected");
@@ -669,6 +722,15 @@ namespace Tabl_
             //replace Loaded
             ReloadRefs(idstrings);
         }
+
+        private void TablSort()
+        {
+            
+        }
+        /*private int LVItemComparer(ListViewItem a, ListViewItem b)
+        {
+            if (a.)
+        }*/
     }
 
 }
