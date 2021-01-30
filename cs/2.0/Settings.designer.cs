@@ -50,19 +50,19 @@
             this.ttipSettings = new System.Windows.Forms.ToolTip(this.components);
             this.chklTablDisplay = new System.Windows.Forms.CheckedListBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.nudHLLW = new System.Windows.Forms.NumericUpDown();
-            this.btnHLClr = new System.Windows.Forms.Button();
+            this.nudWireWt = new System.Windows.Forms.NumericUpDown();
+            this.btnMarkerClr = new System.Windows.Forms.Button();
             this.clrPicker = new System.Windows.Forms.ColorDialog();
-            this.label7 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudDP)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudUnitScale)).BeginInit();
             this.groupBox5.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudHLLW)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudWireWt)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -294,8 +294,8 @@
             this.groupBox5.Controls.Add(this.label7);
             this.groupBox5.Controls.Add(this.label6);
             this.groupBox5.Controls.Add(this.label5);
-            this.groupBox5.Controls.Add(this.nudHLLW);
-            this.groupBox5.Controls.Add(this.btnHLClr);
+            this.groupBox5.Controls.Add(this.nudWireWt);
+            this.groupBox5.Controls.Add(this.btnMarkerClr);
             this.groupBox5.Controls.Add(this.chklTablDisplay);
             this.groupBox5.Location = new System.Drawing.Point(245, 70);
             this.groupBox5.Name = "groupBox5";
@@ -303,6 +303,15 @@
             this.groupBox5.TabIndex = 6;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Spreadsheet";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 92);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(50, 15);
+            this.label7.TabIndex = 3;
+            this.label7.Text = "Refresh";
             // 
             // label6
             // 
@@ -322,50 +331,41 @@
             this.label5.TabIndex = 3;
             this.label5.Text = "Wire";
             // 
-            // nudHLLW
+            // nudWireWt
             // 
-            this.nudHLLW.Location = new System.Drawing.Point(181, 63);
-            this.nudHLLW.Maximum = new decimal(new int[] {
+            this.nudWireWt.Location = new System.Drawing.Point(181, 63);
+            this.nudWireWt.Maximum = new decimal(new int[] {
             99,
             0,
             0,
             0});
-            this.nudHLLW.Minimum = new decimal(new int[] {
+            this.nudWireWt.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            this.nudHLLW.Name = "nudHLLW";
-            this.nudHLLW.Size = new System.Drawing.Size(40, 21);
-            this.nudHLLW.TabIndex = 2;
-            this.nudHLLW.Value = new decimal(new int[] {
+            this.nudWireWt.Name = "nudWireWt";
+            this.nudWireWt.Size = new System.Drawing.Size(40, 21);
+            this.nudWireWt.TabIndex = 2;
+            this.nudWireWt.Value = new decimal(new int[] {
             3,
             0,
             0,
             0});
             // 
-            // btnHLClr
+            // btnMarkerClr
             // 
-            this.btnHLClr.BackColor = System.Drawing.Color.HotPink;
-            this.btnHLClr.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnHLClr.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnHLClr.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnHLClr.Location = new System.Drawing.Point(96, 63);
-            this.btnHLClr.Name = "btnHLClr";
-            this.btnHLClr.Size = new System.Drawing.Size(41, 21);
-            this.btnHLClr.TabIndex = 1;
-            this.btnHLClr.Text = "color";
-            this.btnHLClr.UseVisualStyleBackColor = false;
-            this.btnHLClr.Click += new System.EventHandler(this.HLClr_Click);
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 92);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(50, 15);
-            this.label7.TabIndex = 3;
-            this.label7.Text = "Refresh";
+            this.btnMarkerClr.BackColor = System.Drawing.Color.HotPink;
+            this.btnMarkerClr.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnMarkerClr.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnMarkerClr.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnMarkerClr.Location = new System.Drawing.Point(96, 63);
+            this.btnMarkerClr.Name = "btnMarkerClr";
+            this.btnMarkerClr.Size = new System.Drawing.Size(41, 21);
+            this.btnMarkerClr.TabIndex = 1;
+            this.btnMarkerClr.Text = "color";
+            this.btnMarkerClr.UseVisualStyleBackColor = false;
+            this.btnMarkerClr.Click += new System.EventHandler(this.MarkerClr_Click);
             // 
             // Settings
             // 
@@ -395,7 +395,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudUnitScale)).EndInit();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudHLLW)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudWireWt)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -425,8 +425,8 @@
         private System.Windows.Forms.CheckedListBox chklTablDisplay;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.NumericUpDown nudHLLW;
-        private System.Windows.Forms.Button btnHLClr;
+        private System.Windows.Forms.NumericUpDown nudWireWt;
+        private System.Windows.Forms.Button btnMarkerClr;
         private System.Windows.Forms.ColorDialog clrPicker;
         private System.Windows.Forms.Label label7;
     }

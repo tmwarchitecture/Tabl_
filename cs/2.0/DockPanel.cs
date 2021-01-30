@@ -142,7 +142,7 @@ namespace Tabl_
             else
                 sortord = 0;
             
-            TablSort();
+            //TablSort();
 
         }
         private void HeaderStripClosing(object s, ToolStripDropDownClosingEventArgs e)

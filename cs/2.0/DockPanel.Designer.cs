@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DockPanel));
             this.lvTabl = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -81,6 +82,7 @@
             this.ttipBtns = new System.Windows.Forms.ToolTip(this.components);
             this.dlogExport = new System.Windows.Forms.SaveFileDialog();
             this.dlogImport = new System.Windows.Forms.OpenFileDialog();
+            this.zoomToHighlightedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lvCtxtMenu.SuspendLayout();
             this.msHeaders.SuspendLayout();
             this.msEdits.SuspendLayout();
@@ -128,15 +130,16 @@
             this.lvCtxtMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.thisWorkedToolStripMenuItem,
             this.editHighlightedToolStripMenuItem,
-            this.copyTextsToolStripMenuItem});
+            this.copyTextsToolStripMenuItem,
+            this.zoomToHighlightedToolStripMenuItem});
             this.lvCtxtMenu.Name = "lvCtxtMenu";
-            this.lvCtxtMenu.Size = new System.Drawing.Size(161, 70);
+            this.lvCtxtMenu.Size = new System.Drawing.Size(187, 114);
             // 
             // thisWorkedToolStripMenuItem
             // 
             this.thisWorkedToolStripMenuItem.DropDown = this.msHeaders;
             this.thisWorkedToolStripMenuItem.Name = "thisWorkedToolStripMenuItem";
-            this.thisWorkedToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.thisWorkedToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.thisWorkedToolStripMenuItem.Text = "Show Columns";
             // 
             // msHeaders
@@ -308,7 +311,7 @@
             // 
             this.editHighlightedToolStripMenuItem.DropDown = this.msEdits;
             this.editHighlightedToolStripMenuItem.Name = "editHighlightedToolStripMenuItem";
-            this.editHighlightedToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.editHighlightedToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.editHighlightedToolStripMenuItem.Text = "Edit Highlighted";
             // 
             // msEdits
@@ -377,7 +380,7 @@
             // copyTextsToolStripMenuItem
             // 
             this.copyTextsToolStripMenuItem.Name = "copyTextsToolStripMenuItem";
-            this.copyTextsToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.copyTextsToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.copyTextsToolStripMenuItem.Text = "Copy Texts";
             // 
             // btnAdd
@@ -430,7 +433,7 @@
             // 
             // btnTrash
             // 
-            this.btnTrash.Image = global::Tabl_.Properties.Resources.trash;
+            this.btnTrash.Image = ((System.Drawing.Image)(resources.GetObject("btnTrash.Image")));
             this.btnTrash.Location = new System.Drawing.Point(136, 4);
             this.btnTrash.Margin = new System.Windows.Forms.Padding(4);
             this.btnTrash.Name = "btnTrash";
@@ -511,6 +514,12 @@
             this.dlogImport.Filter = "Comma Separated Values|*.csv";
             this.dlogImport.Multiselect = true;
             this.dlogImport.ReadOnlyChecked = true;
+            // 
+            // zoomToHighlightedToolStripMenuItem
+            // 
+            this.zoomToHighlightedToolStripMenuItem.Name = "zoomToHighlightedToolStripMenuItem";
+            this.zoomToHighlightedToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.zoomToHighlightedToolStripMenuItem.Text = "Zoom to Highlighted";
             // 
             // DockPanel
             // 
@@ -593,5 +602,6 @@
         private System.Windows.Forms.ToolStripMenuItem lengthToolStripMenuItem1;
         private System.Windows.Forms.SaveFileDialog dlogExport;
         private System.Windows.Forms.OpenFileDialog dlogImport;
+        private System.Windows.Forms.ToolStripMenuItem zoomToHighlightedToolStripMenuItem;
     }
 }

@@ -102,6 +102,15 @@ namespace Tabl_
 
     }
 
+    internal class TablLineItem : ListViewItem
+    {
+        public Guid RefId { get; set; }
+        public TablLineItem(string[] items) : base(items)
+        {
+
+        }
+    }
+
     public partial class DockPanel : UserControl
     {
 
@@ -316,7 +325,7 @@ namespace Tabl_
         /// refresh spreadsheet
         /// </summary>
         /// <param name="th">true if threaded computing</param>
-        private void RefreshTabl(bool th = false)
+        private void RefreshTabl()
         {
             lvTabl.Clear();
             // set up headers
@@ -335,41 +344,29 @@ namespace Tabl_
             List<ListViewItem> lines = new List<ListViewItem>();
             List<int> badidx = new List<int>(); // missing in document but objref still references
 
-            /*
-            if (settings.ssopt[3])
-                Parallel.For(0, Loaded.Length, oi =>
-                {
-                    lock (locker)
-                    {
-                        string[] infos = TablLineItem(oi);
-                        lis.Add(new ListViewItem(infos));
-                    }
-                });
-            else
-             */
-            for (int oi =0; oi<Loaded.Length; oi++)
+            // TODO: parallell this?
+            for (int oi = 0; oi < Loaded.Length; oi++)
             {
-                // serial
-                string[] infos = TablLineItem(oi);
+                string[] infos = TablLineFields(oi);
                 if (infos[0] == "MISSING! DELETE!")
                 {
                     badidx.Add(oi);
                     continue;
                 }
                 else if (!linecounter)
-                    lines.Add(new ListViewItem(infos));
+                    lines.Add(new TablLineItem(infos) { RefId = Loaded[oi].ObjectId,});
                 else
                 {
-                    List<string> infolist = new List<string> { (oi+1).ToString(), };
+                    List<string> infolist = new List<string> { (oi + 1).ToString(), };
                     infolist.AddRange(infos);
                     lines.Add(new ListViewItem(infolist.ToArray()));
                 }
             }
-            
 
             lvTabl.Items.AddRange(lines.ToArray()); // faster with addrange rather than add in a loop
             TablColAutoSize();
 
+            // remove if something in doc was deleted by user
             if (badidx.Count != 0)
             {
                 List<string> todelete = new List<string>();
@@ -377,6 +374,7 @@ namespace Tabl_
                     todelete.Add(Loaded[idx].ObjectId.ToString());
                 RemoveByIds(todelete.ToArray());
             }
+
             // prep for click-n-mark
             settings.docmarker.crvs = new List<Curve[]>(lvTabl.Items.Count);
             for (int n = 0; n < lvTabl.Items.Count; n++)
@@ -397,12 +395,12 @@ namespace Tabl_
         }
 
         /// <summary>
-        /// get the line item for tabl
+        /// get the line item fields for a tabl line
         /// </summary>
         /// <param name="refi">index of objref in loaded</param>
         /// <param name="th">true if threaded computing</param>
         /// <returns>array of the obj properties</returns>
-        private string[] TablLineItem(int refi)
+        private string[] TablLineFields(int refi)
         {
             string[] infos;
             if (linecounter)
@@ -436,9 +434,7 @@ namespace Tabl_
         {
             string info="";
             RhinoObject obj = Loaded[refi].Object();
-            
-            // catches when user delete object in doc but tabl_ still has reference
-            // objref can still return a guid, use it to remove in loaded and docstr
+            // flag missing obj in doc, deletion handled outside this method
             if (obj == null)
                 return "MISSING! DELETE!";
             
@@ -485,7 +481,7 @@ namespace Tabl_
                     else info = pw.ToString();
                     break;
                 case "PrintColor":
-                    System.Drawing.Color pc;
+                    Color pc;
                     var pcs = obj.Attributes.PlotColorSource;
                     if (pcs == ObjectPlotColorSource.PlotColorFromLayer)
                     {
@@ -599,7 +595,24 @@ namespace Tabl_
                             else vol = "0";
                         }
                     }
-
+                    else if (obj.ObjectType == ObjectType.Mesh)
+                        if (Loaded[refi].Mesh().IsClosed)
+                        {
+                            VolumeMassProperties vmp = VolumeMassProperties.Compute(Loaded[refi].Mesh());
+                            double vol_num = vmp.Volume;
+                            vol_num = Math.Round(vol_num, settings.dp);
+                            vol_num *= settings.su;
+                            if (settings.ts == ",")
+                                vol = KMarker(vol_num, ',');
+                            else if (settings.ts == ".")
+                                vol = KMarker(vol_num, '.');
+                            else if (settings.ts == " ")
+                                vol = KMarker(vol_num, ' ');
+                            else vol = vol_num.ToString();
+                        }
+                        else
+                            vol = "0";
+                    // append unit
                     if (!settings.ssopt[0] || vol == null) info = vol;
                     else if (vol != "open brep" && vol != "invalid extrusion")
                     {
@@ -722,15 +735,77 @@ namespace Tabl_
             //replace Loaded
             ReloadRefs(idstrings);
         }
-
+        
+        /*
         private void TablSort()
         {
-            
+            //TODO: finish this
+            string htxt = lvTabl.Columns[sorthdr].Text;
+            if (htxt == "GUID" || htxt == "Name" || htxt == "Comments" || htxt == "Type" || htxt == "LineType" || htxt == "Layer" || htxt == "PrintColor" || htxt == "Color" || htxt == "Material" || htxt == "IsClosed" || htxt == "IsPlanar")
+            {
+                lvTabl.ListViewItemSorter = new LVSorterByStr(sorthdr, sortord);
+            }
+            else if (lvTabl.Columns[sorthdr].Text == "CenterPt")
+            {
+                // special point item
+                lvTabl.ListViewItemSorter = new LVSorterByPt(sorthdr, sortord);
+            }
+            else
+            {
+                // numeric items
+                lvTabl.ListViewItemSorter = new LVSorterByNum(sorthdr, sortord);
+            }
+            lvTabl.Sort();
         }
-        /*private int LVItemComparer(ListViewItem a, ListViewItem b)
+        private class LVSorterByStr : IComparer
         {
-            if (a.)
-        }*/
+            public int hdridx;
+            public int sortorder;
+            public LVSorterByStr(int i, int o)
+            {
+                hdridx = i;
+                sortorder = o;
+            }
+            public int IComparer.Compare(object x, object y)
+            {
+                ListViewItem a = x as ListViewItem;
+                ListViewItem b = y as ListViewItem;
+
+            }
+        }
+        private class LVSorterByNum : IComparer
+        {
+            public int hdridx;
+            public int sortorder;
+            public LVSorterByNum(int i, int o)
+            {
+                hdridx = i;
+                sortorder = o;
+            }
+            public int IComparer.Compare(object x, object y)
+            {
+                ListViewItem a = x as ListViewItem;
+                ListViewItem b = y as ListViewItem;
+            }
+        }
+        private class LVSorterByPt : IComparer
+        {
+            public int hdridx;
+            public int sortorder;
+            public LVSorterByPt(int i, int o)
+            {
+                hdridx = i;
+                sortorder = o;
+            }
+            public int IComparer.Compare(object x, object y)
+            {
+                ListViewItem a = x as ListViewItem;
+                ListViewItem b = y as ListViewItem;
+            }
+        }
+        */
     }
+
+    
 
 }

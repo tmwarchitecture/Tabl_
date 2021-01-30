@@ -36,6 +36,7 @@ namespace Tabl_
             Shown += OnPopUp;
             docmarker = new Highlighter();
             clrPicker.Color = docmarker.clr;
+            nudWireWt.Value = docmarker.w;
         }
 
         // cancel
@@ -75,8 +76,8 @@ namespace Tabl_
                     chklTablDisplay.SetItemChecked(i, false);
             }
 
-            btnHLClr.BackColor = docmarker.clr;
-            nudHLLW.Value = docmarker.w;
+            btnMarkerClr.BackColor = docmarker.clr;
+            nudWireWt.Value = docmarker.w;
         }
 
         // commit changes
@@ -98,19 +99,20 @@ namespace Tabl_
                 else
                     ssopt[i] = false;
             }
-            docmarker.w = (int)nudHLLW.Value;
+            docmarker.w = (int)nudWireWt.Value;
 
             // must be shown modal and therefore not disposed after below call
             Close(); 
         }
 
-        private void HLClr_Click(object sender, EventArgs e)
+        // color change
+        private void MarkerClr_Click(object sender, EventArgs e)
         {
             DialogResult r = clrPicker.ShowDialog(this);
             if (r == DialogResult.OK)
             {
                 docmarker.clr = clrPicker.Color;
-                btnHLClr.BackColor = clrPicker.Color;
+                btnMarkerClr.BackColor = clrPicker.Color;
             }
         }
     }
