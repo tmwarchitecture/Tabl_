@@ -108,7 +108,7 @@ namespace Tabl_
             if (Loaded.Length != 0) RefreshTabl();
         }
 
-        #region non-UI events
+        #region non-UI handlers
         // refresh after each command
         private void OnDocChange(object s, EventArgs e)
         {
@@ -133,9 +133,10 @@ namespace Tabl_
                 RhinoDoc.ModifyObjectAttributes += OnAttrMod;
             }
         }
-        
+
         #endregion
 
+        #region ListVeiw tabl handlers
         private void TablColClick(object s, ColumnClickEventArgs e)
         {
             sorthdr = e.Column;
@@ -244,6 +245,17 @@ namespace Tabl_
                 MenuStripCopyTabl_Click(dummy, e);
             }
         }
+        private void MenuStripZoom_Click(object sender, EventArgs e)
+        {
+            ParentDoc.Views.RedrawEnabled = false;
+            foreach (TablLineItem tli in lvTabl.SelectedItems)
+                ParentDoc.Objects.Select(tli.RefId, true);
+            ParentDoc.Views.ActiveView.ActiveViewport.ZoomExtentsSelected();
+            foreach (TablLineItem tli in lvTabl.SelectedItems)
+                ParentDoc.Objects.Select(tli.RefId, false);
+            ParentDoc.Views.RedrawEnabled = true;
+        }
+        #endregion
 
         private void Add_Click(object sender, EventArgs e)
         {
@@ -467,6 +479,5 @@ namespace Tabl_
         }
 
         
-
     }
 }

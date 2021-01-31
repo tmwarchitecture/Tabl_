@@ -397,6 +397,7 @@
             this.zoomToHighlightedToolStripMenuItem.Name = "zoomToHighlightedToolStripMenuItem";
             this.zoomToHighlightedToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.zoomToHighlightedToolStripMenuItem.Text = "Zoom to Highlighted";
+            this.zoomToHighlightedToolStripMenuItem.Click += new System.EventHandler(this.MenuStripZoom_Click);
             // 
             // btnAdd
             // 

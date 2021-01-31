@@ -104,7 +104,14 @@ namespace Tabl_
 
     internal class TablLineItem : ListViewItem
     {
+        /// <summary>
+        /// guid belonging to the rhino object this tabl line corresponds
+        /// </summary>
         public Guid RefId { get; set; }
+        /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="items">collection of cells on the row</param>
         public TablLineItem(string[] items) : base(items)
         {
         }

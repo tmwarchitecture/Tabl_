@@ -72,6 +72,12 @@
     <Compile Include="DockPanelUtil.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="PlaceSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PlaceSettings.designer.cs">
+      <DependentUpon>PlaceSettings.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -95,6 +101,9 @@
       <DependentUpon>DockPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EmbeddedResources\plugin-utility.ico" />
+    <EmbeddedResource Include="PlaceSettings.resx">
+      <DependentUpon>PlaceSettings.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
