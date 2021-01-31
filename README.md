@@ -23,7 +23,7 @@ As of version 0.2, the Tabl_ can then be placed into the Rhino document model sp
 
 0.x versions are cross-platform. Tabl_ can run on Windows and MacOS machines.
 
-2.0 versions are Windows machine only.
+2.x versions are Windows machine only.
 
 
 ## Example Uses
