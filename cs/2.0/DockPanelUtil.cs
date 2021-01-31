@@ -107,7 +107,6 @@ namespace Tabl_
         public Guid RefId { get; set; }
         public TablLineItem(string[] items) : base(items)
         {
-
         }
     }
 
@@ -212,18 +211,18 @@ namespace Tabl_
         /// <returns>array of ObjRef</returns>
         private ObjRef[] PickObj(ObjectType ot = ObjectType.AnyObject)
         {
-            //WindowState = FormWindowState.Minimized;
+            Enabled = false;
 
             Result r = RhinoGet.GetMultipleObjects(" select object(s)", true, ot, out ObjRef[] picked);
             if (r == Result.Success)
             {
-                //WindowState = FormWindowState.Normal;
+                Enabled = true;
                 return picked;
             }
             else
             {
-                RhinoApp.WriteLine(" nothing selected...");
-                //WindowState = FormWindowState.Normal;
+                RhinoApp.WriteLine(" error in selection");
+                Enabled = true;
                 return new ObjRef[] { };
             }
         }
@@ -341,7 +340,7 @@ namespace Tabl_
                 }
 
             // fill spreadsheet
-            List<ListViewItem> lines = new List<ListViewItem>();
+            List<TablLineItem> lines = new List<TablLineItem>();
             List<int> badidx = new List<int>(); // missing in document but objref still references
 
             // TODO: parallell this?
@@ -359,7 +358,7 @@ namespace Tabl_
                 {
                     List<string> infolist = new List<string> { (oi + 1).ToString(), };
                     infolist.AddRange(infos);
-                    lines.Add(new ListViewItem(infolist.ToArray()));
+                    lines.Add(new TablLineItem(infolist.ToArray()) { RefId = Loaded[oi].ObjectId,});
                 }
             }
 
@@ -531,6 +530,8 @@ namespace Tabl_
                         if (obj.Geometry.HasBrepForm)
                             amp = AreaMassProperties.Compute(Brep.TryConvertBrep(obj.Geometry));
                         else amp = null;
+                    else if (obj.ObjectType == ObjectType.Mesh)
+                        amp = AreaMassProperties.Compute(Loaded[refi].Mesh());
 
                     if (amp != null)
                     {
@@ -736,10 +737,9 @@ namespace Tabl_
             ReloadRefs(idstrings);
         }
         
-        /*
+        
         private void TablSort()
         {
-            //TODO: finish this
             string htxt = lvTabl.Columns[sorthdr].Text;
             if (htxt == "GUID" || htxt == "Name" || htxt == "Comments" || htxt == "Type" || htxt == "LineType" || htxt == "Layer" || htxt == "PrintColor" || htxt == "Color" || htxt == "Material" || htxt == "IsClosed" || htxt == "IsPlanar")
             {
@@ -756,6 +756,13 @@ namespace Tabl_
                 lvTabl.ListViewItemSorter = new LVSorterByNum(sorthdr, sortord);
             }
             lvTabl.Sort();
+            // sync order between tabl items and loaded objrefs
+            for (int i = 0; i< lvTabl.Items.Count; i++)
+            {
+                TablLineItem li = lvTabl.Items[i] as TablLineItem;
+                Loaded.SetValue(new ObjRef(li.RefId), i);
+            }
+            lvTabl.ListViewItemSorter = Comparer.Default;
         }
         private class LVSorterByStr : IComparer
         {
@@ -766,11 +773,19 @@ namespace Tabl_
                 hdridx = i;
                 sortorder = o;
             }
-            public int IComparer.Compare(object x, object y)
+            int IComparer.Compare(object x, object y)
             {
                 ListViewItem a = x as ListViewItem;
                 ListViewItem b = y as ListViewItem;
-
+                int r = Comparer.Default.Compare(a.SubItems[hdridx].Text, b.SubItems[hdridx].Text);
+                if (sortorder != -1)
+                    return r;
+                else
+                {
+                    if (r == 1) return -1;
+                    else if (r == -1) return 1;
+                    else return 0;
+                }
             }
         }
         private class LVSorterByNum : IComparer
@@ -782,10 +797,25 @@ namespace Tabl_
                 hdridx = i;
                 sortorder = o;
             }
-            public int IComparer.Compare(object x, object y)
+            int IComparer.Compare(object x, object y)
             {
                 ListViewItem a = x as ListViewItem;
                 ListViewItem b = y as ListViewItem;
+                double.TryParse(a.SubItems[hdridx].Text, out double anum);
+                double.TryParse(b.SubItems[hdridx].Text, out double bnum);
+                int r = Comparer.Default.Compare(anum, bnum);
+                if (sortorder != -1)
+                    return r;
+                else
+                {
+                    if (r == 1) return -1;
+                    else if (r == -1) return 1;
+                    else return 0;
+                }
+            }
+            public static string ExtractStrDigits(string s)
+            {
+                return "";//TODO: parse cells with units or commas
             }
         }
         private class LVSorterByPt : IComparer
@@ -797,15 +827,12 @@ namespace Tabl_
                 hdridx = i;
                 sortorder = o;
             }
-            public int IComparer.Compare(object x, object y)
+            int IComparer.Compare(object x, object y)
             {
-                ListViewItem a = x as ListViewItem;
-                ListViewItem b = y as ListViewItem;
+                return 0; // TODO: implement a way to sort points
             }
         }
-        */
+        
     }
-
-    
 
 }

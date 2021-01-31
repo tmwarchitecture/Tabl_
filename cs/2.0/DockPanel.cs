@@ -142,8 +142,11 @@ namespace Tabl_
             else
                 sortord = 0;
             
-            //TablSort();
+            TablSort();
 
+            settings.docmarker.Empty();
+            settings.docmarker.AddMarkerGeometries(lvTabl, Loaded);
+            ParentDoc.Views.Redraw();
         }
         private void HeaderStripClosing(object s, ToolStripDropDownClosingEventArgs e)
         {
@@ -169,7 +172,7 @@ namespace Tabl_
         {
             if (ModifierKeys == Keys.Shift) // shift + click
                 return; // making sure handler not triggered for each of the multi-select
-            else if (shiftselected) // click following a shift+click
+            else if (lvTabl.SelectedItems.Count>1) // click when others are selected
                 return; // skip redraw
 
             int hli = e.ItemIndex;
@@ -192,7 +195,8 @@ namespace Tabl_
             {
                 // following a shift select
                 await Task.Delay(50); // give arbitrary amount of time to docmarker unselecting
-                shiftselected = false;
+                if (ModifierKeys!= Keys.Control)
+                    shiftselected = false; // control de-select 
                 settings.docmarker.Empty();
                 settings.docmarker.AddMarkerGeometries(lvTabl, Loaded);
                 ParentDoc.Views.Redraw();
@@ -327,7 +331,7 @@ namespace Tabl_
                             htxts.SetValue(lvTabl.Columns[i].Text, i);
                         sw.WriteLine(string.Join(",", htxts));
                     }
-                    foreach (ListViewItem li in lvTabl.Items)
+                    foreach (TablLineItem li in lvTabl.Items)
                     {
                         string[] fields = new string[li.SubItems.Count];
                         for (int i = 0; i < li.SubItems.Count; i++)

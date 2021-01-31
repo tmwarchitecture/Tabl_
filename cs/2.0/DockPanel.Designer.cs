@@ -133,7 +133,7 @@
             this.copyTextsToolStripMenuItem,
             this.zoomToHighlightedToolStripMenuItem});
             this.lvCtxtMenu.Name = "lvCtxtMenu";
-            this.lvCtxtMenu.Size = new System.Drawing.Size(187, 114);
+            this.lvCtxtMenu.Size = new System.Drawing.Size(187, 92);
             // 
             // thisWorkedToolStripMenuItem
             // 
@@ -167,10 +167,9 @@
             this.isClosedToolStripMenuItem,
             this.commentsToolStripMenuItem});
             this.msHeaders.Name = "msHeader";
-            this.msHeaders.OwnerItem = this.thisWorkedToolStripMenuItem;
             this.msHeaders.ShowCheckMargin = true;
             this.msHeaders.ShowImageMargin = false;
-            this.msHeaders.Size = new System.Drawing.Size(134, 466);
+            this.msHeaders.Size = new System.Drawing.Size(181, 488);
             // 
             // toolStripMenuItem2
             // 
@@ -245,19 +244,17 @@
             // 
             this.areaToolStripMenuItem.ForeColor = System.Drawing.Color.Firebrick;
             this.areaToolStripMenuItem.Name = "areaToolStripMenuItem";
-            this.areaToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
+            this.areaToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.areaToolStripMenuItem.Text = "Area";
-            this.areaToolStripMenuItem.ToolTipText = "this uses much computing resource\r\nrecommend turning off auto-update before enabl" +
-    "ing";
+            this.areaToolStripMenuItem.ToolTipText = "heavy computing\r\nauto-update recommended off";
             // 
             // volumeToolStripMenuItem
             // 
             this.volumeToolStripMenuItem.ForeColor = System.Drawing.Color.Firebrick;
             this.volumeToolStripMenuItem.Name = "volumeToolStripMenuItem";
-            this.volumeToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
+            this.volumeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.volumeToolStripMenuItem.Text = "Volume";
-            this.volumeToolStripMenuItem.ToolTipText = "this uses much computing resource\r\nrecommend turning off auto-update before enabl" +
-    "ing";
+            this.volumeToolStripMenuItem.ToolTipText = "heavy computing\r\nauto-update recommended off";
             // 
             // numPtsToolStripMenuItem
             // 
