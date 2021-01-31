@@ -69,6 +69,8 @@
             this.materialToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.lengthToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.copyTextsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copySpreadsheetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.zoomToHighlightedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnAdd = new System.Windows.Forms.Button();
             this.btnRemove = new System.Windows.Forms.Button();
             this.btnRefresh = new System.Windows.Forms.Button();
@@ -82,7 +84,6 @@
             this.ttipBtns = new System.Windows.Forms.ToolTip(this.components);
             this.dlogExport = new System.Windows.Forms.SaveFileDialog();
             this.dlogImport = new System.Windows.Forms.OpenFileDialog();
-            this.zoomToHighlightedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lvCtxtMenu.SuspendLayout();
             this.msHeaders.SuspendLayout();
             this.msEdits.SuspendLayout();
@@ -131,9 +132,10 @@
             this.thisWorkedToolStripMenuItem,
             this.editHighlightedToolStripMenuItem,
             this.copyTextsToolStripMenuItem,
+            this.copySpreadsheetToolStripMenuItem,
             this.zoomToHighlightedToolStripMenuItem});
             this.lvCtxtMenu.Name = "lvCtxtMenu";
-            this.lvCtxtMenu.Size = new System.Drawing.Size(187, 92);
+            this.lvCtxtMenu.Size = new System.Drawing.Size(187, 114);
             // 
             // thisWorkedToolStripMenuItem
             // 
@@ -167,9 +169,10 @@
             this.isClosedToolStripMenuItem,
             this.commentsToolStripMenuItem});
             this.msHeaders.Name = "msHeader";
+            this.msHeaders.OwnerItem = this.thisWorkedToolStripMenuItem;
             this.msHeaders.ShowCheckMargin = true;
             this.msHeaders.ShowImageMargin = false;
-            this.msHeaders.Size = new System.Drawing.Size(181, 488);
+            this.msHeaders.Size = new System.Drawing.Size(134, 466);
             // 
             // toolStripMenuItem2
             // 
@@ -244,7 +247,7 @@
             // 
             this.areaToolStripMenuItem.ForeColor = System.Drawing.Color.Firebrick;
             this.areaToolStripMenuItem.Name = "areaToolStripMenuItem";
-            this.areaToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.areaToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
             this.areaToolStripMenuItem.Text = "Area";
             this.areaToolStripMenuItem.ToolTipText = "heavy computing\r\nauto-update recommended off";
             // 
@@ -252,7 +255,7 @@
             // 
             this.volumeToolStripMenuItem.ForeColor = System.Drawing.Color.Firebrick;
             this.volumeToolStripMenuItem.Name = "volumeToolStripMenuItem";
-            this.volumeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.volumeToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
             this.volumeToolStripMenuItem.Text = "Volume";
             this.volumeToolStripMenuItem.ToolTipText = "heavy computing\r\nauto-update recommended off";
             // 
@@ -379,6 +382,21 @@
             this.copyTextsToolStripMenuItem.Name = "copyTextsToolStripMenuItem";
             this.copyTextsToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.copyTextsToolStripMenuItem.Text = "Copy Texts";
+            this.copyTextsToolStripMenuItem.ToolTipText = "raw text as csv";
+            this.copyTextsToolStripMenuItem.Click += new System.EventHandler(this.MenuStripCopyTabl_Click);
+            // 
+            // copySpreadsheetToolStripMenuItem
+            // 
+            this.copySpreadsheetToolStripMenuItem.Name = "copySpreadsheetToolStripMenuItem";
+            this.copySpreadsheetToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.copySpreadsheetToolStripMenuItem.Text = "Copy as Spreadsheet";
+            this.copySpreadsheetToolStripMenuItem.Click += new System.EventHandler(this.MenuStripCopyTabl_Click);
+            // 
+            // zoomToHighlightedToolStripMenuItem
+            // 
+            this.zoomToHighlightedToolStripMenuItem.Name = "zoomToHighlightedToolStripMenuItem";
+            this.zoomToHighlightedToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.zoomToHighlightedToolStripMenuItem.Text = "Zoom to Highlighted";
             // 
             // btnAdd
             // 
@@ -512,12 +530,6 @@
             this.dlogImport.Multiselect = true;
             this.dlogImport.ReadOnlyChecked = true;
             // 
-            // zoomToHighlightedToolStripMenuItem
-            // 
-            this.zoomToHighlightedToolStripMenuItem.Name = "zoomToHighlightedToolStripMenuItem";
-            this.zoomToHighlightedToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.zoomToHighlightedToolStripMenuItem.Text = "Zoom to Highlighted";
-            // 
             // DockPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -600,5 +612,6 @@
         private System.Windows.Forms.SaveFileDialog dlogExport;
         private System.Windows.Forms.OpenFileDialog dlogImport;
         private System.Windows.Forms.ToolStripMenuItem zoomToHighlightedToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem copySpreadsheetToolStripMenuItem;
     }
 }

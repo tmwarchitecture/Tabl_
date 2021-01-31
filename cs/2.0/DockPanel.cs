@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows;
 using Rhino;
 using Rhino.Commands;
 using Rhino.DocObjects;
@@ -97,8 +98,11 @@ namespace Tabl_
             RhinoApp.Idle += OnRhIdle;
 
             lvTabl.ColumnClick += TablColClick;
-            lvTabl.MouseUp += TablShiftSelect; // multiple select, mark altogether
+            /* lvTabl.MouseUp += TablShiftSelect; // multiple select, mark altogether
             lvTabl.ItemSelectionChanged += TablSelectedChanged; // one item, mark individually
+            */
+            lvTabl.MouseUp += TablLeftClick;
+            lvTabl.KeyUp += TablCtrlC;
 
             ReloadRefs();
             if (Loaded.Length != 0) RefreshTabl();
@@ -168,7 +172,8 @@ namespace Tabl_
         {
             MirrorHeaders();
         }
-        private void TablSelectedChanged(object s, ListViewItemSelectionChangedEventArgs e)
+        /* deprecated
+         * private void TablSelectedChanged(object s, ListViewItemSelectionChangedEventArgs e)
         {
             if (ModifierKeys == Keys.Shift) // shift + click
                 return; // making sure handler not triggered for each of the multi-select
@@ -200,6 +205,43 @@ namespace Tabl_
                 settings.docmarker.Empty();
                 settings.docmarker.AddMarkerGeometries(lvTabl, Loaded);
                 ParentDoc.Views.Redraw();
+            }
+        }
+        */
+        private void TablLeftClick(object s, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                settings.docmarker.Empty();
+                settings.docmarker.AddMarkerGeometries(lvTabl, Loaded);
+            }
+            ParentDoc.Views.Redraw();
+        }
+        private void MenuStripCopyTabl_Click(object sender, EventArgs e)
+        {
+            if (!(sender is ToolStripMenuItem tsi)) return;
+
+            string s;
+            if (tsi.Text.Contains("Texts")) s = ",";
+            else s = "\t";
+
+            string[] sprdsheet = new string[lvTabl.SelectedItems.Count];
+            for (int ri = 0; ri < lvTabl.SelectedItems.Count; ri++)
+            {
+                string[] line = new string[lvTabl.SelectedItems[ri].SubItems.Count];
+                for (int ii = 0; ii < lvTabl.SelectedItems[ri].SubItems.Count; ii++)
+                    line.SetValue(lvTabl.SelectedItems[ri].SubItems[ii].Text, ii);
+                sprdsheet.SetValue(string.Join(s, line), ri);
+            }
+            string content = string.Join("\n", sprdsheet);
+            Clipboard.SetText(content, TextDataFormat.Text);
+        }
+        private void TablCtrlC(object s, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.C && ModifierKeys == Keys.Control)
+            {
+                ToolStripMenuItem dummy = new ToolStripMenuItem() { Text = "Spreadsheet" };
+                MenuStripCopyTabl_Click(dummy, e);
             }
         }
 
@@ -423,5 +465,8 @@ namespace Tabl_
                     MessageBox.Show(string.Join("\n\r", errmsgs), "Import errors", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
+
+        
+
     }
 }
