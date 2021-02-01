@@ -34,7 +34,7 @@ namespace Tabl_
                 ssopt.SetValue(false, i);
 
             Shown += OnPopUp;
-            docmarker = new Highlighter();
+            docmarker = new Highlighter() { Enabled = cbEnableMarker.Checked, };
             clrPicker.Color = docmarker.clr;
             nudWireWt.Value = docmarker.w;
         }
@@ -78,6 +78,7 @@ namespace Tabl_
 
             btnMarkerClr.BackColor = docmarker.clr;
             nudWireWt.Value = docmarker.w;
+            cbEnableMarker.Checked = docmarker.Enabled;
         }
 
         // commit changes
@@ -114,6 +115,12 @@ namespace Tabl_
                 docmarker.clr = clrPicker.Color;
                 btnMarkerClr.BackColor = clrPicker.Color;
             }
+        }
+
+        private void Marker_CheckedChanged(object sender, EventArgs e)
+        {
+            CheckBox cb = sender as CheckBox;
+            docmarker.Enabled = cb.Checked;
         }
     }
 }

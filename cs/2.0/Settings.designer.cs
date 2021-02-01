@@ -370,6 +370,7 @@
             this.cbEnableMarker.TabIndex = 4;
             this.cbEnableMarker.Text = "Mark selected";
             this.cbEnableMarker.UseVisualStyleBackColor = true;
+            this.cbEnableMarker.CheckedChanged += new System.EventHandler(this.Marker_CheckedChanged);
             // 
             // Settings
             // 

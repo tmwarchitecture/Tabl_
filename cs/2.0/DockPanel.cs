@@ -31,12 +31,13 @@ namespace Tabl_
         private double rtol;
         private bool in_mod = false; // whether doc is modifying attr, see OnAttrMod
         private bool menustripaction = false; // whether user (un)checked in header menustrip
-        private bool shiftselected = false; // whether lvTabl select was multi select previously
         private int sorthdr = 0; // index of column to sort
         private int sortord = 0; // order, 0 none, 1 small to large, -1 reverse
 
         // settings popup
         private Settings settings = new Settings();
+        // placement popup
+        private PlaceSettings placetabl = new PlaceSettings();
         // whether tabl has left most column that counts line items
         private bool linecounter = false;
         // header visibilities, dict data type has no order
@@ -90,7 +91,6 @@ namespace Tabl_
             tol = ParentDoc.ModelAbsoluteTolerance;
             rtol = ParentDoc.ModelAngleToleranceRadians;
             settings.FormClosing += Refresh_Click;
-            settings.docmarker.Enabled = true; // start display conduit
             Command.EndCommand += OnDocChange;
             // set up first mod trigger, unlistened during event itself
             RhinoDoc.ModifyObjectAttributes += OnAttrMod;
@@ -98,9 +98,6 @@ namespace Tabl_
             RhinoApp.Idle += OnRhIdle;
 
             lvTabl.ColumnClick += TablColClick;
-            /* lvTabl.MouseUp += TablShiftSelect; // multiple select, mark altogether
-            lvTabl.ItemSelectionChanged += TablSelectedChanged; // one item, mark individually
-            */
             lvTabl.MouseUp += TablLeftClick;
             lvTabl.KeyUp += TablCtrlC;
 
@@ -173,42 +170,6 @@ namespace Tabl_
         {
             MirrorHeaders();
         }
-        /* deprecated
-         * private void TablSelectedChanged(object s, ListViewItemSelectionChangedEventArgs e)
-        {
-            if (ModifierKeys == Keys.Shift) // shift + click
-                return; // making sure handler not triggered for each of the multi-select
-            else if (lvTabl.SelectedItems.Count>1) // click when others are selected
-                return; // skip redraw
-
-            int hli = e.ItemIndex;
-            if (e.IsSelected)
-                settings.docmarker.AddMarkerGeometry(hli, Loaded);
-            else
-                settings.docmarker.crvs[hli] = new Curve[] { };
-            ParentDoc.Views.Redraw();
-        }
-        private async void TablShiftSelect(object s, MouseEventArgs e)
-        {
-            if (ModifierKeys == Keys.Shift) //shift + click
-            {
-                shiftselected = true;
-                settings.docmarker.Empty();
-                settings.docmarker.AddMarkerGeometries(lvTabl, Loaded);
-                ParentDoc.Views.Redraw();
-            }
-            else if (shiftselected == true) // no shift this time but following a shift+click
-            {
-                // following a shift select
-                await Task.Delay(50); // give arbitrary amount of time to docmarker unselecting
-                if (ModifierKeys!= Keys.Control)
-                    shiftselected = false; // control de-select 
-                settings.docmarker.Empty();
-                settings.docmarker.AddMarkerGeometries(lvTabl, Loaded);
-                ParentDoc.Views.Redraw();
-            }
-        }
-        */
         private void TablLeftClick(object s, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
