@@ -16,14 +16,27 @@ namespace Tabl_
 {
     internal class Highlighter : DisplayConduit
     {
-        // groups of curves, each group is from an object
+        /* groups of curves, each group is from an object
+         largely unnecessary to keep this indexing, flat list should work
+         this was put in place for possibly deleting markers by index
+             */
         public List<Curve[]> crvs;
+
+        public List<Point3d> pts;
+        public List<AnnotationBase> annos;
+        public List<TextDot> dottxts;
+        public List<Box> blockbbs; // bounding boxes for blocks
+
         public Color clr;
         public int w; // wire line width in pixels
 
         public Highlighter()
         {
-            crvs = null;
+            crvs = new List<Curve[]>();
+            pts = new List<Point3d>();
+            annos = new List<AnnotationBase>();
+            dottxts = new List<TextDot>();
+            blockbbs = new List<Box>();
             clr = Color.HotPink;
             w = 3;
         }
@@ -35,6 +48,10 @@ namespace Tabl_
         {
             for (int i = 0; i < crvs.Count; i++)
                 crvs[i] = new Curve[] { };
+            pts.Clear();
+            annos.Clear();
+            dottxts.Clear();
+            blockbbs.Clear();
         }
 
         /// <summary>
@@ -42,18 +59,18 @@ namespace Tabl_
         /// </summary>
         /// <param name="lv">ListView where items are pulled</param>
         /// <param name="loaded">objrefs corresponding to the provided listview items</param>
-        public void AddMarkerGeometries(ListView lv, ObjRef[] loaded)
+        public void AddMarkers(ListView lv, ObjRef[] loaded)
         {
             if (!Enabled) return;
             foreach (int hli in lv.SelectedIndices)
-                AddMarkerGeometry(hli, loaded);
+                AddMarker(hli, loaded);
         }
         /// <summary>
         /// add specific geometries from loaded ObjRef[] to preview markers. you should check if listview items and loaded match order and capacity
         /// </summary>
         /// <param name="idx">index in the loaded collection</param>
         /// <param name="loaded">loaded collection</param>
-        public void AddMarkerGeometry(int idx, ObjRef[] loaded)
+        public void AddMarker(int idx, ObjRef[] loaded)
         {
             if (!Enabled) return;
             GeometryBase g = loaded[idx].Geometry();
@@ -72,6 +89,14 @@ namespace Tabl_
                     edges.SetValue(m.TopologyEdges.EdgeLine(ei).ToNurbsCurve(), ei);
                 crvs[idx] = edges;
             }
+            else if (g is TextDot txtdot)
+                dottxts.Add(txtdot);
+            else if (g is AnnotationBase anno)
+                annos.Add(anno);
+            else if (g is InstanceReferenceGeometry block)
+                blockbbs.Add(new Box(block.GetBoundingBox(false)));
+            else if (g is Rhino.Geometry.Point pt)
+                pts.Add(pt.Location);
             else
             {
                 //TODO: more to preview
@@ -102,6 +127,17 @@ namespace Tabl_
                     e.Display.DrawCurve(c, clr, w);
         }
 
+        protected override void DrawOverlay(DrawEventArgs e)
+        {
+            //base.DrawOverlay(e);
+            foreach (TextDot td in dottxts)
+                e.Display.DrawDot(td, clr, Color.DarkSlateGray, Color.DarkSlateGray);
+            foreach (AnnotationBase anno in annos)
+                e.Display.DrawAnnotation(anno, clr);
+            e.Display.DrawPoints(pts, PointStyle.X, w*2, clr);
+            foreach (Box b in blockbbs)
+                e.Display.DrawBox(b, clr, w+w/2);
+        }
     }
 
     internal class TablLineItem : ListViewItem
@@ -396,6 +432,10 @@ namespace Tabl_
             settings.docmarker.crvs = new List<Curve[]>(lvTabl.Items.Count);
             for (int n = 0; n < lvTabl.Items.Count; n++)
                 settings.docmarker.crvs.Add(new Curve[] { });
+            /* If object type isn't one that produces wireframes like annotations,
+             there will be an empty array left in place.
+             This index-preservation seems largely unncessary with new click-n-mark mechanism
+            */
 
             ParentDoc.Views.Redraw();
         }

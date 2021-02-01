@@ -98,7 +98,7 @@ namespace Tabl_
             RhinoApp.Idle += OnRhIdle;
 
             lvTabl.ColumnClick += TablColClick;
-            lvTabl.MouseUp += TablLeftClick;
+            lvTabl.MouseUp += TablMouseUp;
             lvTabl.KeyUp += TablCtrlC;
 
             ReloadRefs();
@@ -147,7 +147,7 @@ namespace Tabl_
             TablSort();
 
             settings.docmarker.Empty();
-            settings.docmarker.AddMarkerGeometries(lvTabl, Loaded);
+            settings.docmarker.AddMarkers(lvTabl, Loaded);
             ParentDoc.Views.Redraw();
         }
         private void HeaderStripClosing(object s, ToolStripDropDownClosingEventArgs e)
@@ -170,13 +170,11 @@ namespace Tabl_
         {
             MirrorHeaders();
         }
-        private void TablLeftClick(object s, MouseEventArgs e)
+        private void TablMouseUp(object s, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
-            {
-                settings.docmarker.Empty();
-                settings.docmarker.AddMarkerGeometries(lvTabl, Loaded);
-            }
+            settings.docmarker.Empty();
+            settings.docmarker.AddMarkers(lvTabl, Loaded);
+            
             ParentDoc.Views.Redraw();
         }
         private void MenuStripCopyTabl_Click(object sender, EventArgs e)
@@ -303,6 +301,7 @@ namespace Tabl_
             {
                 ParentDoc.Strings.Delete("tabl_cs_selected");
                 Loaded = new ObjRef[] { };
+                settings.docmarker.Empty();
                 RefreshTabl();
             }
         }
