@@ -44,6 +44,7 @@ namespace Tabl_
         /// <param name="loaded">objrefs corresponding to the provided listview items</param>
         public void AddMarkerGeometries(ListView lv, ObjRef[] loaded)
         {
+            if (!Enabled) return;
             foreach (int hli in lv.SelectedIndices)
                 AddMarkerGeometry(hli, loaded);
         }
@@ -54,6 +55,7 @@ namespace Tabl_
         /// <param name="loaded">loaded collection</param>
         public void AddMarkerGeometry(int idx, ObjRef[] loaded)
         {
+            if (!Enabled) return;
             GeometryBase g = loaded[idx].Geometry();
             if (g.HasBrepForm)
             {
@@ -159,6 +161,15 @@ namespace Tabl_
             nums = string.Join(marker.ToString(), groups.Reverse());
             nums += "." + parts[1];
             return nums;
+        }
+        /// <summary>
+        /// transform string back to parse friendly digits by taking out thousand marker or unit suffix
+        /// </summary>
+        /// <param name="withunit">string with units or markers</param>
+        /// <returns>parse ready digits as string</returns>
+        internal static string DeUnit(string withunit)
+        {
+            return string.Join("", withunit.ToList().FindAll(s => char.IsDigit(s) || s == '.'));
         }
 
         /// <summary>
@@ -808,8 +819,8 @@ namespace Tabl_
             {
                 ListViewItem a = x as ListViewItem;
                 ListViewItem b = y as ListViewItem;
-                double.TryParse(a.SubItems[hdridx].Text, out double anum);
-                double.TryParse(b.SubItems[hdridx].Text, out double bnum);
+                double.TryParse(DeUnit(a.SubItems[hdridx].Text), out double anum);
+                double.TryParse(DeUnit(b.SubItems[hdridx].Text), out double bnum);
                 int r = Comparer.Default.Compare(anum, bnum);
                 if (sortorder != -1)
                     return r;
@@ -819,10 +830,6 @@ namespace Tabl_
                     else if (r == -1) return 1;
                     else return 0;
                 }
-            }
-            public static string ExtractStrDigits(string s)
-            {
-                return "";//TODO: parse cells with units or commas
             }
         }
         private class LVSorterByPt : IComparer

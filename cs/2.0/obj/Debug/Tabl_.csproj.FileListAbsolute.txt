@@ -9,3 +9,4 @@ D:\ww_personal\Tabl_\cs\2.0\obj\Debug\Tabl_.csproj.GenerateResource.cache
 D:\ww_personal\Tabl_\cs\2.0\obj\Debug\Tabl_.csproj.CoreCompileInputs.cache
 D:\ww_personal\Tabl_\cs\2.0\obj\Debug\Tabl_2.dll
 D:\ww_personal\Tabl_\cs\2.0\obj\Debug\Tabl_2.pdb
+D:\ww_personal\Tabl_\cs\2.0\obj\Debug\Tabl_.PlaceSettings.resources

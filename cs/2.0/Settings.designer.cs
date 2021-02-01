@@ -51,11 +51,11 @@
             this.chklTablDisplay = new System.Windows.Forms.CheckedListBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.label7 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.nudWireWt = new System.Windows.Forms.NumericUpDown();
             this.btnMarkerClr = new System.Windows.Forms.Button();
             this.clrPicker = new System.Windows.Forms.ColorDialog();
+            this.cbEnableMarker = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudDP)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -289,10 +289,10 @@
             // 
             // groupBox5
             // 
+            this.groupBox5.Controls.Add(this.cbEnableMarker);
             this.groupBox5.Controls.Add(this.rbAutoUpdate);
             this.groupBox5.Controls.Add(this.rbManual);
             this.groupBox5.Controls.Add(this.label7);
-            this.groupBox5.Controls.Add(this.label6);
             this.groupBox5.Controls.Add(this.label5);
             this.groupBox5.Controls.Add(this.nudWireWt);
             this.groupBox5.Controls.Add(this.btnMarkerClr);
@@ -312,15 +312,6 @@
             this.label7.Size = new System.Drawing.Size(50, 15);
             this.label7.TabIndex = 3;
             this.label7.Text = "Refresh";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 65);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(84, 15);
-            this.label6.TabIndex = 3;
-            this.label6.Text = "Mark selected";
             // 
             // label5
             // 
@@ -359,19 +350,32 @@
             this.btnMarkerClr.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnMarkerClr.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnMarkerClr.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnMarkerClr.Location = new System.Drawing.Point(96, 63);
+            this.btnMarkerClr.Location = new System.Drawing.Point(111, 63);
             this.btnMarkerClr.Name = "btnMarkerClr";
-            this.btnMarkerClr.Size = new System.Drawing.Size(41, 21);
+            this.btnMarkerClr.Size = new System.Drawing.Size(26, 21);
             this.btnMarkerClr.TabIndex = 1;
-            this.btnMarkerClr.Text = "color";
+            this.btnMarkerClr.Text = "...";
+            this.ttipSettings.SetToolTip(this.btnMarkerClr, "viewport marker color");
             this.btnMarkerClr.UseVisualStyleBackColor = false;
             this.btnMarkerClr.Click += new System.EventHandler(this.MarkerClr_Click);
+            // 
+            // cbEnableMarker
+            // 
+            this.cbEnableMarker.AutoSize = true;
+            this.cbEnableMarker.Checked = true;
+            this.cbEnableMarker.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbEnableMarker.Location = new System.Drawing.Point(6, 64);
+            this.cbEnableMarker.Name = "cbEnableMarker";
+            this.cbEnableMarker.Size = new System.Drawing.Size(103, 19);
+            this.cbEnableMarker.TabIndex = 4;
+            this.cbEnableMarker.Text = "Mark selected";
+            this.cbEnableMarker.UseVisualStyleBackColor = true;
             // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(485, 227);
+            this.ClientSize = new System.Drawing.Size(480, 227);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
@@ -423,11 +427,11 @@
         private System.Windows.Forms.ToolTip ttipSettings;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.CheckedListBox chklTablDisplay;
-        private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.NumericUpDown nudWireWt;
         private System.Windows.Forms.Button btnMarkerClr;
         private System.Windows.Forms.ColorDialog clrPicker;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.CheckBox cbEnableMarker;
     }
 }

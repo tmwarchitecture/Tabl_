@@ -349,6 +349,7 @@ namespace Tabl_
         private void Place_Click(object sender, EventArgs e)
         {
             MessageBox.Show("place spreadsheet not implemented yet");
+            //TODO: implement placement of tabl in doc view
         }
 
         private void Info_Click(object sender, EventArgs e)

@@ -44,8 +44,8 @@ namespace Tabl_
                 default:
                     break;
             }
-            textBox1.Text = cw.ToString();
-            textBox1.Enabled = false;
+            tbPlaceColW.Text = cw.ToString();
+            tbPlaceColW.Enabled = false;
             nudPad.Value = cellpad;
             labelFontBtn.Text = fn;
             tbFontSize.Text = fs.ToString();
@@ -73,44 +73,33 @@ namespace Tabl_
             else
                 fitting = 0;
 
-            if (fitting == 0) textBox1.Enabled = false;
-            else textBox1.Enabled = true;
+            if (fitting == 0) tbPlaceColW.Enabled = false;
+            else tbPlaceColW.Enabled = true;
         }
-        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        private void ColWFit_CheckedChanged(object sender, EventArgs e)
         {
             RadioButton s = sender as RadioButton;
             if (s.Checked == false) return;
             OnFittingTypeChanged(sender, e);
         }
-        private void radioButton2_CheckedChanged(object sender, EventArgs e)
-        {
-            radioButton1_CheckedChanged(sender, e);
-        }
-        private void radioButton3_CheckedChanged(object sender, EventArgs e)
-        {
-            radioButton1_CheckedChanged(sender, e);
-        }
-        private void radioButton4_CheckedChanged(object sender, EventArgs e)
-        {
-            radioButton1_CheckedChanged(sender, e);
-        }
+        
 
         // cancel click
-        private void button1_Click(object sender, EventArgs e)
+        private void PlaceCancel_Click(object sender, EventArgs e)
         {
             ok = false;
             Close();
         }
 
         // ok click
-        private void button2_Click(object sender, EventArgs e)
+        private void PlaceOK_Click(object sender, EventArgs e)
         {
             ok = true;
             Close();
         }
 
         // width
-        private void textBox1_TextChanged(object sender, EventArgs e)
+        private void ColWInput_TextChanged(object sender, EventArgs e)
         {
             TextBox s = sender as TextBox;
             double temp = cw;
@@ -124,14 +113,14 @@ namespace Tabl_
         }
 
         // padding
-        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
+        private void Padding_ValueChanged(object sender, EventArgs e)
         {
             NumericUpDown s = sender as NumericUpDown;
             cellpad = s.Value;
         }
 
         // font pick
-        private void label4_Click(object sender, EventArgs e)
+        private void LabelFont_Click(object sender, EventArgs e)
         {
             Label s = sender as Label;
             if (fontDialog1.ShowDialog(this) == DialogResult.OK)
@@ -143,7 +132,7 @@ namespace Tabl_
         }
 
         // font size
-        private void textBox2_TextChanged(object sender, EventArgs e)
+        private void FontSize_TextChanged(object sender, EventArgs e)
         {
             TextBox s = sender as TextBox;
             double temp = fs;
@@ -169,23 +158,12 @@ namespace Tabl_
                     MessageBox.Show("plane selection failed\ndefaulted to world XY");
                 }
         }
-        private void radioButton8_CheckedChanged(object sender, EventArgs e)
+        private void Plane_CheckedChanged(object sender, EventArgs e)
         {
             RadioButton s = sender as RadioButton;
             if (s.Checked == false) return;
             OnPlaneTypeChanged(sender, e);
         }
-        private void radioButton5_CheckedChanged(object sender, EventArgs e)
-        {
-            radioButton8_CheckedChanged(sender, e);
-        }
-        private void radioButton6_CheckedChanged(object sender, EventArgs e)
-        {
-            radioButton8_CheckedChanged(sender, e);
-        }
-        private void radioButton7_CheckedChanged(object sender, EventArgs e)
-        {
-            radioButton8_CheckedChanged(sender, e);
-        }
+        
     }
 }

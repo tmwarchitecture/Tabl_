@@ -32,7 +32,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PlaceSettings));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.tbPlaceColW = new System.Windows.Forms.TextBox();
             this.rbFitCol = new System.Windows.Forms.RadioButton();
             this.rbEvenTablW = new System.Windows.Forms.RadioButton();
             this.rbFitTablW = new System.Windows.Forms.RadioButton();
@@ -49,8 +49,8 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.nudPad = new System.Windows.Forms.NumericUpDown();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.btnPlaceCancel = new System.Windows.Forms.Button();
+            this.btnPlaceOK = new System.Windows.Forms.Button();
             this.fontDialog1 = new System.Windows.Forms.FontDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.groupBox1.SuspendLayout();
@@ -61,7 +61,7 @@
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.textBox1);
+            this.groupBox1.Controls.Add(this.tbPlaceColW);
             this.groupBox1.Controls.Add(this.rbFitCol);
             this.groupBox1.Controls.Add(this.rbEvenTablW);
             this.groupBox1.Controls.Add(this.rbFitTablW);
@@ -82,14 +82,14 @@
             this.label2.TabIndex = 5;
             this.label2.Text = "Width";
             // 
-            // textBox1
+            // tbPlaceColW
             // 
-            this.textBox1.Location = new System.Drawing.Point(60, 111);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(85, 20);
-            this.textBox1.TabIndex = 4;
-            this.toolTip1.SetToolTip(this.textBox1, "in document unit");
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.tbPlaceColW.Location = new System.Drawing.Point(60, 111);
+            this.tbPlaceColW.Name = "tbPlaceColW";
+            this.tbPlaceColW.Size = new System.Drawing.Size(85, 20);
+            this.tbPlaceColW.TabIndex = 4;
+            this.toolTip1.SetToolTip(this.tbPlaceColW, "in document unit");
+            this.tbPlaceColW.TextChanged += new System.EventHandler(this.ColWInput_TextChanged);
             // 
             // rbFitCol
             // 
@@ -100,7 +100,7 @@
             this.rbFitCol.TabIndex = 3;
             this.rbFitCol.Text = "Fixed column width";
             this.rbFitCol.UseVisualStyleBackColor = true;
-            this.rbFitCol.CheckedChanged += new System.EventHandler(this.radioButton4_CheckedChanged);
+            this.rbFitCol.CheckedChanged += new System.EventHandler(this.ColWFit_CheckedChanged);
             // 
             // rbEvenTablW
             // 
@@ -113,7 +113,7 @@
             this.rbEvenTablW.Text = "Evenly divide table width";
             this.toolTip1.SetToolTip(this.rbEvenTablW, "no implementation yet\r\nwill fit to data");
             this.rbEvenTablW.UseVisualStyleBackColor = true;
-            this.rbEvenTablW.CheckedChanged += new System.EventHandler(this.radioButton3_CheckedChanged);
+            this.rbEvenTablW.CheckedChanged += new System.EventHandler(this.ColWFit_CheckedChanged);
             // 
             // rbFitTablW
             // 
@@ -126,7 +126,7 @@
             this.rbFitTablW.Text = "Fit to table width";
             this.toolTip1.SetToolTip(this.rbFitTablW, "no implementation yet\r\nwill fit to data");
             this.rbFitTablW.UseVisualStyleBackColor = true;
-            this.rbFitTablW.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
+            this.rbFitTablW.CheckedChanged += new System.EventHandler(this.ColWFit_CheckedChanged);
             // 
             // tbFitData
             // 
@@ -140,7 +140,7 @@
             this.tbFitData.Text = "Fit to data";
             this.toolTip1.SetToolTip(this.tbFitData, "recommended");
             this.tbFitData.UseVisualStyleBackColor = true;
-            this.tbFitData.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
+            this.tbFitData.CheckedChanged += new System.EventHandler(this.ColWFit_CheckedChanged);
             // 
             // groupBox2
             // 
@@ -172,7 +172,7 @@
             this.rbXZ.TabStop = true;
             this.rbXZ.Text = "XZ";
             this.rbXZ.UseVisualStyleBackColor = true;
-            this.rbXZ.CheckedChanged += new System.EventHandler(this.radioButton7_CheckedChanged);
+            this.rbXZ.CheckedChanged += new System.EventHandler(this.Plane_CheckedChanged);
             // 
             // rbPickPlane
             // 
@@ -185,7 +185,7 @@
             this.rbPickPlane.Text = "Pick";
             this.toolTip1.SetToolTip(this.rbPickPlane, "table will be placed at click location\r\nand parallel to this plane");
             this.rbPickPlane.UseVisualStyleBackColor = true;
-            this.rbPickPlane.CheckedChanged += new System.EventHandler(this.radioButton8_CheckedChanged);
+            this.rbPickPlane.CheckedChanged += new System.EventHandler(this.Plane_CheckedChanged);
             // 
             // rbYZ
             // 
@@ -197,7 +197,7 @@
             this.rbYZ.TabStop = true;
             this.rbYZ.Text = "YZ";
             this.rbYZ.UseVisualStyleBackColor = true;
-            this.rbYZ.CheckedChanged += new System.EventHandler(this.radioButton6_CheckedChanged);
+            this.rbYZ.CheckedChanged += new System.EventHandler(this.Plane_CheckedChanged);
             // 
             // rbXY
             // 
@@ -209,7 +209,7 @@
             this.rbXY.TabStop = true;
             this.rbXY.Text = "XY";
             this.rbXY.UseVisualStyleBackColor = true;
-            this.rbXY.CheckedChanged += new System.EventHandler(this.radioButton5_CheckedChanged);
+            this.rbXY.CheckedChanged += new System.EventHandler(this.Plane_CheckedChanged);
             // 
             // label6
             // 
@@ -227,7 +227,7 @@
             this.tbFontSize.Size = new System.Drawing.Size(85, 20);
             this.tbFontSize.TabIndex = 5;
             this.tbFontSize.Text = "10";
-            this.tbFontSize.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
+            this.tbFontSize.TextChanged += new System.EventHandler(this.FontSize_TextChanged);
             // 
             // label5
             // 
@@ -249,7 +249,7 @@
             this.labelFontBtn.Size = new System.Drawing.Size(29, 15);
             this.labelFontBtn.TabIndex = 3;
             this.labelFontBtn.Text = "Arial";
-            this.labelFontBtn.Click += new System.EventHandler(this.label4_Click);
+            this.labelFontBtn.Click += new System.EventHandler(this.LabelFont_Click);
             // 
             // label3
             // 
@@ -285,35 +285,35 @@
             0,
             0,
             0});
-            this.nudPad.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
+            this.nudPad.ValueChanged += new System.EventHandler(this.Padding_ValueChanged);
             // 
-            // button1
+            // btnPlaceCancel
             // 
-            this.button1.Location = new System.Drawing.Point(12, 160);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(60, 23);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "Cancel";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.btnPlaceCancel.Location = new System.Drawing.Point(248, 160);
+            this.btnPlaceCancel.Name = "btnPlaceCancel";
+            this.btnPlaceCancel.Size = new System.Drawing.Size(72, 23);
+            this.btnPlaceCancel.TabIndex = 2;
+            this.btnPlaceCancel.Text = "Cancel";
+            this.btnPlaceCancel.UseVisualStyleBackColor = true;
+            this.btnPlaceCancel.Click += new System.EventHandler(this.PlaceCancel_Click);
             // 
-            // button2
+            // btnPlaceOK
             // 
-            this.button2.Location = new System.Drawing.Point(78, 160);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(60, 23);
-            this.button2.TabIndex = 3;
-            this.button2.Text = "OK";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.btnPlaceOK.Location = new System.Drawing.Point(169, 160);
+            this.btnPlaceOK.Name = "btnPlaceOK";
+            this.btnPlaceOK.Size = new System.Drawing.Size(72, 23);
+            this.btnPlaceOK.TabIndex = 3;
+            this.btnPlaceOK.Text = "OK";
+            this.btnPlaceOK.UseVisualStyleBackColor = true;
+            this.btnPlaceOK.Click += new System.EventHandler(this.PlaceOK_Click);
             // 
             // PlaceSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(331, 194);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
+            this.ClientSize = new System.Drawing.Size(331, 195);
+            this.Controls.Add(this.btnPlaceOK);
+            this.Controls.Add(this.btnPlaceCancel);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
@@ -336,7 +336,7 @@
 
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox tbPlaceColW;
         private System.Windows.Forms.RadioButton rbFitCol;
         private System.Windows.Forms.RadioButton rbEvenTablW;
         private System.Windows.Forms.RadioButton rbFitTablW;
@@ -344,8 +344,8 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.NumericUpDown nudPad;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button btnPlaceCancel;
+        private System.Windows.Forms.Button btnPlaceOK;
         private System.Windows.Forms.FontDialog fontDialog1;
         private System.Windows.Forms.Label labelFontBtn;
         private System.Windows.Forms.Label label3;
