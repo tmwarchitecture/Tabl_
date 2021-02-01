@@ -342,9 +342,14 @@ namespace Tabl_
         /// </summary>
         private void ReloadRefs()
         {
-            string raw = ParentDoc.Strings.GetValue("tabl_cs_selected");
-            List<string> idstrs = raw.Split(new string[] { ",", }, StringSplitOptions.RemoveEmptyEntries).ToList();
-            ReloadRefs(idstrs);
+            try
+            {
+                string raw = ParentDoc.Strings.GetValue("tabl_cs_selected");
+                List<string> idstrs = raw.Split(new string[] { ",", }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                ReloadRefs(idstrs);
+            }
+            catch (ArgumentNullException) { }
+            catch (NullReferenceException) { }
         }
 
         /// <summary>

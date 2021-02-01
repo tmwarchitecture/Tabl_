@@ -14,7 +14,7 @@ using System.Windows;
 using Rhino;
 using Rhino.Commands;
 using Rhino.DocObjects;
-using Rhino.Geometry;
+using Rhino.UI;
 
 namespace Tabl_
 {
@@ -100,6 +100,8 @@ namespace Tabl_
             lvTabl.ColumnClick += TablColClick;
             lvTabl.MouseUp += TablMouseUp;
             lvTabl.KeyUp += TablCtrlC;
+            tbmsNameChange.KeyUp += MenuStripNameChange_Enter;
+            tbmsNameChange.MouseLeave += MenuStripNameTB_DeFocus;
 
             ReloadRefs();
             if (Loaded.Length != 0) RefreshTabl();
@@ -214,6 +216,57 @@ namespace Tabl_
                 ParentDoc.Objects.Select(tli.RefId, false);
             ParentDoc.Views.RedrawEnabled = true;
         }
+        private void MenuStripChangeLayer_Click(object sender, EventArgs e)
+        {
+            int li = -1;
+            bool current = false;
+            bool r = Dialogs.ShowSelectLayerDialog(ref li, "Target Layer", false, false, ref current);
+            if (r && li != -1)
+            {
+                int errn = 0;
+                foreach (TablLineItem tli in lvTabl.SelectedItems)
+                {
+                    ObjRef oref = new ObjRef(tli.RefId);
+                    var obj = oref.Object();
+                    obj.Attributes.LayerIndex = li;
+                    if (!obj.CommitChanges())
+                        errn++;
+                }
+                if (errn>0)
+                    MessageBox.Show(string.Format("error changing {0} layer(s)\nplease email support\nsorry about the inconvenience",errn));
+                ParentDoc.Views.Redraw();
+            }
+        }
+        private void MenuStripNameChange_Apply(object sender, EventArgs e)
+        {
+            int errn = 0;
+            foreach (TablLineItem tli in lvTabl.SelectedItems)
+            {
+                
+                ObjRef oref = new ObjRef(tli.RefId);
+                var obj = oref.Object();
+                obj.Attributes.Name = tbmsNameChange.Text;
+                if (!obj.CommitChanges())
+                    errn++;
+            }
+            if (errn > 0)
+                MessageBox.Show(string.Format("error changing {0} layer(s)\nplease email support\nsorry about the inconvenience", errn));
+            RefreshTabl();
+        }
+        private void MenuStripNameChange_Enter(object s, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                MenuStripNameChange_Apply(null, null); // dummy args cuz method doesn't use them
+                // TODO: nice to exit menustrip after user hits enter
+            }
+        }
+        private void MenuStripNameTB_DeFocus(object s, EventArgs e)
+        {
+            if (s is ToolStripTextBox menutb)
+                menutb.GetCurrentParent().Focus();
+        }
+
         #endregion
 
         private void Add_Click(object sender, EventArgs e)
