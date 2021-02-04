@@ -15,6 +15,7 @@ using Rhino;
 using Rhino.Commands;
 using Rhino.DocObjects;
 using Rhino.UI;
+using Rhino.Render;
 
 namespace Tabl_
 {
@@ -239,6 +240,7 @@ namespace Tabl_
         }
         private void MenuStripNameChange_Apply(object sender, EventArgs e)
         {
+            //TODO: if none selected, don't do anything
             int errn = 0;
             foreach (TablLineItem tli in lvTabl.SelectedItems)
             {
@@ -266,7 +268,137 @@ namespace Tabl_
             if (s is ToolStripTextBox menutb)
                 menutb.GetCurrentParent().Focus();
         }
+        private void MenuStripColorChange_Click(object s, EventArgs e)
+        {
+            Color lclr = Color.Chartreuse;
+            bool r = Dialogs.ShowColorDialog(ref lclr);
+            if (!r) return;
 
+            int errn = 0;
+            foreach (TablLineItem tli in lvTabl.SelectedItems)
+            {
+                ObjRef oref = new ObjRef(tli.RefId);
+                var obj = oref.Object();
+                obj.Attributes.ColorSource = ObjectColorSource.ColorFromObject;
+                obj.Attributes.ObjectColor = lclr;
+                if (!obj.CommitChanges())
+                    errn++;
+            }
+            if (errn > 0)
+                MessageBox.Show(string.Format("error changing {0} color(s)\nplease email support\nsorry about the inconvenience", errn));
+            RefreshTabl();
+        }
+        private void MenuStripLTypeChange_Click(object s, EventArgs e)
+        {
+            int ltidx = 0;
+            bool r = Dialogs.ShowSelectLinetypeDialog(ref ltidx, false);
+            if (!r) return;
+
+            int errn = 0;
+            foreach (TablLineItem tli in lvTabl.SelectedItems)
+            {
+                ObjRef oref = new ObjRef(tli.RefId);
+                var obj = oref.Object();
+                obj.Attributes.LinetypeSource = ObjectLinetypeSource.LinetypeFromObject;
+                obj.Attributes.LinetypeIndex = ltidx;
+                if (!obj.CommitChanges())
+                    errn++;
+            }
+            if (errn > 0)
+                MessageBox.Show(string.Format("error changing {0} line type(s)\nplease email support\nsorry about the inconvenience", errn));
+            RefreshTabl();
+        }
+        private void MenuStripPrintClrChange_Click(object sender, EventArgs e)
+        {
+            Color pclr = Color.Black;
+            bool r = Dialogs.ShowColorDialog(ref pclr);
+            if (!r) return;
+
+            int errn = 0;
+            foreach (TablLineItem tli in lvTabl.SelectedItems)
+            {
+                ObjRef oref = new ObjRef(tli.RefId);
+                var obj = oref.Object();
+                obj.Attributes.PlotColorSource = ObjectPlotColorSource.PlotColorFromObject;
+                obj.Attributes.PlotColor = pclr;
+                if (!obj.CommitChanges())
+                    errn++;
+            }
+            if (errn > 0)
+                MessageBox.Show(string.Format("error changing {0} plot color(s)\nplease email support\nsorry about the inconvenience", errn));
+            RefreshTabl();
+        }
+        private void MenuStripPrintWChange_Click(object sender, EventArgs e)
+        {
+            double wnum = 0;
+            bool r = Dialogs.ShowNumberBox("New PlotWidth", "input number ", ref wnum);
+            if (!r) return;
+
+            int errn = 0;
+            foreach (TablLineItem tli in lvTabl.SelectedItems)
+            {
+                ObjRef oref = new ObjRef(tli.RefId);
+                var obj = oref.Object();
+                obj.Attributes.PlotWeightSource = ObjectPlotWeightSource.PlotWeightFromObject;
+                obj.Attributes.PlotWeight = wnum;
+                if (!obj.CommitChanges())
+                    errn++;
+            }
+            if (errn > 0)
+                MessageBox.Show(string.Format("error changing {0} plot color(s)\nplease email support\nsorry about the inconvenience", errn));
+            RefreshTabl();
+        }
+        private void MenuStripMatChange_Click(object sender, EventArgs e)
+        {
+            int matidx;
+            List<string> mats = new List<string>();
+            foreach (RenderMaterial mat in ParentDoc.RenderMaterials)
+            {
+                mats.Add(mat.Name);
+            }
+            object selection = Dialogs.ShowListBox("Materials", "select target material", mats);
+            if (selection is string lname)
+                matidx = ParentDoc.Materials.Find(lname, true);
+            else
+            {
+                MessageBox.Show("Material selection failed. Either no material in the document or selection improper", "Failed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            int errn = 0;
+            foreach (TablLineItem tli in lvTabl.SelectedItems)
+            {
+                ObjRef oref = new ObjRef(tli.RefId);
+                var obj = oref.Object();
+                obj.Attributes.MaterialSource = ObjectMaterialSource.MaterialFromObject;
+                if (matidx == -1)
+                {
+                    errn++;
+                    continue;
+                }
+                obj.Attributes.MaterialIndex = matidx;
+                if (!obj.CommitChanges())
+                    errn++;
+            }
+            if (errn > 0)
+                MessageBox.Show(string.Format("error changing {0} material(s)\nplease email support\nsorry about the inconvenience", errn));
+            RefreshTabl();
+        }
+        private void MenuStripCommentsChange_Click(object sender, EventArgs e)
+        {
+            if (Dialogs.ShowEditBox("User Text", "set key", "Tabl_", false, out string k))
+                if (Dialogs.ShowEditBox("User Text", "set texts", "", true, out string txts))
+                {
+                    if (k == "" || txts == "") return;
+                    foreach (TablLineItem tli in lvTabl.SelectedItems)
+                    {
+                        ObjRef oref = new ObjRef(tli.RefId);
+                        var obj = oref.Object();
+                        obj.Attributes.SetUserString(k, txts);
+                    }
+                    RefreshTabl();
+                }
+        }
         #endregion
 
         private void Add_Click(object sender, EventArgs e)

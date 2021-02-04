@@ -444,6 +444,7 @@ namespace Tabl_
 
             ParentDoc.Views.Redraw();
         }
+        // TODO: new method for selective refresh, refresh updated objects only
 
         /// <summary>
         /// autosize column width of tabl
@@ -762,13 +763,15 @@ namespace Tabl_
                     else info = "irrelevant";
                     break;
                 case "Comments":
-                    var usertxts = obj.Attributes.GetUserStrings();
-                    string txt = null;
-                    if (usertxts.Count == 1)
-                        txt = usertxts[0];
+                    var usertxts = obj.Attributes.GetUserStrings(); // it's like a dictionary
+                    string txt = "";
+                    if (usertxts.AllKeys.Contains("Tabl_"))
+                        txt = usertxts["Tabl_"];
+                    else if (usertxts.Count == 1)
+                        txt = usertxts[usertxts.AllKeys[0]];
                     else
-                        txt = string.Join(";", usertxts.AllKeys);
-                    info = "keys_" + txt;
+                        txt = "keys: " + string.Join(";", usertxts.AllKeys);
+                    info = txt.Length <= 50 ? txt : txt.Substring(0, 50) + "(...truncated)";
                     break;
                 case "CenterPt":
                     Point3d ctr = obj.Geometry.GetBoundingBox(false).Center;
