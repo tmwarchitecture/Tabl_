@@ -99,7 +99,7 @@ namespace Tabl_
                 pts.Add(pt.Location);
             else
             {
-                //TODO: more to preview
+                // anything else to preview???
             }
         }
 
@@ -437,14 +437,40 @@ namespace Tabl_
             settings.docmarker.crvs = new List<Curve[]>(lvTabl.Items.Count);
             for (int n = 0; n < lvTabl.Items.Count; n++)
                 settings.docmarker.crvs.Add(new Curve[] { });
-            /* If object type isn't one that produces wireframes like annotations,
-             there will be an empty array left in place.
-             This index-preservation seems largely unncessary with new click-n-mark mechanism
-            */
+            // If object type isn't one that produces wireframes like annotations, there will be an empty array left in place. This index-preservation seems largely unncessary with new click-n-mark mechanism
 
             ParentDoc.Views.Redraw();
         }
-        // TODO: new method for selective refresh, refresh updated objects only
+        /// <summary>
+        /// refresh just an item in Tabl by objref, no null checking in this method
+        /// </summary>
+        /// <param name="oref">object reference</param>
+        private void RefreshTabl(ObjRef oref)
+        {
+            int tliidx = -1;
+            for (int i=0; i< lvTabl.Items.Count; i++)
+            {
+                TablLineItem li = lvTabl.Items[i] as TablLineItem;
+                if (li.RefId == oref.ObjectId)
+                {
+                    tliidx = i;
+                    break;
+                }
+            }
+            string[] infos = TablLineFields(tliidx);
+            if (!linecounter)
+                lvTabl.Items[tliidx] = new TablLineItem(infos) {
+                    RefId = Loaded[tliidx].ObjectId,
+                };
+            else
+            {
+                List<string> infolist = new List<string> { (tliidx + 1).ToString(), };
+                infolist.AddRange(infos);
+                lvTabl.Items[tliidx] = new TablLineItem(infolist.ToArray()) {
+                    RefId = Loaded[tliidx].ObjectId,
+                };
+            }
+        }
 
         /// <summary>
         /// autosize column width of tabl
@@ -461,7 +487,6 @@ namespace Tabl_
         /// get the line item fields for a tabl line
         /// </summary>
         /// <param name="refi">index of objref in loaded</param>
-        /// <param name="th">true if threaded computing</param>
         /// <returns>array of the obj properties</returns>
         private string[] TablLineFields(int refi)
         {
@@ -803,8 +828,10 @@ namespace Tabl_
             ReloadRefs(idstrings);
         }
         
-        
-        private void TablSort()
+        /// <summary>
+        /// sort tabl by column header, only called when header click happens, this also maintains synchronization between tabl and loaded objrefs
+        /// </summary>
+        private void HeaderClickSort()
         {
             string htxt = lvTabl.Columns[sorthdr].Text;
             if (htxt == "GUID" || htxt == "Name" || htxt == "Comments" || htxt == "Type" || htxt == "LineType" || htxt == "Layer" || htxt == "PrintColor" || htxt == "Color" || htxt == "Material" || htxt == "IsClosed" || htxt == "IsPlanar")
@@ -822,13 +849,16 @@ namespace Tabl_
                 lvTabl.ListViewItemSorter = new LVSorterByNum(sorthdr, sortord);
             }
             lvTabl.Sort();
-            // sync order between tabl items and loaded objrefs
+
+            // !!! SYNC ORDER between tabl items and loaded objrefs !!!
             for (int i = 0; i< lvTabl.Items.Count; i++)
             {
                 TablLineItem li = lvTabl.Items[i] as TablLineItem;
                 Loaded.SetValue(new ObjRef(li.RefId), i);
             }
-            lvTabl.ListViewItemSorter = Comparer.Default;
+
+            // reset so next time tabl refreshes it stays same order as Loaded
+            lvTabl.ListViewItemSorter = Comparer.Default; 
         }
         private class LVSorterByStr : IComparer
         {
@@ -870,6 +900,8 @@ namespace Tabl_
                 double.TryParse(DeUnit(a.SubItems[hdridx].Text), out double anum);
                 double.TryParse(DeUnit(b.SubItems[hdridx].Text), out double bnum);
                 int r = Comparer.Default.Compare(anum, bnum);
+
+                // reverse if necessary
                 if (sortorder != -1)
                     return r;
                 else
@@ -891,7 +923,28 @@ namespace Tabl_
             }
             int IComparer.Compare(object x, object y)
             {
-                return 0; // TODO: implement a way to sort points
+                ListViewItem a = x as ListViewItem;
+                ListViewItem b = y as ListViewItem;
+                string atxt = a.SubItems[hdridx].Text;
+                string btxt = b.SubItems[hdridx].Text;
+                if (Point3d.TryParse(atxt, out Point3d apt) && Point3d.TryParse(btxt, out Point3d bpt))
+                {
+                    int r = Comparer.Default.Compare(apt.X, bpt.X);
+                    if (r == 0) r = Comparer.Default.Compare(apt.Y, bpt.Y);
+                    if (r == 0) r = Comparer.Default.Compare(apt.Z, bpt.Z);
+                    
+                    // test reverse or not
+                    if (sortorder != -1)
+                        return r;
+                    else
+                    {
+                        if (r == 1) return -1;
+                        else if (r == -1) return 1;
+                        else return 0;
+                    }
+                }
+                else
+                    return 0;
             }
         }
         

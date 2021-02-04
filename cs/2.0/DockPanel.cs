@@ -65,6 +65,11 @@ namespace Tabl_
         {
             InitializeComponent();
             InitializeLVMS();
+
+#if !DEBUG
+            btnEnv.Visible = false;
+#endif
+
             headers = new Dictionary<string, bool> {
                 {"GUID", false },
                 { "Type", true},
@@ -87,11 +92,10 @@ namespace Tabl_
                 {"IsClosed", false },
                 {"Comments",false },
             };
-
             ParentDoc = RhinoDoc.ActiveDoc;
             tol = ParentDoc.ModelAbsoluteTolerance;
             rtol = ParentDoc.ModelAngleToleranceRadians;
-            settings.FormClosing += Refresh_Click;
+            settings.FormClosing += Refresh_Click; // TODO: cancel click shouldn't trigger refresh
             Command.EndCommand += OnDocChange;
             // set up first mod trigger, unlistened during event itself
             RhinoDoc.ModifyObjectAttributes += OnAttrMod;
@@ -108,7 +112,7 @@ namespace Tabl_
             if (Loaded.Length != 0) RefreshTabl();
         }
 
-        #region non-UI handlers
+#region non-UI handlers
         // refresh after each command
         private void OnDocChange(object s, EventArgs e)
         {
@@ -134,9 +138,9 @@ namespace Tabl_
             }
         }
 
-        #endregion
+#endregion
 
-        #region ListVeiw tabl handlers
+#region ListVeiw tabl handlers
         private void TablColClick(object s, ColumnClickEventArgs e)
         {
             sorthdr = e.Column;
@@ -147,7 +151,7 @@ namespace Tabl_
             else
                 sortord = 0;
             
-            TablSort();
+            HeaderClickSort();
 
             settings.docmarker.Empty();
             settings.docmarker.AddMarkers(lvTabl, Loaded);
@@ -240,7 +244,6 @@ namespace Tabl_
         }
         private void MenuStripNameChange_Apply(object sender, EventArgs e)
         {
-            //TODO: if none selected, don't do anything
             int errn = 0;
             foreach (TablLineItem tli in lvTabl.SelectedItems)
             {
@@ -253,7 +256,9 @@ namespace Tabl_
             }
             if (errn > 0)
                 MessageBox.Show(string.Format("error changing {0} layer(s)\nplease email support\nsorry about the inconvenience", errn));
-            RefreshTabl();
+
+            foreach (TablLineItem tli in lvTabl.SelectedItems)
+                RefreshTabl(new ObjRef(tli.RefId));
         }
         private void MenuStripNameChange_Enter(object s, KeyEventArgs e)
         {
@@ -286,7 +291,9 @@ namespace Tabl_
             }
             if (errn > 0)
                 MessageBox.Show(string.Format("error changing {0} color(s)\nplease email support\nsorry about the inconvenience", errn));
-            RefreshTabl();
+
+            foreach (TablLineItem tli in lvTabl.SelectedItems)
+                RefreshTabl(new ObjRef(tli.RefId));
         }
         private void MenuStripLTypeChange_Click(object s, EventArgs e)
         {
@@ -306,7 +313,9 @@ namespace Tabl_
             }
             if (errn > 0)
                 MessageBox.Show(string.Format("error changing {0} line type(s)\nplease email support\nsorry about the inconvenience", errn));
-            RefreshTabl();
+
+            foreach (TablLineItem tli in lvTabl.SelectedItems)
+                RefreshTabl(new ObjRef(tli.RefId));
         }
         private void MenuStripPrintClrChange_Click(object sender, EventArgs e)
         {
@@ -326,7 +335,9 @@ namespace Tabl_
             }
             if (errn > 0)
                 MessageBox.Show(string.Format("error changing {0} plot color(s)\nplease email support\nsorry about the inconvenience", errn));
-            RefreshTabl();
+
+            foreach (TablLineItem tli in lvTabl.SelectedItems)
+                RefreshTabl(new ObjRef(tli.RefId));
         }
         private void MenuStripPrintWChange_Click(object sender, EventArgs e)
         {
@@ -346,10 +357,16 @@ namespace Tabl_
             }
             if (errn > 0)
                 MessageBox.Show(string.Format("error changing {0} plot color(s)\nplease email support\nsorry about the inconvenience", errn));
-            RefreshTabl();
+
+            foreach (TablLineItem tli in lvTabl.SelectedItems)
+                RefreshTabl(new ObjRef(tli.RefId));
         }
         private void MenuStripMatChange_Click(object sender, EventArgs e)
         {
+            // TODO: needs working material assignment
+#if DEBUG
+            return;
+#else
             int matidx;
             List<string> mats = new List<string>();
             foreach (RenderMaterial mat in ParentDoc.RenderMaterials)
@@ -383,6 +400,7 @@ namespace Tabl_
             if (errn > 0)
                 MessageBox.Show(string.Format("error changing {0} material(s)\nplease email support\nsorry about the inconvenience", errn));
             RefreshTabl();
+#endif
         }
         private void MenuStripCommentsChange_Click(object sender, EventArgs e)
         {
@@ -396,10 +414,12 @@ namespace Tabl_
                         var obj = oref.Object();
                         obj.Attributes.SetUserString(k, txts);
                     }
-                    RefreshTabl();
+
+                    foreach (TablLineItem tli in lvTabl.SelectedItems)
+                        RefreshTabl(new ObjRef(tli.RefId));
                 }
         }
-        #endregion
+#endregion
 
         private void Add_Click(object sender, EventArgs e)
         {
@@ -502,7 +522,7 @@ namespace Tabl_
             AboutTabl_ about = new AboutTabl_();
             about.ShowDialog(this);
         }
-        // TODO: delete in production
+#if DEBUG
         private void Env_Click(object sender, EventArgs e)
         {
             // this is debug popup
@@ -515,7 +535,7 @@ namespace Tabl_
 
             MessageBox.Show(msg);
         }
-
+#endif
         private void Export_Click(object sender, EventArgs e)
         {
             DialogResult r = dlogExport.ShowDialog(this);
@@ -624,6 +644,12 @@ namespace Tabl_
             }
         }
 
-        
+        private void SelectInDoc_Click(object sender, EventArgs e)
+        {
+            foreach(TablLineItem tli in lvTabl.SelectedItems)
+                ParentDoc.Objects.Select(tli.RefId, true);
+            ParentDoc.Views.Redraw();
+        }
+
     }
 }

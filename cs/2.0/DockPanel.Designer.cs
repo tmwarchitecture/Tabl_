@@ -73,19 +73,20 @@
             this.copyTextsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copySpreadsheetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.zoomToHighlightedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnAdd = new System.Windows.Forms.Button();
-            this.btnRemove = new System.Windows.Forms.Button();
-            this.btnRefresh = new System.Windows.Forms.Button();
-            this.btnSettings = new System.Windows.Forms.Button();
-            this.btnTrash = new System.Windows.Forms.Button();
-            this.btnPlace = new System.Windows.Forms.Button();
-            this.btnEnv = new System.Windows.Forms.Button();
-            this.btnImport = new System.Windows.Forms.Button();
-            this.btnExport = new System.Windows.Forms.Button();
-            this.btnInfo = new System.Windows.Forms.Button();
             this.ttipBtns = new System.Windows.Forms.ToolTip(this.components);
+            this.btnInfo = new System.Windows.Forms.Button();
+            this.btnExport = new System.Windows.Forms.Button();
+            this.btnImport = new System.Windows.Forms.Button();
+            this.btnPlace = new System.Windows.Forms.Button();
+            this.btnTrash = new System.Windows.Forms.Button();
+            this.btnSettings = new System.Windows.Forms.Button();
+            this.btnRefresh = new System.Windows.Forms.Button();
+            this.btnRemove = new System.Windows.Forms.Button();
+            this.btnAdd = new System.Windows.Forms.Button();
             this.dlogExport = new System.Windows.Forms.SaveFileDialog();
             this.dlogImport = new System.Windows.Forms.OpenFileDialog();
+            this.btnSelectInDoc = new System.Windows.Forms.Button();
+            this.btnEnv = new System.Windows.Forms.Button();
             this.lvCtxtMenu.SuspendLayout();
             this.msHeaders.SuspendLayout();
             this.msEdits.SuspendLayout();
@@ -137,13 +138,13 @@
             this.copySpreadsheetToolStripMenuItem,
             this.zoomToHighlightedToolStripMenuItem});
             this.lvCtxtMenu.Name = "lvCtxtMenu";
-            this.lvCtxtMenu.Size = new System.Drawing.Size(187, 114);
+            this.lvCtxtMenu.Size = new System.Drawing.Size(195, 154);
             // 
             // thisWorkedToolStripMenuItem
             // 
             this.thisWorkedToolStripMenuItem.DropDown = this.msHeaders;
             this.thisWorkedToolStripMenuItem.Name = "thisWorkedToolStripMenuItem";
-            this.thisWorkedToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.thisWorkedToolStripMenuItem.Size = new System.Drawing.Size(194, 30);
             this.thisWorkedToolStripMenuItem.Text = "Show Columns";
             // 
             // msHeaders
@@ -313,7 +314,7 @@
             // 
             this.editHighlightedToolStripMenuItem.DropDown = this.msEdits;
             this.editHighlightedToolStripMenuItem.Name = "editHighlightedToolStripMenuItem";
-            this.editHighlightedToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.editHighlightedToolStripMenuItem.Size = new System.Drawing.Size(194, 30);
             this.editHighlightedToolStripMenuItem.Text = "Edit Properties";
             // 
             // msEdits
@@ -404,7 +405,7 @@
             // copyTextsToolStripMenuItem
             // 
             this.copyTextsToolStripMenuItem.Name = "copyTextsToolStripMenuItem";
-            this.copyTextsToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.copyTextsToolStripMenuItem.Size = new System.Drawing.Size(194, 30);
             this.copyTextsToolStripMenuItem.Text = "Copy Texts";
             this.copyTextsToolStripMenuItem.ToolTipText = "raw text as csv";
             this.copyTextsToolStripMenuItem.Click += new System.EventHandler(this.MenuStripCopyTabl_Click);
@@ -412,41 +413,91 @@
             // copySpreadsheetToolStripMenuItem
             // 
             this.copySpreadsheetToolStripMenuItem.Name = "copySpreadsheetToolStripMenuItem";
-            this.copySpreadsheetToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.copySpreadsheetToolStripMenuItem.Size = new System.Drawing.Size(194, 30);
             this.copySpreadsheetToolStripMenuItem.Text = "Copy as Spreadsheet";
             this.copySpreadsheetToolStripMenuItem.ToolTipText = "paste in an Excel will you?";
             this.copySpreadsheetToolStripMenuItem.Click += new System.EventHandler(this.MenuStripCopyTabl_Click);
             // 
             // zoomToHighlightedToolStripMenuItem
             // 
+            this.zoomToHighlightedToolStripMenuItem.Image = global::Tabl_.Properties.Resources.selectindoc;
+            this.zoomToHighlightedToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.zoomToHighlightedToolStripMenuItem.Name = "zoomToHighlightedToolStripMenuItem";
-            this.zoomToHighlightedToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.zoomToHighlightedToolStripMenuItem.Size = new System.Drawing.Size(194, 30);
             this.zoomToHighlightedToolStripMenuItem.Text = "Zoom to Highlighted";
             this.zoomToHighlightedToolStripMenuItem.Click += new System.EventHandler(this.MenuStripZoom_Click);
             // 
-            // btnAdd
+            // btnInfo
             // 
-            this.btnAdd.Image = global::Tabl_.Properties.Resources.add;
-            this.btnAdd.Location = new System.Drawing.Point(4, 4);
-            this.btnAdd.Margin = new System.Windows.Forms.Padding(4);
-            this.btnAdd.Name = "btnAdd";
-            this.btnAdd.Size = new System.Drawing.Size(25, 25);
-            this.btnAdd.TabIndex = 1;
-            this.ttipBtns.SetToolTip(this.btnAdd, "Add from Rhino model");
-            this.btnAdd.UseVisualStyleBackColor = true;
-            this.btnAdd.Click += new System.EventHandler(this.Add_Click);
+            this.btnInfo.Image = global::Tabl_.Properties.Resources.info;
+            this.btnInfo.Location = new System.Drawing.Point(299, 4);
+            this.btnInfo.Margin = new System.Windows.Forms.Padding(4);
+            this.btnInfo.Name = "btnInfo";
+            this.btnInfo.Size = new System.Drawing.Size(25, 25);
+            this.btnInfo.TabIndex = 1;
+            this.ttipBtns.SetToolTip(this.btnInfo, "About Tabl_");
+            this.btnInfo.UseVisualStyleBackColor = true;
+            this.btnInfo.Click += new System.EventHandler(this.Info_Click);
             // 
-            // btnRemove
+            // btnExport
             // 
-            this.btnRemove.Image = global::Tabl_.Properties.Resources.remove;
-            this.btnRemove.Location = new System.Drawing.Point(37, 4);
-            this.btnRemove.Margin = new System.Windows.Forms.Padding(4);
-            this.btnRemove.Name = "btnRemove";
-            this.btnRemove.Size = new System.Drawing.Size(25, 25);
-            this.btnRemove.TabIndex = 1;
-            this.ttipBtns.SetToolTip(this.btnRemove, "Remove Rhino object from Tabl_");
-            this.btnRemove.UseVisualStyleBackColor = true;
-            this.btnRemove.Click += new System.EventHandler(this.Remove_Click);
+            this.btnExport.Image = global::Tabl_.Properties.Resources.upload;
+            this.btnExport.Location = new System.Drawing.Point(266, 4);
+            this.btnExport.Margin = new System.Windows.Forms.Padding(4);
+            this.btnExport.Name = "btnExport";
+            this.btnExport.Size = new System.Drawing.Size(25, 25);
+            this.btnExport.TabIndex = 1;
+            this.ttipBtns.SetToolTip(this.btnExport, "Export entire spreadsheet");
+            this.btnExport.UseVisualStyleBackColor = true;
+            this.btnExport.Click += new System.EventHandler(this.Export_Click);
+            // 
+            // btnImport
+            // 
+            this.btnImport.Image = global::Tabl_.Properties.Resources.download;
+            this.btnImport.Location = new System.Drawing.Point(233, 4);
+            this.btnImport.Margin = new System.Windows.Forms.Padding(4);
+            this.btnImport.Name = "btnImport";
+            this.btnImport.Size = new System.Drawing.Size(25, 25);
+            this.btnImport.TabIndex = 1;
+            this.ttipBtns.SetToolTip(this.btnImport, "Import spreadsheet\r\nWill append to existing list");
+            this.btnImport.UseVisualStyleBackColor = true;
+            this.btnImport.Click += new System.EventHandler(this.Import_Click);
+            // 
+            // btnPlace
+            // 
+            this.btnPlace.Image = global::Tabl_.Properties.Resources.import;
+            this.btnPlace.Location = new System.Drawing.Point(200, 4);
+            this.btnPlace.Margin = new System.Windows.Forms.Padding(4);
+            this.btnPlace.Name = "btnPlace";
+            this.btnPlace.Size = new System.Drawing.Size(25, 25);
+            this.btnPlace.TabIndex = 1;
+            this.ttipBtns.SetToolTip(this.btnPlace, "Place spreadsheet in Rhino model");
+            this.btnPlace.UseVisualStyleBackColor = true;
+            this.btnPlace.Click += new System.EventHandler(this.Place_Click);
+            // 
+            // btnTrash
+            // 
+            this.btnTrash.Image = ((System.Drawing.Image)(resources.GetObject("btnTrash.Image")));
+            this.btnTrash.Location = new System.Drawing.Point(167, 4);
+            this.btnTrash.Margin = new System.Windows.Forms.Padding(4);
+            this.btnTrash.Name = "btnTrash";
+            this.btnTrash.Size = new System.Drawing.Size(25, 25);
+            this.btnTrash.TabIndex = 1;
+            this.ttipBtns.SetToolTip(this.btnTrash, "Clear Tabl_");
+            this.btnTrash.UseVisualStyleBackColor = true;
+            this.btnTrash.Click += new System.EventHandler(this.Trash_Click);
+            // 
+            // btnSettings
+            // 
+            this.btnSettings.Image = global::Tabl_.Properties.Resources.setting;
+            this.btnSettings.Location = new System.Drawing.Point(134, 4);
+            this.btnSettings.Margin = new System.Windows.Forms.Padding(4);
+            this.btnSettings.Name = "btnSettings";
+            this.btnSettings.Size = new System.Drawing.Size(25, 25);
+            this.btnSettings.TabIndex = 1;
+            this.ttipBtns.SetToolTip(this.btnSettings, "Settings");
+            this.btnSettings.UseVisualStyleBackColor = true;
+            this.btnSettings.Click += new System.EventHandler(this.Settings_Click);
             // 
             // btnRefresh
             // 
@@ -460,90 +511,29 @@
             this.btnRefresh.UseVisualStyleBackColor = true;
             this.btnRefresh.Click += new System.EventHandler(this.Refresh_Click);
             // 
-            // btnSettings
+            // btnRemove
             // 
-            this.btnSettings.Image = global::Tabl_.Properties.Resources.setting;
-            this.btnSettings.Location = new System.Drawing.Point(103, 4);
-            this.btnSettings.Margin = new System.Windows.Forms.Padding(4);
-            this.btnSettings.Name = "btnSettings";
-            this.btnSettings.Size = new System.Drawing.Size(25, 25);
-            this.btnSettings.TabIndex = 1;
-            this.ttipBtns.SetToolTip(this.btnSettings, "Settings");
-            this.btnSettings.UseVisualStyleBackColor = true;
-            this.btnSettings.Click += new System.EventHandler(this.Settings_Click);
+            this.btnRemove.Image = global::Tabl_.Properties.Resources.remove;
+            this.btnRemove.Location = new System.Drawing.Point(37, 4);
+            this.btnRemove.Margin = new System.Windows.Forms.Padding(4);
+            this.btnRemove.Name = "btnRemove";
+            this.btnRemove.Size = new System.Drawing.Size(25, 25);
+            this.btnRemove.TabIndex = 1;
+            this.ttipBtns.SetToolTip(this.btnRemove, "Remove Rhino object from Tabl_");
+            this.btnRemove.UseVisualStyleBackColor = true;
+            this.btnRemove.Click += new System.EventHandler(this.Remove_Click);
             // 
-            // btnTrash
+            // btnAdd
             // 
-            this.btnTrash.Image = ((System.Drawing.Image)(resources.GetObject("btnTrash.Image")));
-            this.btnTrash.Location = new System.Drawing.Point(136, 4);
-            this.btnTrash.Margin = new System.Windows.Forms.Padding(4);
-            this.btnTrash.Name = "btnTrash";
-            this.btnTrash.Size = new System.Drawing.Size(25, 25);
-            this.btnTrash.TabIndex = 1;
-            this.ttipBtns.SetToolTip(this.btnTrash, "Clear Tabl_");
-            this.btnTrash.UseVisualStyleBackColor = true;
-            this.btnTrash.Click += new System.EventHandler(this.Trash_Click);
-            // 
-            // btnPlace
-            // 
-            this.btnPlace.Image = global::Tabl_.Properties.Resources.import;
-            this.btnPlace.Location = new System.Drawing.Point(169, 4);
-            this.btnPlace.Margin = new System.Windows.Forms.Padding(4);
-            this.btnPlace.Name = "btnPlace";
-            this.btnPlace.Size = new System.Drawing.Size(25, 25);
-            this.btnPlace.TabIndex = 1;
-            this.ttipBtns.SetToolTip(this.btnPlace, "Place spreadsheet in Rhino model");
-            this.btnPlace.UseVisualStyleBackColor = true;
-            this.btnPlace.Click += new System.EventHandler(this.Place_Click);
-            // 
-            // btnEnv
-            // 
-            this.btnEnv.BackColor = System.Drawing.Color.Orange;
-            this.btnEnv.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnEnv.Image = global::Tabl_.Properties.Resources.export;
-            this.btnEnv.Location = new System.Drawing.Point(301, 4);
-            this.btnEnv.Margin = new System.Windows.Forms.Padding(4);
-            this.btnEnv.Name = "btnEnv";
-            this.btnEnv.Size = new System.Drawing.Size(25, 25);
-            this.btnEnv.TabIndex = 1;
-            this.btnEnv.UseVisualStyleBackColor = false;
-            this.btnEnv.Click += new System.EventHandler(this.Env_Click);
-            // 
-            // btnImport
-            // 
-            this.btnImport.Image = global::Tabl_.Properties.Resources.download;
-            this.btnImport.Location = new System.Drawing.Point(202, 4);
-            this.btnImport.Margin = new System.Windows.Forms.Padding(4);
-            this.btnImport.Name = "btnImport";
-            this.btnImport.Size = new System.Drawing.Size(25, 25);
-            this.btnImport.TabIndex = 1;
-            this.ttipBtns.SetToolTip(this.btnImport, "Import spreadsheet\r\nWill append to existing list");
-            this.btnImport.UseVisualStyleBackColor = true;
-            this.btnImport.Click += new System.EventHandler(this.Import_Click);
-            // 
-            // btnExport
-            // 
-            this.btnExport.Image = global::Tabl_.Properties.Resources.upload;
-            this.btnExport.Location = new System.Drawing.Point(235, 4);
-            this.btnExport.Margin = new System.Windows.Forms.Padding(4);
-            this.btnExport.Name = "btnExport";
-            this.btnExport.Size = new System.Drawing.Size(25, 25);
-            this.btnExport.TabIndex = 1;
-            this.ttipBtns.SetToolTip(this.btnExport, "Export entire spreadsheet");
-            this.btnExport.UseVisualStyleBackColor = true;
-            this.btnExport.Click += new System.EventHandler(this.Export_Click);
-            // 
-            // btnInfo
-            // 
-            this.btnInfo.Image = global::Tabl_.Properties.Resources.info;
-            this.btnInfo.Location = new System.Drawing.Point(268, 4);
-            this.btnInfo.Margin = new System.Windows.Forms.Padding(4);
-            this.btnInfo.Name = "btnInfo";
-            this.btnInfo.Size = new System.Drawing.Size(25, 25);
-            this.btnInfo.TabIndex = 1;
-            this.ttipBtns.SetToolTip(this.btnInfo, "About Tabl_");
-            this.btnInfo.UseVisualStyleBackColor = true;
-            this.btnInfo.Click += new System.EventHandler(this.Info_Click);
+            this.btnAdd.Image = global::Tabl_.Properties.Resources.add;
+            this.btnAdd.Location = new System.Drawing.Point(4, 4);
+            this.btnAdd.Margin = new System.Windows.Forms.Padding(4);
+            this.btnAdd.Name = "btnAdd";
+            this.btnAdd.Size = new System.Drawing.Size(25, 25);
+            this.btnAdd.TabIndex = 1;
+            this.ttipBtns.SetToolTip(this.btnAdd, "Add from Rhino model");
+            this.btnAdd.UseVisualStyleBackColor = true;
+            this.btnAdd.Click += new System.EventHandler(this.Add_Click);
             // 
             // dlogExport
             // 
@@ -556,11 +546,36 @@
             this.dlogImport.Multiselect = true;
             this.dlogImport.ReadOnlyChecked = true;
             // 
+            // btnSelectInDoc
+            // 
+            this.btnSelectInDoc.Image = global::Tabl_.Properties.Resources.selectindoc;
+            this.btnSelectInDoc.Location = new System.Drawing.Point(102, 4);
+            this.btnSelectInDoc.Name = "btnSelectInDoc";
+            this.btnSelectInDoc.Size = new System.Drawing.Size(25, 25);
+            this.btnSelectInDoc.TabIndex = 3;
+            this.ttipBtns.SetToolTip(this.btnSelectInDoc, "select highlighted item in rhino document");
+            this.btnSelectInDoc.UseVisualStyleBackColor = true;
+            this.btnSelectInDoc.Click += new System.EventHandler(this.SelectInDoc_Click);
+            // 
+            // btnEnv
+            // 
+            this.btnEnv.BackColor = System.Drawing.Color.Orange;
+            this.btnEnv.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnEnv.Image = global::Tabl_.Properties.Resources.export;
+            this.btnEnv.Location = new System.Drawing.Point(332, 4);
+            this.btnEnv.Margin = new System.Windows.Forms.Padding(4);
+            this.btnEnv.Name = "btnEnv";
+            this.btnEnv.Size = new System.Drawing.Size(25, 25);
+            this.btnEnv.TabIndex = 1;
+            this.btnEnv.UseVisualStyleBackColor = false;
+            this.btnEnv.Click += new System.EventHandler(this.Env_Click);
+            // 
             // DockPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
+            this.Controls.Add(this.btnSelectInDoc);
             this.Controls.Add(this.btnInfo);
             this.Controls.Add(this.btnExport);
             this.Controls.Add(this.btnImport);
@@ -641,5 +656,6 @@
         private System.Windows.Forms.ToolStripMenuItem copySpreadsheetToolStripMenuItem;
         private System.Windows.Forms.ToolStripTextBox tbmsNameChange;
         private System.Windows.Forms.ToolStripMenuItem applyToolStripMenuItem;
+        private System.Windows.Forms.Button btnSelectInDoc;
     }
 }
