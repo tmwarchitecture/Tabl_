@@ -32,7 +32,7 @@ namespace Tabl_
 
         protected override Result RunCommand(RhinoDoc doc, RunMode mode)
         {
-            Guid pid = DockPanel.PanelId;
+            Guid pid = TablDockPanel.PanelId;
             bool open = Panels.IsPanelVisible(pid);
             if (open) Panels.ClosePanel(pid);
             else Panels.OpenPanel(pid);

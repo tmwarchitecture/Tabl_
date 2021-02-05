@@ -165,7 +165,7 @@ namespace Tabl_
         }
     }
 
-    public partial class DockPanel : UserControl
+    public partial class TablDockPanel : UserControl
     {
 
         /// <summary>

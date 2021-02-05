@@ -32,11 +32,11 @@ namespace Tabl_
 
         protected override LoadReturnCode OnLoad(ref string errorMessage)
         {
-            Type paneltype = typeof(DockPanel);
+            Type paneltype = typeof(TablDockPanel);
             Panels.RegisterPanel(this, paneltype, "Tabl_", Properties.Resources.main);
             return LoadReturnCode.Success;
         }
 
-        public DockPanel TablPanel { get; set; }
+        public TablDockPanel TablPanel { get; set; }
     }
 }

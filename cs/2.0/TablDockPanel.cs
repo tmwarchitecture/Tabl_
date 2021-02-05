@@ -20,7 +20,7 @@ using Rhino.Render;
 namespace Tabl_
 {
     [Guid("FA271E46-C13B-47A5-9B69-46C578A74EA4")]
-    public partial class DockPanel : UserControl
+    public partial class TablDockPanel : UserControl
     {
         internal static object locker = new object();
 
@@ -37,7 +37,7 @@ namespace Tabl_
         private int sortord = 0; // order, 0 none, 1 small to large, -1 reverse
 
         // settings popup
-        private Settings settings = new Settings();
+        private Settings settings;
         // placement popup
         private PlaceSettings placetabl = new PlaceSettings();
         // whether tabl has left most column that counts line items
@@ -60,10 +60,10 @@ namespace Tabl_
 
         public static Guid PanelId
         {
-            get { return typeof(DockPanel).GUID; }
+            get { return typeof(TablDockPanel).GUID; }
         }
 
-        public DockPanel()
+        public TablDockPanel()
         {
             InitializeComponent();
             InitializeLVMS();
@@ -96,9 +96,9 @@ namespace Tabl_
                 {"Comments",false },
             };
             ParentDoc = RhinoDoc.ActiveDoc;
+            settings = new Settings(this);
             tol = ParentDoc.ModelAbsoluteTolerance;
             rtol = ParentDoc.ModelAngleToleranceRadians;
-            settings.FormClosing += Refresh_Click; // TODO: cancel click shouldn't trigger refresh
             Command.EndCommand += OnDocChange;
             // set up first mod trigger, unlistened during event itself
             RhinoDoc.ModifyObjectAttributes += OnAttrMod;
@@ -272,7 +272,7 @@ namespace Tabl_
             if (e.KeyCode == Keys.Enter)
             {
                 MenuStripNameChange_Apply(null, null); // dummy args cuz method doesn't use them
-                // TODO: nice to exit menustrip after user hits enter
+                lvCtxtMenu.Close();
             }
         }
         private void MenuStripNameTB_DeFocus(object s, EventArgs e)
@@ -496,7 +496,7 @@ namespace Tabl_
             if (!settings.update) RefreshTabl(); // cuz PickObj() triggers OnRhIdle post-command
         }
 
-        private void Refresh_Click(object sender, EventArgs e)
+        internal void Refresh_Click(object sender, EventArgs e)
         {
             RefreshTabl();
         }

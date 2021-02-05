@@ -38,6 +38,10 @@ namespace Tabl_
             clrPicker.Color = docmarker.clr;
             nudWireWt.Value = docmarker.w;
         }
+        public Settings(Control parent):this()
+        {
+            Parent = parent;
+        }
 
         // cancel
         private void Cancel_Click(object sender, EventArgs e)
@@ -103,7 +107,9 @@ namespace Tabl_
             docmarker.w = (int)nudWireWt.Value;
 
             // must be shown modal and therefore not disposed after below call
-            Close(); 
+            Close();
+            if (Parent is TablDockPanel tabl)
+                tabl.Refresh_Click(null, null); // dummy args
         }
 
         // color change
