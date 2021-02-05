@@ -48,7 +48,7 @@ namespace Tabl_
         // header order
         private string[] ho = new string[]
         {
-            "GUID","Type","Name","Layer","Color","LineType", "PrintColor","PrintWidth","Material","Length","Area", "Volume","NumPts","NumEdges","NumFaces", "Degree","CenterPt","IsPlanar","IsClosed","Comments",
+            "GUID","Type","Name","Layer","Color","LineType", "PrintColor","PrintWidth","Material","Length","Area", "Volume","NumPts","NumEdges","NumFaces", "Degree","CenterPt","Extents","IsPlanar","IsClosed","Comments",
         };
         // comparer, used to sort dict keys
         private int HeaderSorter(string a, string b)
@@ -90,6 +90,7 @@ namespace Tabl_
                 {"NumFaces" , false},
                 {"Degree",false },
                 {"CenterPt",false },
+                {"Extents", false },
                 {"IsPlanar",false },
                 {"IsClosed", false },
                 {"Comments",false },
@@ -203,7 +204,11 @@ namespace Tabl_
                 sprdsheet.SetValue(string.Join(s, line), ri);
             }
             string content = string.Join("\n", sprdsheet);
-            Clipboard.SetText(content, TextDataFormat.Text);
+            try { Clipboard.SetText(content, TextDataFormat.Text); }
+            catch (ArgumentNullException)
+            {
+                MessageBox.Show("Nothing to copy\nEither no items selected or no property column is showing at all", "Not Copied", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
         private void TablCtrlC(object s, KeyEventArgs e)
         {

@@ -154,12 +154,14 @@ namespace Tabl_
         /// guid belonging to the rhino object this tabl line corresponds
         /// </summary>
         public Guid RefId { get; set; }
+        
         /// <summary>
-        /// constructor
+        /// constructor, this doesn't assign RefId. set property separately
         /// </summary>
         /// <param name="items">collection of cells on the row</param>
         public TablLineItem(string[] items) : base(items)
         {
+            
         }
     }
 
@@ -395,6 +397,12 @@ namespace Tabl_
         {
             lvTabl.Clear();
             // set up headers
+            if (!headers.Values.Contains(true))
+            {
+                lvCtxtMenu.Close();
+                MessageBox.Show("No property column is checked\nRight click spreadsheet area and select columns to show", "Nothing to see", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
             List<string> keys = headers.Keys.ToList();
             keys.Sort(HeaderSorter); // this guarantees header order matching with menustrip's
             if (linecounter)
@@ -409,12 +417,12 @@ namespace Tabl_
             // fill spreadsheet
             List<TablLineItem> lines = new List<TablLineItem>();
             List<int> badidx = new List<int>(); // missing in document but objref still references
-
-            // TODO: parallell this?
             for (int oi = 0; oi < Loaded.Length; oi++)
             {
                 string[] infos = TablLineFields(oi);
-                if (infos[0] == "MISSING! DELETE!")
+                if (infos.Length == 0)
+                    break;
+                else if (infos[0] == "MISSING! DELETE!")
                 {
                     badidx.Add(oi);
                     continue;
@@ -428,7 +436,6 @@ namespace Tabl_
                     lines.Add(new TablLineItem(infolist.ToArray()) { RefId = Loaded[oi].ObjectId,});
                 }
             }
-
             lvTabl.Items.AddRange(lines.ToArray()); // faster with addrange rather than add in a loop
             TablColAutoSize();
 
@@ -450,34 +457,11 @@ namespace Tabl_
             for (int n = 0; n < lvTabl.Items.Count; n++)
                 settings.docmarker.crvs.Add(new Curve[] { });
             
+            // totals
+            // whenever iterating through lvTabl.items, beware of last item!
             if (settings.ssopt[1])
-            {
-                // show total
-                string[] numkeys = new string[] { "Area", "Volume", "Length", "NumPts", "NumFaces", "NumEdges", };
-                string[] totals = new string[lvTabl.Columns.Count];
-                bool tallied = false; 
-                for (int i=0;i<totals.Length;i++)
-                {
-                    ColumnHeader c = lvTabl.Columns[i];
-                    if (numkeys.Contains(c.Text))
-                    {
-                        tallied = true; // set to true cuz a numeric header is visible
-                        double tot = 0;
-                        foreach (TablLineItem tli in lvTabl.Items)
-                        {
-                            string numstr = tli.SubItems[i].Text;
-                            if (double.TryParse(DeUnit(numstr), out double n))
-                                tot += n;
-                        }
-                        totals.SetValue(tot.ToString(), i);
-                    }
-                    else
-                        totals.SetValue("", i);
-                }
-                if (tallied)
-                    lvTabl.Items.Add(new TablLineItem(totals));
-            }
-
+                lvTabl.Items.Add(TablTotals());
+            
             ParentDoc.Views.Redraw();
         }
         /// <summary>
@@ -755,7 +739,11 @@ namespace Tabl_
                 case "NumPts":
                     if (obj.ObjectType == ObjectType.Curve)
                         info = Loaded[refi].Curve().ToNurbsCurve().Points.Count.ToString();
-                    break;
+                    else if (obj.ObjectType == ObjectType.Mesh)
+                        info = Loaded[refi].Mesh().Vertices.Count.ToString();
+                    else if (obj.Geometry.HasBrepForm)
+                        info = Brep.TryConvertBrep(obj.Geometry).Vertices.Count.ToString();
+                        break;
                 case "NumEdges":
                     if (obj.ObjectType == ObjectType.Brep)
                         info = Loaded[refi].Brep().Edges.Count.ToString();
@@ -763,16 +751,18 @@ namespace Tabl_
                         if (obj.Geometry.HasBrepForm)
                             info = Brep.TryConvertBrep(obj.Geometry).Edges.Count.ToString();
                         else info = "invalid extrusion";
-
+                    else if (obj.ObjectType == ObjectType.Mesh)
+                        info = Loaded[refi].Mesh().TopologyEdges.Count.ToString();
                     break;
                 case "NumFaces":
                     if (obj.ObjectType == ObjectType.Brep)
-                        info=Loaded[refi].Brep().Faces.Count.ToString();
+                        info = Loaded[refi].Brep().Faces.Count.ToString();
                     else if (obj.ObjectType == ObjectType.Extrusion)
                         if (obj.Geometry.HasBrepForm)
-                            info=Brep.TryConvertBrep(obj.Geometry).Faces.Count.ToString();
-                        else info="invalid extrusion";
-
+                            info = Brep.TryConvertBrep(obj.Geometry).Faces.Count.ToString();
+                        else info = "invalid extrusion";
+                    else if (obj.ObjectType == ObjectType.Mesh)
+                        info = Loaded[refi].Mesh().Faces.Count.ToString();
                     break;
                 case "Degree":
                     if (obj.ObjectType == ObjectType.Curve)
@@ -846,10 +836,48 @@ namespace Tabl_
                     double pz = Math.Round(ctr.Z, settings.dp) * settings.su;
                     info = string.Format("{0}, {1}, {2}", px, py, pz);
                     break;
+                case "Extents":
+                    BoundingBox bb = obj.Geometry.GetBoundingBox(false);
+                    double xe = Math.Round(bb.Diagonal.X, settings.dp) * settings.su;
+                    double ye = Math.Round(bb.Diagonal.Y, settings.dp) * settings.su;
+                    double ze = Math.Round(bb.Diagonal.Z, settings.dp) * settings.su;
+                    info = string.Format("{0}, {1}, {2}", xe, ye, ze);
+                    break;
                 default:
                     break;
             }
             return info;
+        }
+
+        /// <summary>
+        /// make the totals line item for tabl
+        /// </summary>
+        /// <returns>line item to add to listview</returns>
+        private TablLineItem TablTotals()
+        {
+            string[] numkeys = new string[] { "Area", "Volume", "Length", "NumPts", "NumFaces", "NumEdges", };
+            string[] totals = new string[lvTabl.Columns.Count];
+            for (int i = 0; i < totals.Length; i++)
+            {
+                ColumnHeader c = lvTabl.Columns[i];
+                if (numkeys.Contains(c.Text))
+                {
+                    double tot = 0;
+                    foreach (TablLineItem tli in lvTabl.Items)
+                    {
+                        string numstr = tli.SubItems[i].Text;
+                        if (double.TryParse(DeUnit(numstr), out double n))
+                            tot += n;
+                    }
+                    totals.SetValue(tot.ToString(), i);
+                }
+                else
+                    totals.SetValue("", i);
+            }
+            return new TablLineItem(totals)
+            {
+                BackColor = Color.LightSteelBlue
+            };
         }
 
         /// <summary>
@@ -874,25 +902,26 @@ namespace Tabl_
         /// </summary>
         private void HeaderClickSort()
         {
-            // TODO: take out last row if total is being tallied
+            // detect total line
+            TablLineItem totalline = null;
+            if (settings.ssopt[1])
+            {
+                totalline = lvTabl.Items[lvTabl.Items.Count - 1] as TablLineItem;
+                lvTabl.Items.RemoveAt(lvTabl.Items.Count - 1);
+            }
+
             string htxt = lvTabl.Columns[sorthdr].Text;
-            if (htxt == "GUID" || htxt == "Name" || htxt == "Comments" || htxt == "Type" || htxt == "LineType" || htxt == "Layer" || htxt == "PrintColor" || htxt == "Color" || htxt == "Material" || htxt == "IsClosed" || htxt == "IsPlanar")
-            {
+            string[] txtfields = new string[] { "GUID", "Name", "Comments", "Type", "LineType", "Layer", "PrintColor", "Color", "Material", "IsClosed", "IsPlanar", };
+            if (txtfields.Contains(htxt))
                 lvTabl.ListViewItemSorter = new LVSorterByStr(sorthdr, sortord);
-            }
-            else if (lvTabl.Columns[sorthdr].Text == "CenterPt")
-            {
-                // special point item
+            else if (htxt == "CenterPt" || htxt == "Extents")
                 lvTabl.ListViewItemSorter = new LVSorterByPt(sorthdr, sortord);
-            }
             else
-            {
-                // numeric items
                 lvTabl.ListViewItemSorter = new LVSorterByNum(sorthdr, sortord);
-            }
+            
             lvTabl.Sort();
 
-            // !!! SYNC ORDER between tabl items and loaded objrefs !!!
+            // !!! SYNC ORDER between tabl items and loaded objrefs here !!!
             for (int i = 0; i< lvTabl.Items.Count; i++)
             {
                 if (settings.ssopt[1] && i == lvTabl.Items.Count - 1)
@@ -902,7 +931,11 @@ namespace Tabl_
             }
 
             // reset so next time tabl refreshes it stays same order as Loaded
-            lvTabl.ListViewItemSorter = Comparer.Default; 
+            lvTabl.ListViewItemSorter = Comparer.Default;
+
+            // restore if total line is visible
+            if (settings.ssopt[1] && totalline != null)
+                lvTabl.Items.Add(totalline);
         }
         private class LVSorterByStr : IComparer
         {
