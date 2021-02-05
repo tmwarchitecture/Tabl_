@@ -13,6 +13,7 @@ namespace Tabl_
     public partial class Settings : Form
     {
         internal Highlighter docmarker;
+        private TablDockPanel super; // the tabldockpanel that launches this form
 
         internal int dp = 2; // decimal place
         internal string ts =""; // thousands separater
@@ -38,9 +39,9 @@ namespace Tabl_
             clrPicker.Color = docmarker.clr;
             nudWireWt.Value = docmarker.w;
         }
-        public Settings(Control parent):this()
+        public Settings(TablDockPanel panel):this()
         {
-            Parent = parent;
+            super = panel;
         }
 
         // cancel
@@ -108,8 +109,7 @@ namespace Tabl_
 
             // must be shown modal and therefore not disposed after below call
             Close();
-            if (Parent is TablDockPanel tabl)
-                tabl.Refresh_Click(null, null); // dummy args
+            super.Refresh_Click(null, null); // dummy args
         }
 
         // color change

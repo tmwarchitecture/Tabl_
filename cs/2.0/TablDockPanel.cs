@@ -67,7 +67,7 @@ namespace Tabl_
         {
             InitializeComponent();
             InitializeLVMS();
-
+            
 #if !DEBUG
             btnEnv.Visible = false;
 #endif

@@ -167,7 +167,6 @@ namespace Tabl_
 
     public partial class TablDockPanel : UserControl
     {
-
         /// <summary>
         /// get the length unit to show in spreadsheet
         /// </summary>
