@@ -63,7 +63,15 @@ namespace Tabl_
         {
             if (!Enabled) return;
             foreach (int hli in lv.SelectedIndices)
+            {
+                if (hli == lv.Items.Count - 1)
+                {
+                    // test if this last line item is the totals
+                    TablLineItem lastitem = lv.Items[hli] as TablLineItem;
+                    if (lastitem.RefId == Guid.Empty || lastitem.RefId == null) break;
+                }
                 AddMarker(hli, loaded);
+            }
         }
         /// <summary>
         /// add specific geometries from loaded ObjRef[] to preview markers. you should check if listview items and loaded match order and capacity
@@ -433,11 +441,42 @@ namespace Tabl_
                 RemoveByIds(todelete.ToArray());
             }
 
-            // prep for click-n-mark
+            /* prep for click-n-mark
+             If object type isn't one that produces wireframes like annotations,
+             there will be an empty array left in place.
+             This index-preservation seems largely unncessary with new click-n-mark mechanism
+             */
             settings.docmarker.crvs = new List<Curve[]>(lvTabl.Items.Count);
             for (int n = 0; n < lvTabl.Items.Count; n++)
                 settings.docmarker.crvs.Add(new Curve[] { });
-            // If object type isn't one that produces wireframes like annotations, there will be an empty array left in place. This index-preservation seems largely unncessary with new click-n-mark mechanism
+            
+            if (settings.ssopt[1])
+            {
+                // show total
+                string[] numkeys = new string[] { "Area", "Volume", "Length", "NumPts", "NumFaces", "NumEdges", };
+                string[] totals = new string[lvTabl.Columns.Count];
+                bool tallied = false; 
+                for (int i=0;i<totals.Length;i++)
+                {
+                    ColumnHeader c = lvTabl.Columns[i];
+                    if (numkeys.Contains(c.Text))
+                    {
+                        tallied = true; // set to true cuz a numeric header is visible
+                        double tot = 0;
+                        foreach (TablLineItem tli in lvTabl.Items)
+                        {
+                            string numstr = tli.SubItems[i].Text;
+                            if (double.TryParse(DeUnit(numstr), out double n))
+                                tot += n;
+                        }
+                        totals.SetValue(tot.ToString(), i);
+                    }
+                    else
+                        totals.SetValue("", i);
+                }
+                if (tallied)
+                    lvTabl.Items.Add(new TablLineItem(totals));
+            }
 
             ParentDoc.Views.Redraw();
         }
@@ -450,6 +489,8 @@ namespace Tabl_
             int tliidx = -1;
             for (int i=0; i< lvTabl.Items.Count; i++)
             {
+                if (settings.ssopt[1] && i == lvTabl.Items.Count - 1)
+                    break;
                 TablLineItem li = lvTabl.Items[i] as TablLineItem;
                 if (li.RefId == oref.ObjectId)
                 {
@@ -833,6 +874,7 @@ namespace Tabl_
         /// </summary>
         private void HeaderClickSort()
         {
+            // TODO: take out last row if total is being tallied
             string htxt = lvTabl.Columns[sorthdr].Text;
             if (htxt == "GUID" || htxt == "Name" || htxt == "Comments" || htxt == "Type" || htxt == "LineType" || htxt == "Layer" || htxt == "PrintColor" || htxt == "Color" || htxt == "Material" || htxt == "IsClosed" || htxt == "IsPlanar")
             {
@@ -853,6 +895,8 @@ namespace Tabl_
             // !!! SYNC ORDER between tabl items and loaded objrefs !!!
             for (int i = 0; i< lvTabl.Items.Count; i++)
             {
+                if (settings.ssopt[1] && i == lvTabl.Items.Count - 1)
+                    break;
                 TablLineItem li = lvTabl.Items[i] as TablLineItem;
                 Loaded.SetValue(new ObjRef(li.RefId), i);
             }

@@ -25,7 +25,8 @@ namespace Tabl_
         internal static object locker = new object();
 
         internal RhinoDoc ParentDoc { get; private set; }
-        // loaded objref order must always be the same as tabl line items
+        /*loaded objref order must always be the same as tabl line items
+         headersort method reorders tabl so it has sync built in*/
         internal ObjRef[] Loaded { get; set; } = new ObjRef[] { };
 
         private double tol;
@@ -40,6 +41,7 @@ namespace Tabl_
         // placement popup
         private PlaceSettings placetabl = new PlaceSettings();
         // whether tabl has left most column that counts line items
+        // whenever a TablLineItem is created, query this
         private bool linecounter = false;
         // header visibilities, dict data type has no order
         private Dictionary<string, bool> headers;
@@ -365,7 +367,7 @@ namespace Tabl_
         {
             // TODO: needs working material assignment
 #if DEBUG
-            return;
+            MessageBox.Show("not implemented...");
 #else
             int matidx;
             List<string> mats = new List<string>();
