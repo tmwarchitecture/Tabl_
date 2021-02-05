@@ -7,10 +7,10 @@ Tabl_ is a spreadsheet interface within Rhino for the viewing, editing, and expo
 * "Live" Spreadsheet interface running while modeling in Rhino.
 * Analyze and display multiple object properties simultaneously.
 * Live update as objects are modified.
-* Display up to 23 different object properties.
-* Simple export to TXT,  CSV, and HTML Tables.
+* Display an extensive list of object properties.
+* Simple export to spreadsheet friendly formats.
 * Sort, count, and total object properties.
-* Color and number formatting options.
+* Flexible formatting masks on data points.
 * Place the Tabl_ into the Rhino document as text objects.
 
 Tabl_ provides a column and row spreadsheet in which objects can be added and removed from. The user can then check which of the 23 properties to display as the columns in the spreadsheet. Each column can be sorted to provide a unique way of examining object properties. Tabl_ can also provide totals for certain columns, allowing instant feedback on how the geometry is meeting project goals. Additionally, multiple options of formatting are available for numbers and colors, depending on the user requirements.
@@ -23,7 +23,9 @@ As of version 0.2, the Tabl_ can then be placed into the Rhino document model sp
 
 0.x versions are cross-platform. Tabl_ can run on Windows and MacOS machines.
 
-2.x versions are Windows machine only.
+1.x versions are deprecated.
+
+2.x versions are for Windows machine only, latest build against Rhino 7.
 
 
 ## Example Uses
