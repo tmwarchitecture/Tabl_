@@ -23,6 +23,12 @@ namespace Tabl_
         internal double fs = 10;
         private Plane bp;
 
+        internal Plane BasePlane
+        {
+            get { return bp; }
+        }
+        internal RectPreview RectFollower;
+
         public PlaceSettings()
         {
             InitializeComponent();
@@ -36,9 +42,6 @@ namespace Tabl_
                     rbFitTablW.Checked = true;
                     break;
                 case 2:
-                    rbEvenTablW.Checked = true;
-                    break;
-                case 3:
                     rbFitCol.Checked = true;
                     break;
                 default:
@@ -52,11 +55,7 @@ namespace Tabl_
             rbXY.Checked = true;
             
             bp = Plane.WorldXY;
-        }
-
-        internal Plane BasePlane
-        {
-            get { return bp; }
+            RectFollower = new RectPreview();
         }
 
         // check changed for column fitting raido bttns, all radio bttn check change call this one
@@ -66,10 +65,8 @@ namespace Tabl_
                 fitting = 0;
             else if (rbFitTablW.Checked)
                 fitting = 1;
-            else if (rbEvenTablW.Checked)
-                fitting = 2;
             else if (rbFitCol.Checked)
-                fitting = 3;
+                fitting = 2;
             else
                 fitting = 0;
 
@@ -82,7 +79,7 @@ namespace Tabl_
             if (s.Checked == false) return;
             OnFittingTypeChanged(sender, e);
         }
-        
+
 
         // cancel click
         private void PlaceCancel_Click(object sender, EventArgs e)
@@ -123,9 +120,9 @@ namespace Tabl_
         private void LabelFont_Click(object sender, EventArgs e)
         {
             Label s = sender as Label;
-            if (fontDialog1.ShowDialog(this) == DialogResult.OK)
+            if (dlogFont.ShowDialog(this) == DialogResult.OK)
             {
-                fn = fontDialog1.Font.Name;
+                fn = dlogFont.Font.Name;
                 string display = fn.Length > 23 ? fn.Substring(0, 23) : fn;
                 s.Text = display;
             }
@@ -165,5 +162,6 @@ namespace Tabl_
             OnPlaneTypeChanged(sender, e);
         }
         
+
     }
 }

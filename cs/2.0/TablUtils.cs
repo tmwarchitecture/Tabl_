@@ -1,5 +1,6 @@
 ﻿using Rhino;
 using Rhino.Input;
+using Rhino.Input.Custom;
 using Rhino.Commands;
 using Rhino.DocObjects;
 using Rhino.Geometry;
@@ -145,6 +146,35 @@ namespace Tabl_
             e.Display.DrawPoints(pts, PointStyle.X, w*2, clr);
             foreach (Box b in blockbbs)
                 e.Display.DrawBox(b, clr, w+w/2);
+        }
+    }
+
+    internal class RectPreview: DisplayConduit
+    {
+        public Rectangle3d rec;
+        public Color clr;
+
+        public RectPreview()
+        {
+            clr = Color.HotPink;
+        }
+        public RectPreview(Color c)
+        {
+            clr = c;
+        }
+
+        protected override void CalculateBoundingBox(CalculateBoundingBoxEventArgs e)
+        {
+            e.IncludeBoundingBox(rec.BoundingBox);
+        }
+        protected override void DrawOverlay(DrawEventArgs e)
+        {
+            e.Display.DrawDottedPolyline(new Point3d[] {
+                rec.Corner(0),
+                rec.Corner(1),
+                rec.Corner(2),
+                rec.Corner(3),
+            }, clr, true);
         }
     }
 
@@ -1024,6 +1054,26 @@ namespace Tabl_
             }
         }
         
+        private void InitializePtGetter()
+        {
+            //TODO: finish initializing ptgetter
+            ptgetter = new GetPoint();
+            ptgetter.DynamicDraw += PlaceRectUpdate;
+            ptgetter.MouseDown += PtGetterMouseDn;
+        }
+        private void PlaceRectUpdate(object s, GetPointDrawEventArgs e)
+        {
+
+            if (!plcsettings.RectFollower.Enabled) plcsettings.RectFollower.Enabled = true;
+            plcsettings.RectFollower.rec = new Rectangle3d(plcsettings.BasePlane, e.CurrentPoint, e.CurrentPoint + new Point3d(5, 5, 5));
+            // TOOD: use correct plane for this preview rect
+
+        }
+        private void PtGetterMouseDn(object s, GetPointMouseEventArgs e)
+        {
+            plcsettings.RectFollower.Enabled = false;
+            plcsettings.RectFollower.rec = Rectangle3d.Unset;
+        }
     }
 
 }

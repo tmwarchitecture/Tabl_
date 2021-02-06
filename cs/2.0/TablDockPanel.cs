@@ -16,10 +16,11 @@ using Rhino.Commands;
 using Rhino.DocObjects;
 using Rhino.UI;
 using Rhino.Render;
+using Rhino.Input.Custom;
 
 namespace Tabl_
 {
-    [Guid("FA271E46-C13B-47A5-9B69-46C578A74EA4")]
+    [Guid("FA271E46-C13B-47A5-9B69-46C578A74EA4")] // required by Rhino
     public partial class TablDockPanel : UserControl
     {
         internal static object locker = new object();
@@ -35,11 +36,12 @@ namespace Tabl_
         private bool menustripaction = false; // whether user (un)checked in header menustrip
         private int sorthdr = 0; // index of column to sort
         private int sortord = 0; // order, 0 none, 1 small to large, -1 reverse
+        private GetPoint ptgetter;
 
         // settings popup
         private Settings settings;
         // placement popup
-        private PlaceSettings placetabl = new PlaceSettings();
+        private PlaceSettings plcsettings;
         // whether tabl has left most column that counts line items
         // whenever a TablLineItem is created, query this
         private bool linecounter = false;
@@ -50,14 +52,13 @@ namespace Tabl_
         {
             "GUID","Type","Name","Layer","Color","LineType", "PrintColor","PrintWidth","Material","Length","Area", "Volume","NumPts","NumEdges","NumFaces", "Degree","CenterPt","Extents","IsPlanar","IsClosed","Comments",
         };
-        // comparer, used to sort dict keys
+        // delegate comparer, used to sort dict keys
         private int HeaderSorter(string a, string b)
         {
             if (Array.IndexOf(ho, a) > Array.IndexOf(ho, b)) return 1;
             else return -1;
         }
-        
-
+        // required by Rhino
         public static Guid PanelId
         {
             get { return typeof(TablDockPanel).GUID; }
@@ -67,6 +68,8 @@ namespace Tabl_
         {
             InitializeComponent();
             InitializeLVMS();
+            
+            InitializePtGetter();
             
 #if !DEBUG
             btnEnv.Visible = false;
@@ -97,12 +100,13 @@ namespace Tabl_
             };
             ParentDoc = RhinoDoc.ActiveDoc;
             settings = new Settings(this);
+            plcsettings = new PlaceSettings();
             tol = ParentDoc.ModelAbsoluteTolerance;
             rtol = ParentDoc.ModelAngleToleranceRadians;
             Command.EndCommand += OnDocChange;
             // set up first mod trigger, unlistened during event itself
             RhinoDoc.ModifyObjectAttributes += OnAttrMod;
-            // will relisten attr mod after all mod finish
+            // will relisten attr mod cuz all mod has finished
             RhinoApp.Idle += OnRhIdle;
 
             lvTabl.ColumnClick += TablColClick;
@@ -132,6 +136,7 @@ namespace Tabl_
         // handle idle after all attr mod
         private void OnRhIdle(object sender, EventArgs e)
         {
+            // will relisten attr mod cuz all mod has finished
             if (in_mod)
             {
                 if (settings.update)
@@ -140,6 +145,8 @@ namespace Tabl_
                 RhinoDoc.ModifyObjectAttributes += OnAttrMod;
             }
         }
+
+        
 
 #endregion
 
@@ -426,8 +433,9 @@ namespace Tabl_
                         RefreshTabl(new ObjRef(tli.RefId));
                 }
         }
-#endregion
+        #endregion
 
+        #region main UI handlers
         private void Add_Click(object sender, EventArgs e)
         {
             AddPickFilter(true);
@@ -520,7 +528,12 @@ namespace Tabl_
 
         private void Place_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("place spreadsheet not implemented yet");
+            plcsettings.Location = Cursor.Position;
+            plcsettings.ShowDialog(); // closing form won't dispose it
+            if (plcsettings.ok)
+            {
+                ptgetter.Get(true);
+            }
             //TODO: implement placement of tabl in doc view
         }
 
@@ -657,6 +670,6 @@ namespace Tabl_
                 ParentDoc.Objects.Select(tli.RefId, true);
             ParentDoc.Views.Redraw();
         }
-
+        #endregion
     }
 }
