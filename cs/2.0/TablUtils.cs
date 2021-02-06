@@ -31,6 +31,9 @@ namespace Tabl_
         public Color clr;
         public int w; // wire line width in pixels
 
+        /// <summary>
+        /// constructor for highlight marker in rhino model, of selected line item of Tabl_
+        /// </summary>
         public Highlighter()
         {
             crvs = new List<Curve[]>();
@@ -154,10 +157,17 @@ namespace Tabl_
         public Rectangle3d rec;
         public Color clr;
 
+        /// <summary>
+        /// construct display conduit for preview rectangle during placement of tabl in rhino doc
+        /// </summary>
         public RectPreview()
         {
             clr = Color.HotPink;
         }
+        /// <summary>
+        /// construct display conduit for preview rectangle during placement of tabl in rhino doc
+        /// </summary>
+        /// <param name="c">color of preview</param>
         public RectPreview(Color c)
         {
             clr = c;
@@ -1054,6 +1064,9 @@ namespace Tabl_
             }
         }
         
+        /// <summary>
+        /// initialize point getter during placement of Tabl_ in rhinodoc
+        /// </summary>
         private void InitializePtGetter()
         {
             //TODO: finish initializing ptgetter
@@ -1066,13 +1079,106 @@ namespace Tabl_
 
             if (!plcsettings.RectFollower.Enabled) plcsettings.RectFollower.Enabled = true;
             plcsettings.RectFollower.rec = new Rectangle3d(plcsettings.BasePlane, e.CurrentPoint, e.CurrentPoint + new Point3d(5, 5, 5));
-            // TOOD: use correct plane for this preview rect
+            // TODO: use correct plane for this preview rect
 
         }
         private void PtGetterMouseDn(object s, GetPointMouseEventArgs e)
         {
             plcsettings.RectFollower.Enabled = false;
             plcsettings.RectFollower.rec = Rectangle3d.Unset;
+        }
+
+        /// <summary>
+        /// generate the Tabl_ to be placed in rhino doc, everything positioned against point3d.origin
+        /// </summary>
+        /// <param name="content">output the collection of cell contents</param>
+        /// <returns>borders of the Tabl_</returns>
+        private Line[] InDocTabl(out List<TextEntity[]> content)
+        {
+            // load cell contents (texts)
+            content = new List<TextEntity[]>(lvTabl.Items.Count);
+            foreach (TablLineItem tli in lvTabl.Items)
+            {
+                TextEntity[] l = new TextEntity[tli.SubItems.Count];
+                for (int i = 0; i < l.Length; i++)
+                {
+                    string txt = tli.SubItems[i].Text;
+                    TextEntity rhtxt = new TextEntity()
+                    {
+                        PlainText = txt,
+                        Justification = TextJustification.Center,
+                        TextHeight = plcsettings.fs,
+                        Font = new Rhino.DocObjects.Font(plcsettings.fn),
+                        Plane = Plane.WorldXY,
+                    };
+                    l.SetValue(rhtxt, i);
+                }
+                content.Add(l);
+            }
+
+            // column widths
+            double[] cws = new double[content[0].Length]; // use first row to get num of col
+            if (plcsettings.fitting == 2)
+                for (int n = 0; n < cws.Length; n++)
+                    cws.SetValue(plcsettings.cw, n);
+            else
+            {
+                // start from 0 and fit up
+                for (int n = 0; n < cws.Length; n++)
+                    cws.SetValue(0, n);
+                // fit up
+                for (int ri = 0; ri < content.Count; ri++)
+                    for (int ci = 0; ci < content[ri].Length; ci++)
+                        cws.SetValue(
+                            content[ri][ci].TextModelWidth > cws[ci] ?
+                            content[ri][ci].TextModelWidth + (double)plcsettings.cellpad * 2 :
+                            cws[ci] + (double)plcsettings.cellpad * 2,
+                            ci);
+            }
+
+            // borders, all based off point3d.origin
+            List<Line> borders = new List<Line>();
+            Line h0 = new Line(Point3d.Origin, Point3d.Origin + new Point3d(cws.Sum(), 0, 0)); // first horizontal
+            double vdim = content.Count * (plcsettings.fs + (double)plcsettings.cellpad * 2);// cell height
+            Line v0 = new Line(Point3d.Origin, Point3d.Origin + new Point3d(0, -vdim, 0)); // first vertical
+            borders.AddRange(new Line[] { h0, v0 });
+            // all horizontals
+            for (int i = 0; i < content.Count; i++)
+            {
+                Point3d dy = new Point3d(0, -(i + 1) * (plcsettings.fs + (double)plcsettings.cellpad * 2), 0);
+                Point3d start = Point3d.Origin + dy;
+                Point3d end = Point3d.Origin + new Point3d(cws.Sum(), 0, 0) + dy;
+                Line hl = new Line(start, end);
+                borders.Add(hl);
+            }
+            // all verticals
+            double xnow = 0;
+            for (int i = 0; i < cws.Length; i++)
+            {
+                xnow += cws[i];
+                Point3d dx = new Point3d(xnow, 0, 0);
+                Point3d start = Point3d.Origin + dx;
+                Point3d end = Point3d.Origin + new Point3d(0, -vdim, 0) + dx;
+                Line vl = new Line(start, end);
+                borders.Add(vl);
+            }
+
+            // position cell content texts
+            for (int ri = 0; ri < content.Count; ri++)
+            {
+                double rowY = ri * ((double)plcsettings.cellpad * 2 + plcsettings.fs) + (double)plcsettings.cellpad;
+                TextEntity[] ts = content[ri];
+                double txtX = 0;
+                for (int ci = 0; ci < ts.Length; ci++)
+                {
+                    TextEntity te = ts[ci];
+                    if (ci == 0) txtX = cws[0] / 2;
+                    else txtX += cws[ci - 1] / 2 + cws[ci] / 2;
+                    te.Plane = new Plane(Point3d.Origin + new Point3d(txtX, -rowY, 0), Plane.WorldXY.ZAxis);
+                }
+            }
+
+            return borders.ToArray();
         }
     }
 

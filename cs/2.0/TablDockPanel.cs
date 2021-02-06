@@ -15,7 +15,6 @@ using Rhino;
 using Rhino.Commands;
 using Rhino.DocObjects;
 using Rhino.UI;
-using Rhino.Render;
 using Rhino.Input.Custom;
 
 namespace Tabl_

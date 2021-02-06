@@ -87,7 +87,7 @@
             this.tbPlaceColW.Size = new System.Drawing.Size(98, 21);
             this.tbPlaceColW.TabIndex = 4;
             this.tbPlaceColW.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.toolTip.SetToolTip(this.tbPlaceColW, "in document unit");
+            this.toolTip.SetToolTip(this.tbPlaceColW, "in document unit\r\nthis does not affect first option");
             this.tbPlaceColW.WordWrap = false;
             this.tbPlaceColW.TextChanged += new System.EventHandler(this.ColWInput_TextChanged);
             // 
@@ -99,6 +99,7 @@
             this.rbFitCol.Size = new System.Drawing.Size(131, 19);
             this.rbFitCol.TabIndex = 3;
             this.rbFitCol.Text = "Fixed column width";
+            this.toolTip.SetToolTip(this.rbFitCol, "input below will be each column\'s width\r\nno automatic clipping");
             this.rbFitCol.UseVisualStyleBackColor = true;
             this.rbFitCol.CheckedChanged += new System.EventHandler(this.ColWFit_CheckedChanged);
             // 
@@ -111,7 +112,7 @@
             this.rbFitTablW.Size = new System.Drawing.Size(113, 19);
             this.rbFitTablW.TabIndex = 1;
             this.rbFitTablW.Text = "Fit to table width";
-            this.toolTip.SetToolTip(this.rbFitTablW, "no implementation yet\r\nwill fit to data");
+            this.toolTip.SetToolTip(this.rbFitTablW, "evenly divide the width input below");
             this.rbFitTablW.UseVisualStyleBackColor = true;
             this.rbFitTablW.CheckedChanged += new System.EventHandler(this.ColWFit_CheckedChanged);
             // 
@@ -206,6 +207,7 @@
             this.label6.Size = new System.Drawing.Size(70, 15);
             this.label6.TabIndex = 6;
             this.label6.Text = "Base Plane";
+            this.toolTip.SetToolTip(this.label6, "Tabl_ will be place in any one of the planes parallel to this");
             // 
             // tbFontSize
             // 
