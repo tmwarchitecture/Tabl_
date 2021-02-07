@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows;
 using Rhino;
+using Rhino.Geometry;
 using Rhino.Commands;
 using Rhino.DocObjects;
 using Rhino.UI;
@@ -531,7 +532,24 @@ namespace Tabl_
             plcsettings.ShowDialog(); // closing form won't dispose it
             if (plcsettings.ok)
             {
-                ptgetter.Get(true);
+                plcsettings.RectFollower.rec = InDocTabl(out List<TextEntity[]> content, out List<Line> borders);
+                if (ptgetter.Get(true)== Rhino.Input.GetResult.Point)
+                {
+                    // TODO: record undos
+                    Plane trgt = new Plane(ptgetter.Point(), plcsettings.BasePlane.XAxis, plcsettings.BasePlane.YAxis);
+                    Transform xform = Orient(plcsettings.BasePlane, trgt);
+                    foreach (Line l in borders)
+                    {
+                        l.Transform(xform);
+                        ParentDoc.Objects.AddLine(l);
+                    }
+                    foreach (TextEntity[] row in content)
+                        foreach(TextEntity cell in row)
+                        {
+                            cell.Transform(xform);
+                            ParentDoc.Objects.AddText(cell);
+                        }
+                }
             }
             //TODO: implement placement of tabl in doc view
         }

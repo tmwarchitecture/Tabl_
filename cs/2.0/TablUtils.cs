@@ -1076,11 +1076,14 @@ namespace Tabl_
         }
         private void PlaceRectUpdate(object s, GetPointDrawEventArgs e)
         {
-
-            if (!plcsettings.RectFollower.Enabled) plcsettings.RectFollower.Enabled = true;
-            plcsettings.RectFollower.rec = new Rectangle3d(plcsettings.BasePlane, e.CurrentPoint, e.CurrentPoint + new Point3d(5, 5, 5));
-            // TODO: use correct plane for this preview rect
-
+            if (!plcsettings.RectFollower.Enabled)
+            {
+                plcsettings.RectFollower.Enabled = true;
+                Plane trgt = new Plane(e.CurrentPoint, plcsettings.BasePlane.XAxis, plcsettings.BasePlane.YAxis);
+                plcsettings.RectFollower.rec.Transform(Orient(plcsettings.RectFollower.rec.Plane, trgt));
+            }
+            Transform xform = Transform.Translation(new Vector3d(e.CurrentPoint - plcsettings.RectFollower.rec.Plane.Origin));
+            plcsettings.RectFollower.rec.Transform(xform);
         }
         private void PtGetterMouseDn(object s, GetPointMouseEventArgs e)
         {
@@ -1092,8 +1095,9 @@ namespace Tabl_
         /// generate the Tabl_ to be placed in rhino doc, everything positioned against point3d.origin
         /// </summary>
         /// <param name="content">output the collection of cell contents</param>
-        /// <returns>borders of the Tabl_</returns>
-        private Line[] InDocTabl(out List<TextEntity[]> content)
+        /// <param name="borders">output the collection of Tabl_ borders as lines</param>
+        /// <returns>bounding rectangle of the Tabl_</returns>
+        private Rectangle3d InDocTabl(out List<TextEntity[]> content, out List<Line> borders)
         {
             // load cell contents (texts)
             content = new List<TextEntity[]>(lvTabl.Items.Count);
@@ -1106,10 +1110,8 @@ namespace Tabl_
                     TextEntity rhtxt = new TextEntity()
                     {
                         PlainText = txt,
-                        Justification = TextJustification.Center,
-                        TextHeight = plcsettings.fs,
-                        Font = new Rhino.DocObjects.Font(plcsettings.fn),
                         Plane = Plane.WorldXY,
+                        DimensionStyleId = ParentDoc.DimStyles.CurrentId,
                     };
                     l.SetValue(rhtxt, i);
                 }
@@ -1121,7 +1123,7 @@ namespace Tabl_
             if (plcsettings.fitting == 2)
                 for (int n = 0; n < cws.Length; n++)
                     cws.SetValue(plcsettings.cw, n);
-            else
+            else if (plcsettings.fitting == 0)
             {
                 // start from 0 and fit up
                 for (int n = 0; n < cws.Length; n++)
@@ -1137,7 +1139,7 @@ namespace Tabl_
             }
 
             // borders, all based off point3d.origin
-            List<Line> borders = new List<Line>();
+            borders = new List<Line>();
             Line h0 = new Line(Point3d.Origin, Point3d.Origin + new Point3d(cws.Sum(), 0, 0)); // first horizontal
             double vdim = content.Count * (plcsettings.fs + (double)plcsettings.cellpad * 2);// cell height
             Line v0 = new Line(Point3d.Origin, Point3d.Origin + new Point3d(0, -vdim, 0)); // first vertical
@@ -1178,7 +1180,16 @@ namespace Tabl_
                 }
             }
 
-            return borders.ToArray();
+            return new Rectangle3d(Plane.WorldXY, h0.Length, v0.Length);
+        }
+
+        private Transform Orient(Plane src, Plane trgt)
+        {
+            Transform x0 = Transform.ChangeBasis(src, trgt);
+            Point3d mapped = new Point3d(src.Origin);
+            mapped.Transform(x0);
+            Transform x1 = Transform.Translation(new Vector3d(src.Origin - mapped));
+            return x0 * x1;
         }
     }
 
