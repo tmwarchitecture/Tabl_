@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased 2.0]
 ### Added
 - mark highlighted object in viewport
+- zoom to highlighted object in viewport
 ### Changed
 - properties moved into header context menu
 - table rendered in a ListView object
@@ -15,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - dll references updated to Rhino 7
 ### Removed
 - left panel (properties and spreadsheet options)
+- setting for in-model Tabl_ placement no longer has font parameters
 
 ## [Unreleased 0.x]
 ### Added

@@ -49,13 +49,13 @@
             this.btnCancel = new System.Windows.Forms.Button();
             this.ttipSettings = new System.Windows.Forms.ToolTip(this.components);
             this.chklTablDisplay = new System.Windows.Forms.CheckedListBox();
+            this.btnMarkerClr = new System.Windows.Forms.Button();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.cbEnableMarker = new System.Windows.Forms.CheckBox();
             this.label7 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.nudWireWt = new System.Windows.Forms.NumericUpDown();
-            this.btnMarkerClr = new System.Windows.Forms.Button();
             this.clrPicker = new System.Windows.Forms.ColorDialog();
-            this.cbEnableMarker = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudDP)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -287,6 +287,21 @@
             this.ttipSettings.SetToolTip(this.chklTablDisplay, "enabling thread increases overhead\r\nfaster only if there are myriad of line items" +
         "");
             // 
+            // btnMarkerClr
+            // 
+            this.btnMarkerClr.BackColor = System.Drawing.Color.HotPink;
+            this.btnMarkerClr.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnMarkerClr.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnMarkerClr.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnMarkerClr.Location = new System.Drawing.Point(111, 63);
+            this.btnMarkerClr.Name = "btnMarkerClr";
+            this.btnMarkerClr.Size = new System.Drawing.Size(26, 21);
+            this.btnMarkerClr.TabIndex = 1;
+            this.btnMarkerClr.Text = "...";
+            this.ttipSettings.SetToolTip(this.btnMarkerClr, "viewport marker color");
+            this.btnMarkerClr.UseVisualStyleBackColor = false;
+            this.btnMarkerClr.Click += new System.EventHandler(this.MarkerClr_Click);
+            // 
             // groupBox5
             // 
             this.groupBox5.Controls.Add(this.cbEnableMarker);
@@ -303,6 +318,19 @@
             this.groupBox5.TabIndex = 6;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Spreadsheet";
+            // 
+            // cbEnableMarker
+            // 
+            this.cbEnableMarker.AutoSize = true;
+            this.cbEnableMarker.Checked = true;
+            this.cbEnableMarker.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbEnableMarker.Location = new System.Drawing.Point(6, 64);
+            this.cbEnableMarker.Name = "cbEnableMarker";
+            this.cbEnableMarker.Size = new System.Drawing.Size(103, 19);
+            this.cbEnableMarker.TabIndex = 4;
+            this.cbEnableMarker.Text = "Mark selected";
+            this.cbEnableMarker.UseVisualStyleBackColor = true;
+            this.cbEnableMarker.CheckedChanged += new System.EventHandler(this.Marker_CheckedChanged);
             // 
             // label7
             // 
@@ -344,38 +372,10 @@
             0,
             0});
             // 
-            // btnMarkerClr
-            // 
-            this.btnMarkerClr.BackColor = System.Drawing.Color.HotPink;
-            this.btnMarkerClr.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnMarkerClr.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnMarkerClr.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnMarkerClr.Location = new System.Drawing.Point(111, 63);
-            this.btnMarkerClr.Name = "btnMarkerClr";
-            this.btnMarkerClr.Size = new System.Drawing.Size(26, 21);
-            this.btnMarkerClr.TabIndex = 1;
-            this.btnMarkerClr.Text = "...";
-            this.ttipSettings.SetToolTip(this.btnMarkerClr, "viewport marker color");
-            this.btnMarkerClr.UseVisualStyleBackColor = false;
-            this.btnMarkerClr.Click += new System.EventHandler(this.MarkerClr_Click);
-            // 
-            // cbEnableMarker
-            // 
-            this.cbEnableMarker.AutoSize = true;
-            this.cbEnableMarker.Checked = true;
-            this.cbEnableMarker.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbEnableMarker.Location = new System.Drawing.Point(6, 64);
-            this.cbEnableMarker.Name = "cbEnableMarker";
-            this.cbEnableMarker.Size = new System.Drawing.Size(103, 19);
-            this.cbEnableMarker.TabIndex = 4;
-            this.cbEnableMarker.Text = "Mark selected";
-            this.cbEnableMarker.UseVisualStyleBackColor = true;
-            this.cbEnableMarker.CheckedChanged += new System.EventHandler(this.Marker_CheckedChanged);
-            // 
             // Settings
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(480, 227);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.btnCancel);

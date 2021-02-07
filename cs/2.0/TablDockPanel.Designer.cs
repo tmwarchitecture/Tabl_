@@ -174,7 +174,6 @@
             this.isClosedToolStripMenuItem,
             this.commentsToolStripMenuItem});
             this.msHeaders.Name = "msHeader";
-            this.msHeaders.OwnerItem = this.thisWorkedToolStripMenuItem;
             this.msHeaders.ShowCheckMargin = true;
             this.msHeaders.ShowImageMargin = false;
             this.msHeaders.Size = new System.Drawing.Size(134, 488);
@@ -192,6 +191,7 @@
             this.gUIDToolStripMenuItem.Name = "gUIDToolStripMenuItem";
             this.gUIDToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
             this.gUIDToolStripMenuItem.Text = "GUID";
+            this.gUIDToolStripMenuItem.ToolTipText = "unique object identifier";
             // 
             // typeToolStripMenuItem
             // 
@@ -269,36 +269,42 @@
             this.numPtsToolStripMenuItem.Name = "numPtsToolStripMenuItem";
             this.numPtsToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
             this.numPtsToolStripMenuItem.Text = "NumPts";
+            this.numPtsToolStripMenuItem.ToolTipText = "number of control points or vertices";
             // 
             // numEdgesToolStripMenuItem
             // 
             this.numEdgesToolStripMenuItem.Name = "numEdgesToolStripMenuItem";
             this.numEdgesToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
             this.numEdgesToolStripMenuItem.Text = "NumEdges";
+            this.numEdgesToolStripMenuItem.ToolTipText = "number of edges";
             // 
             // numFacesToolStripMenuItem
             // 
             this.numFacesToolStripMenuItem.Name = "numFacesToolStripMenuItem";
             this.numFacesToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
             this.numFacesToolStripMenuItem.Text = "NumFaces";
+            this.numFacesToolStripMenuItem.ToolTipText = "number of faces";
             // 
             // degreeToolStripMenuItem
             // 
             this.degreeToolStripMenuItem.Name = "degreeToolStripMenuItem";
             this.degreeToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
             this.degreeToolStripMenuItem.Text = "Degree";
+            this.degreeToolStripMenuItem.ToolTipText = "curve or isocurve degree";
             // 
             // centerPtToolStripMenuItem
             // 
             this.centerPtToolStripMenuItem.Name = "centerPtToolStripMenuItem";
             this.centerPtToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
             this.centerPtToolStripMenuItem.Text = "CenterPt";
+            this.centerPtToolStripMenuItem.ToolTipText = "bounding box center";
             // 
             // extentsToolStripMenuItem
             // 
             this.extentsToolStripMenuItem.Name = "extentsToolStripMenuItem";
             this.extentsToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
             this.extentsToolStripMenuItem.Text = "Extents";
+            this.extentsToolStripMenuItem.ToolTipText = "x,y,z extents of object bounding box";
             // 
             // isPlanarToolStripMenuItem
             // 
@@ -317,6 +323,7 @@
             this.commentsToolStripMenuItem.Name = "commentsToolStripMenuItem";
             this.commentsToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
             this.commentsToolStripMenuItem.Text = "Comments";
+            this.commentsToolStripMenuItem.ToolTipText = "a.k.a user text";
             // 
             // editHighlightedToolStripMenuItem
             // 
@@ -338,6 +345,7 @@
             this.materialToolStripMenuItem1,
             this.commentsToolStripMenuItem1});
             this.msEdits.Name = "msEdits";
+            this.msEdits.OwnerItem = this.editHighlightedToolStripMenuItem;
             this.msEdits.Size = new System.Drawing.Size(134, 180);
             // 
             // cToolStripMenuItem
@@ -552,7 +560,7 @@
             this.btnSelectInDoc.Name = "btnSelectInDoc";
             this.btnSelectInDoc.Size = new System.Drawing.Size(25, 25);
             this.btnSelectInDoc.TabIndex = 3;
-            this.ttipBtns.SetToolTip(this.btnSelectInDoc, "select highlighted item in rhino document");
+            this.ttipBtns.SetToolTip(this.btnSelectInDoc, "Select highlighted item in rhino document");
             this.btnSelectInDoc.UseVisualStyleBackColor = true;
             this.btnSelectInDoc.Click += new System.EventHandler(this.SelectInDoc_Click);
             // 
