@@ -15,18 +15,13 @@ namespace Tabl_
 {
     public partial class PlaceSettings : Form
     {
-        internal int fitting = 0;
-        internal double cw = 40;
+        internal int fitting = 0; // 0-fit data, 1-even divide, 2-fixed column
+        internal double cw = 40; // column width
         internal decimal cellpad = 2;
-        internal bool ok = false;
-        internal string fn = "Arial";
-        internal double fs = 10;
-        private Plane bp;
+        internal bool ok = false; // clicked ok or not upon form close
+        internal bool custompl = false;
+        internal Plane BasePl { get; set; }
 
-        internal Plane BasePlane
-        {
-            get { return bp; }
-        }
         internal RectPreview RectFollower;
 
         public PlaceSettings()
@@ -50,11 +45,9 @@ namespace Tabl_
             tbPlaceColW.Text = cw.ToString();
             tbPlaceColW.Enabled = false;
             nudPad.Value = cellpad;
-            labelFontBtn.Text = fn;
-            tbFontSize.Text = fs.ToString();
             rbXY.Checked = true;
-            
-            bp = Plane.WorldXY;
+
+            BasePl = Plane.WorldXY;
             RectFollower = new RectPreview();
         }
 
@@ -79,7 +72,6 @@ namespace Tabl_
             if (s.Checked == false) return;
             OnFittingTypeChanged(sender, e);
         }
-
 
         // cancel click
         private void PlaceCancel_Click(object sender, EventArgs e)
@@ -116,44 +108,21 @@ namespace Tabl_
             cellpad = s.Value;
         }
 
-        // font pick
-        private void LabelFont_Click(object sender, EventArgs e)
-        {
-            Label s = sender as Label;
-            if (dlogFont.ShowDialog(this) == DialogResult.OK)
-            {
-                fn = dlogFont.Font.Name;
-                string display = fn.Length > 23 ? fn.Substring(0, 23) : fn;
-                s.Text = display;
-            }
-        }
-
-        // font size
-        private void FontSize_TextChanged(object sender, EventArgs e)
-        {
-            TextBox s = sender as TextBox;
-            double temp = fs;
-            if (!double.TryParse(s.Text, out fs))
-            {
-                // failed parse
-                fs = temp;
-                s.Text = temp.ToString();
-                MessageBox.Show("NOT a valid number input!");
-            }
-        }
-
         // change planes radio bttns event chain
         private void OnPlaneTypeChanged(object sender, EventArgs e)
         {
-            if (rbXY.Checked) bp = Plane.WorldXY;
-            else if (rbYZ.Checked) bp = Plane.WorldYZ;
-            else if (rbXZ.Checked) bp = Plane.WorldZX;
-            else if (rbPickPlane.Checked) 
-                if (RhinoGet.GetPlane(out bp) != Result.Success)
-                {
-                    rbXY.Checked = true;
-                    MessageBox.Show("plane selection failed\ndefaulted to world XY");
-                }
+            custompl = false; // covers following 3 conditions unless 4th changes it
+            if (rbXY.Checked)
+                BasePl = Plane.WorldXY;
+            else if (rbYZ.Checked)
+                BasePl = Plane.WorldYZ;
+            else if (rbXZ.Checked)
+                BasePl = Plane.WorldZX;
+            else
+            {
+                custompl = true;
+                BasePl = Plane.Unset;
+            }
         }
         private void Plane_CheckedChanged(object sender, EventArgs e)
         {
@@ -161,7 +130,5 @@ namespace Tabl_
             if (s.Checked == false) return;
             OnPlaneTypeChanged(sender, e);
         }
-        
-
     }
 }

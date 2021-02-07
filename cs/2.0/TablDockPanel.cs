@@ -17,6 +17,7 @@ using Rhino.Commands;
 using Rhino.DocObjects;
 using Rhino.UI;
 using Rhino.Input.Custom;
+using Rhino.Input;
 
 namespace Tabl_
 {
@@ -530,16 +531,26 @@ namespace Tabl_
         {
             plcsettings.Location = Cursor.Position;
             plcsettings.ShowDialog(); // closing form won't dispose it
-            plcsettings.RectFollower.Enabled = false;
-            plcsettings.RectFollower.rec = Rectangle3d.Unset;
             if (plcsettings.ok)
             {
+                if (plcsettings.custompl)
+                {
+                    if (RhinoGet.GetPlane(out Plane p) != Result.Success)
+                    {
+                        MessageBox.Show("No plane selected, action aborted", "Missing Input", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        return;
+                    }
+                    plcsettings.BasePl = p;
+                }
                 plcsettings.RectFollower.rec = InDocTabl(out List<TextEntity[]> content, out List<Line> borders);
-                if (ptgetter.Get(true)== Rhino.Input.GetResult.Point)
+                GetResult r = ptgetter.Get(true);
+                plcsettings.RectFollower.Enabled = false;
+                plcsettings.RectFollower.rec = Rectangle3d.Unset;
+                if (r== GetResult.Point)
                 {
                     // TODO: record undos
-                    Plane trgt = new Plane(ptgetter.Point(), plcsettings.BasePlane.XAxis, plcsettings.BasePlane.YAxis);
-                    Transform xform = Orient(plcsettings.BasePlane, trgt);
+                    Plane trgt = new Plane(ptgetter.Point(), plcsettings.BasePl.XAxis, plcsettings.BasePl.YAxis);
+                    Transform xform = Orient(Plane.WorldXY, trgt); // TODO: still misplaced tabl_
                     foreach (Line l in borders)
                     {
                         l.Transform(xform);
@@ -553,7 +564,6 @@ namespace Tabl_
                         }
                 }
             }
-            //TODO: implement placement of tabl in doc view
         }
 
         private void Info_Click(object sender, EventArgs e)

@@ -1069,7 +1069,6 @@ namespace Tabl_
         /// </summary>
         private void InitializePtGetter()
         {
-            //TODO: finish initializing ptgetter
             ptgetter = new GetPoint();
             ptgetter.DynamicDraw += PlaceRectUpdate;
         }
@@ -1078,7 +1077,7 @@ namespace Tabl_
             if (!plcsettings.RectFollower.Enabled)
             {
                 plcsettings.RectFollower.Enabled = true;
-                Plane trgt = new Plane(e.CurrentPoint, plcsettings.BasePlane.XAxis, plcsettings.BasePlane.YAxis);
+                Plane trgt = new Plane(e.CurrentPoint, plcsettings.BasePl.XAxis, plcsettings.BasePl.YAxis);
                 plcsettings.RectFollower.rec.Transform(Orient(plcsettings.RectFollower.rec.Plane, trgt));
             }
             Transform xform = Transform.Translation(new Vector3d(e.CurrentPoint - plcsettings.RectFollower.rec.Plane.Origin));
@@ -1176,6 +1175,12 @@ namespace Tabl_
             return new Rectangle3d(Plane.WorldXY, h0.Length, v0.Length);
         }
 
+        /// <summary>
+        /// orientation from one plane to another
+        /// </summary>
+        /// <param name="src">source plane</param>
+        /// <param name="trgt">target plane</param>
+        /// <returns>transform matrix</returns>
         private Transform Orient(Plane src, Plane trgt)
         {
             Transform x0 = Transform.ChangeBasis(src, trgt);

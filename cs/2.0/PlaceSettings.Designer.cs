@@ -42,10 +42,6 @@
             this.rbYZ = new System.Windows.Forms.RadioButton();
             this.rbXY = new System.Windows.Forms.RadioButton();
             this.label6 = new System.Windows.Forms.Label();
-            this.tbFontSize = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.labelFontBtn = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.nudPad = new System.Windows.Forms.NumericUpDown();
             this.btnPlaceCancel = new System.Windows.Forms.Button();
@@ -64,9 +60,9 @@
             this.groupBox1.Controls.Add(this.rbFitCol);
             this.groupBox1.Controls.Add(this.rbFitTablW);
             this.groupBox1.Controls.Add(this.tbFitData);
-            this.groupBox1.Location = new System.Drawing.Point(194, 12);
+            this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(176, 135);
+            this.groupBox1.Size = new System.Drawing.Size(149, 135);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Column";
@@ -84,7 +80,7 @@
             // 
             this.tbPlaceColW.Location = new System.Drawing.Point(70, 100);
             this.tbPlaceColW.Name = "tbPlaceColW";
-            this.tbPlaceColW.Size = new System.Drawing.Size(98, 21);
+            this.tbPlaceColW.Size = new System.Drawing.Size(68, 21);
             this.tbPlaceColW.TabIndex = 4;
             this.tbPlaceColW.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.toolTip.SetToolTip(this.tbPlaceColW, "in document unit\r\nthis does not affect first option");
@@ -137,15 +133,11 @@
             this.groupBox2.Controls.Add(this.rbYZ);
             this.groupBox2.Controls.Add(this.rbXY);
             this.groupBox2.Controls.Add(this.label6);
-            this.groupBox2.Controls.Add(this.tbFontSize);
-            this.groupBox2.Controls.Add(this.label5);
-            this.groupBox2.Controls.Add(this.labelFontBtn);
-            this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.label1);
             this.groupBox2.Controls.Add(this.nudPad);
-            this.groupBox2.Location = new System.Drawing.Point(12, 12);
+            this.groupBox2.Location = new System.Drawing.Point(167, 12);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(176, 168);
+            this.groupBox2.Size = new System.Drawing.Size(150, 135);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Cell";
@@ -153,7 +145,7 @@
             // rbXZ
             // 
             this.rbXZ.AutoSize = true;
-            this.rbXZ.Location = new System.Drawing.Point(115, 142);
+            this.rbXZ.Location = new System.Drawing.Point(100, 75);
             this.rbXZ.Name = "rbXZ";
             this.rbXZ.Size = new System.Drawing.Size(40, 19);
             this.rbXZ.TabIndex = 9;
@@ -165,12 +157,12 @@
             // rbPickPlane
             // 
             this.rbPickPlane.AutoSize = true;
-            this.rbPickPlane.Location = new System.Drawing.Point(115, 114);
+            this.rbPickPlane.Location = new System.Drawing.Point(9, 102);
             this.rbPickPlane.Name = "rbPickPlane";
-            this.rbPickPlane.Size = new System.Drawing.Size(48, 19);
+            this.rbPickPlane.Size = new System.Drawing.Size(67, 19);
             this.rbPickPlane.TabIndex = 9;
             this.rbPickPlane.TabStop = true;
-            this.rbPickPlane.Text = "Pick";
+            this.rbPickPlane.Text = "Custom";
             this.toolTip.SetToolTip(this.rbPickPlane, "table will be placed at click location\r\nand parallel to this plane");
             this.rbPickPlane.UseVisualStyleBackColor = true;
             this.rbPickPlane.CheckedChanged += new System.EventHandler(this.Plane_CheckedChanged);
@@ -178,7 +170,7 @@
             // rbYZ
             // 
             this.rbYZ.AutoSize = true;
-            this.rbYZ.Location = new System.Drawing.Point(63, 142);
+            this.rbYZ.Location = new System.Drawing.Point(55, 75);
             this.rbYZ.Name = "rbYZ";
             this.rbYZ.Size = new System.Drawing.Size(39, 19);
             this.rbYZ.TabIndex = 8;
@@ -190,7 +182,7 @@
             // rbXY
             // 
             this.rbXY.AutoSize = true;
-            this.rbXY.Location = new System.Drawing.Point(10, 142);
+            this.rbXY.Location = new System.Drawing.Point(9, 75);
             this.rbXY.Name = "rbXY";
             this.rbXY.Size = new System.Drawing.Size(40, 19);
             this.rbXY.TabIndex = 7;
@@ -202,59 +194,17 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(7, 117);
+            this.label6.Location = new System.Drawing.Point(6, 50);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(70, 15);
             this.label6.TabIndex = 6;
             this.label6.Text = "Base Plane";
             this.toolTip.SetToolTip(this.label6, "Tabl_ will be place in any one of the planes parallel to this");
             // 
-            // tbFontSize
-            // 
-            this.tbFontSize.Location = new System.Drawing.Point(70, 47);
-            this.tbFontSize.Name = "tbFontSize";
-            this.tbFontSize.Size = new System.Drawing.Size(98, 21);
-            this.tbFontSize.TabIndex = 5;
-            this.tbFontSize.Text = "10";
-            this.tbFontSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.tbFontSize.TextChanged += new System.EventHandler(this.FontSize_TextChanged);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(7, 51);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(58, 15);
-            this.label5.TabIndex = 4;
-            this.label5.Text = "Font Size";
-            // 
-            // labelFontBtn
-            // 
-            this.labelFontBtn.AutoSize = true;
-            this.labelFontBtn.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.labelFontBtn.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.labelFontBtn.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.labelFontBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelFontBtn.Location = new System.Drawing.Point(70, 24);
-            this.labelFontBtn.Name = "labelFontBtn";
-            this.labelFontBtn.Size = new System.Drawing.Size(37, 18);
-            this.labelFontBtn.TabIndex = 3;
-            this.labelFontBtn.Text = "Arial";
-            this.labelFontBtn.Click += new System.EventHandler(this.LabelFont_Click);
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(7, 24);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(31, 15);
-            this.label3.TabIndex = 2;
-            this.label3.Text = "Font";
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(7, 78);
+            this.label1.Location = new System.Drawing.Point(6, 24);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(53, 15);
             this.label1.TabIndex = 1;
@@ -262,14 +212,14 @@
             // 
             // nudPad
             // 
-            this.nudPad.Location = new System.Drawing.Point(70, 75);
+            this.nudPad.Location = new System.Drawing.Point(69, 21);
             this.nudPad.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
             this.nudPad.Name = "nudPad";
-            this.nudPad.Size = new System.Drawing.Size(99, 21);
+            this.nudPad.Size = new System.Drawing.Size(71, 21);
             this.nudPad.TabIndex = 0;
             this.nudPad.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.nudPad.Value = new decimal(new int[] {
@@ -281,9 +231,9 @@
             // 
             // btnPlaceCancel
             // 
-            this.btnPlaceCancel.Location = new System.Drawing.Point(286, 153);
+            this.btnPlaceCancel.Location = new System.Drawing.Point(89, 153);
             this.btnPlaceCancel.Name = "btnPlaceCancel";
-            this.btnPlaceCancel.Size = new System.Drawing.Size(84, 27);
+            this.btnPlaceCancel.Size = new System.Drawing.Size(73, 27);
             this.btnPlaceCancel.TabIndex = 2;
             this.btnPlaceCancel.Text = "Cancel";
             this.btnPlaceCancel.UseVisualStyleBackColor = true;
@@ -291,9 +241,9 @@
             // 
             // btnPlaceOK
             // 
-            this.btnPlaceOK.Location = new System.Drawing.Point(194, 153);
+            this.btnPlaceOK.Location = new System.Drawing.Point(12, 153);
             this.btnPlaceOK.Name = "btnPlaceOK";
-            this.btnPlaceOK.Size = new System.Drawing.Size(84, 27);
+            this.btnPlaceOK.Size = new System.Drawing.Size(73, 27);
             this.btnPlaceOK.TabIndex = 3;
             this.btnPlaceOK.Text = "OK";
             this.btnPlaceOK.UseVisualStyleBackColor = true;
@@ -303,7 +253,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(383, 191);
+            this.ClientSize = new System.Drawing.Size(328, 191);
             this.Controls.Add(this.btnPlaceOK);
             this.Controls.Add(this.btnPlaceCancel);
             this.Controls.Add(this.groupBox2);
@@ -339,10 +289,6 @@
         private System.Windows.Forms.Button btnPlaceCancel;
         private System.Windows.Forms.Button btnPlaceOK;
         private System.Windows.Forms.FontDialog dlogFont;
-        private System.Windows.Forms.Label labelFontBtn;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox tbFontSize;
-        private System.Windows.Forms.Label label5;
         private System.Windows.Forms.RadioButton rbPickPlane;
         private System.Windows.Forms.RadioButton rbYZ;
         private System.Windows.Forms.RadioButton rbXY;
