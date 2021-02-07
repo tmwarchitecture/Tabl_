@@ -18,6 +18,7 @@ using Rhino.DocObjects;
 using Rhino.UI;
 using Rhino.Input.Custom;
 using Rhino.Input;
+using Rhino.Render;
 
 namespace Tabl_
 {
@@ -112,7 +113,7 @@ namespace Tabl_
 
             lvTabl.ColumnClick += TablColClick;
             lvTabl.MouseUp += TablMouseUp;
-            lvTabl.KeyUp += TablCtrlC;
+            lvTabl.KeyUp += TablKeyPress;
             tbmsNameChange.KeyUp += MenuStripNameChange_Enter;
             tbmsNameChange.MouseLeave += MenuStripNameTB_DeFocus;
 
@@ -218,12 +219,27 @@ namespace Tabl_
                 MessageBox.Show("Nothing to copy\nEither no items selected or no property column is showing at all", "Not Copied", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
-        private void TablCtrlC(object s, KeyEventArgs e)
+        private void TablKeyPress(object s, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.C && ModifierKeys == Keys.Control)
             {
                 ToolStripMenuItem dummy = new ToolStripMenuItem() { Text = "Spreadsheet" };
                 MenuStripCopyTabl_Click(dummy, e);
+            }
+            else if (e.KeyCode == Keys.Delete)
+            {
+                //eliminate from doc string
+                string raw = ParentDoc.Strings.GetValue("tabl_cs_selected");
+                List<string> idstrs = raw.Split(new string[] { ",", }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                foreach (var li in lvTabl.SelectedItems)
+                    if (li is TablLineItem tli)
+                        idstrs.Remove(tli.RefId.ToString());
+                ParentDoc.Strings.SetString("tabl_cs_selected", string.Join(",", idstrs));
+
+                //refresh Loaded property from docstr
+                ReloadRefs(idstrs);
+
+                RefreshTabl();
             }
         }
         private void MenuStripZoom_Click(object sender, EventArgs e)
@@ -379,7 +395,7 @@ namespace Tabl_
         private void MenuStripMatChange_Click(object sender, EventArgs e)
         {
             // TODO: needs working material assignment
-#if DEBUG
+#if !DEBUG
             MessageBox.Show("not implemented...");
 #else
             int matidx;
@@ -491,18 +507,19 @@ namespace Tabl_
                 return;
             }
 
-            //first eliminate from doc string
+            //eliminate from doc string
             string raw = ParentDoc.Strings.GetValue("tabl_cs_selected");
             List<string> idstrs = raw.Split(new string[] { ",", }, StringSplitOptions.RemoveEmptyEntries).ToList();
             foreach (ObjRef oref in picked)
                 idstrs.Remove(oref.ObjectId.ToString());
             ParentDoc.Strings.SetString("tabl_cs_selected", string.Join(",", idstrs));
 
-            //refresh Loaded property
+            //refresh Loaded property from docstr
             ReloadRefs(idstrs);
 
             RmvPickFilter(userlocked.ToArray(), false);
-            if (!settings.update) RefreshTabl(); // cuz PickObj() triggers OnRhIdle post-command
+            if (!settings.update)
+                RefreshTabl(); // cuz PickObj() triggers OnRhIdle post-command, refresh manually if not auto-update
         }
 
         internal void Refresh_Click(object sender, EventArgs e)
@@ -529,6 +546,12 @@ namespace Tabl_
 
         private void Place_Click(object sender, EventArgs e)
         {
+            if (lvTabl.Items.Count == 0)
+            {
+                MessageBox.Show("Nothing to place", "Empty Tabl_", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
             plcsettings.Location = Cursor.Position;
             plcsettings.ShowDialog(); // closing form won't dispose it
             if (plcsettings.ok)
@@ -548,9 +571,9 @@ namespace Tabl_
                 plcsettings.RectFollower.rec = Rectangle3d.Unset;
                 if (r== GetResult.Point)
                 {
-                    // TODO: record undos
+                    uint undo_num = ParentDoc.BeginUndoRecord("Placing Tabl_");
                     Plane trgt = new Plane(ptgetter.Point(), plcsettings.BasePl.XAxis, plcsettings.BasePl.YAxis);
-                    Transform xform = Orient(Plane.WorldXY, trgt); // TODO: still misplaced tabl_
+                    Transform xform = Transform.PlaneToPlane(Plane.WorldXY, trgt);
                     foreach (Line l in borders)
                     {
                         l.Transform(xform);
@@ -562,6 +585,7 @@ namespace Tabl_
                             cell.Transform(xform);
                             ParentDoc.Objects.AddText(cell);
                         }
+                    ParentDoc.EndUndoRecord(undo_num);
                 }
             }
         }
@@ -571,9 +595,12 @@ namespace Tabl_
             AboutTabl_ about = new AboutTabl_();
             about.ShowDialog(this);
         }
-#if DEBUG
+
         private void Env_Click(object sender, EventArgs e)
         {
+#if !DEBUG
+            return;
+#endif
             // this is debug popup
             string msg = "";
             msg += string.Format("Loaded: {0}", Loaded.Length);
@@ -584,7 +611,7 @@ namespace Tabl_
 
             MessageBox.Show(msg);
         }
-#endif
+
         private void Export_Click(object sender, EventArgs e)
         {
             DialogResult r = dlogExport.ShowDialog(this);

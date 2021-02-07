@@ -48,6 +48,7 @@
             this.btnPlaceOK = new System.Windows.Forms.Button();
             this.dlogFont = new System.Windows.Forms.FontDialog();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.label3 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudPad)).BeginInit();
@@ -102,7 +103,6 @@
             // rbFitTablW
             // 
             this.rbFitTablW.AutoSize = true;
-            this.rbFitTablW.Enabled = false;
             this.rbFitTablW.Location = new System.Drawing.Point(7, 48);
             this.rbFitTablW.Name = "rbFitTablW";
             this.rbFitTablW.Size = new System.Drawing.Size(113, 19);
@@ -249,11 +249,23 @@
             this.btnPlaceOK.UseVisualStyleBackColor = true;
             this.btnPlaceOK.Click += new System.EventHandler(this.PlaceOK_Click);
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.label3.Location = new System.Drawing.Point(168, 150);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(147, 30);
+            this.label3.TabIndex = 4;
+            this.label3.Text = "Change font appearance\r\nin Rhino dimension styles";
+            // 
             // PlaceSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(328, 191);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.btnPlaceOK);
             this.Controls.Add(this.btnPlaceCancel);
             this.Controls.Add(this.groupBox2);
@@ -272,6 +284,7 @@
             this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudPad)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -295,5 +308,6 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.RadioButton rbXZ;
         private System.Windows.Forms.ToolTip toolTip;
+        private System.Windows.Forms.Label label3;
     }
 }

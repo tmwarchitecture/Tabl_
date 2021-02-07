@@ -1078,7 +1078,7 @@ namespace Tabl_
             {
                 plcsettings.RectFollower.Enabled = true;
                 Plane trgt = new Plane(e.CurrentPoint, plcsettings.BasePl.XAxis, plcsettings.BasePl.YAxis);
-                plcsettings.RectFollower.rec.Transform(Orient(plcsettings.RectFollower.rec.Plane, trgt));
+                plcsettings.RectFollower.rec.Transform(Transform.PlaneToPlane(plcsettings.RectFollower.rec.Plane, trgt));
             }
             Transform xform = Transform.Translation(new Vector3d(e.CurrentPoint - plcsettings.RectFollower.rec.Plane.Origin));
             plcsettings.RectFollower.rec.Transform(xform);
@@ -1093,7 +1093,21 @@ namespace Tabl_
         private Rectangle3d InDocTabl(out List<TextEntity[]> content, out List<Line> borders)
         {
             // load cell contents (texts)
-            content = new List<TextEntity[]>(lvTabl.Items.Count);
+            content = new List<TextEntity[]>(lvTabl.Items.Count+1); //+1 includes headers
+            // headers
+            TextEntity[] headerline = new TextEntity[lvTabl.Columns.Count];
+            for (int i = 0; i < lvTabl.Columns.Count; i++)
+            {
+                TextEntity rhtxt = new TextEntity()
+                {
+                    PlainText = lvTabl.Columns[i].Text,
+                    Plane = Plane.WorldXY,
+                    DimensionStyleId = ParentDoc.DimStyles.CurrentId,
+                };
+                headerline.SetValue(rhtxt, i);
+            }
+            content.Add(headerline);
+            // line items
             foreach (TablLineItem tli in lvTabl.Items)
             {
                 TextEntity[] l = new TextEntity[tli.SubItems.Count];
@@ -1172,23 +1186,9 @@ namespace Tabl_
                 }
             }
 
-            return new Rectangle3d(Plane.WorldXY, h0.Length, v0.Length);
+            return new Rectangle3d(Plane.WorldXY, h0.Length, -v0.Length);
         }
 
-        /// <summary>
-        /// orientation from one plane to another
-        /// </summary>
-        /// <param name="src">source plane</param>
-        /// <param name="trgt">target plane</param>
-        /// <returns>transform matrix</returns>
-        private Transform Orient(Plane src, Plane trgt)
-        {
-            Transform x0 = Transform.ChangeBasis(src, trgt);
-            Point3d mapped = new Point3d(src.Origin);
-            mapped.Transform(x0);
-            Transform x1 = Transform.Translation(new Vector3d(src.Origin - mapped));
-            return x0 * x1;
-        }
     }
 
 }
