@@ -530,6 +530,8 @@ namespace Tabl_
         {
             plcsettings.Location = Cursor.Position;
             plcsettings.ShowDialog(); // closing form won't dispose it
+            plcsettings.RectFollower.Enabled = false;
+            plcsettings.RectFollower.rec = Rectangle3d.Unset;
             if (plcsettings.ok)
             {
                 plcsettings.RectFollower.rec = InDocTabl(out List<TextEntity[]> content, out List<Line> borders);

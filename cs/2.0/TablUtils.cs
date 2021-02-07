@@ -1072,7 +1072,6 @@ namespace Tabl_
             //TODO: finish initializing ptgetter
             ptgetter = new GetPoint();
             ptgetter.DynamicDraw += PlaceRectUpdate;
-            ptgetter.MouseDown += PtGetterMouseDn;
         }
         private void PlaceRectUpdate(object s, GetPointDrawEventArgs e)
         {
@@ -1084,11 +1083,6 @@ namespace Tabl_
             }
             Transform xform = Transform.Translation(new Vector3d(e.CurrentPoint - plcsettings.RectFollower.rec.Plane.Origin));
             plcsettings.RectFollower.rec.Transform(xform);
-        }
-        private void PtGetterMouseDn(object s, GetPointMouseEventArgs e)
-        {
-            plcsettings.RectFollower.Enabled = false;
-            plcsettings.RectFollower.rec = Rectangle3d.Unset;
         }
 
         /// <summary>
@@ -1132,22 +1126,21 @@ namespace Tabl_
                 for (int ri = 0; ri < content.Count; ri++)
                     for (int ci = 0; ci < content[ri].Length; ci++)
                         cws.SetValue(
-                            content[ri][ci].TextModelWidth > cws[ci] ?
-                            content[ri][ci].TextModelWidth + (double)plcsettings.cellpad * 2 :
-                            cws[ci] + (double)plcsettings.cellpad * 2,
+                            content[ri][ci].TextModelWidth > cws[ci] ? content[ri][ci].TextModelWidth + (double)plcsettings.cellpad * 2 : cws[ci],
                             ci);
             }
 
             // borders, all based off point3d.origin
             borders = new List<Line>();
+            double txtht = ParentDoc.DimStyles.Current.TextHeight;
             Line h0 = new Line(Point3d.Origin, Point3d.Origin + new Point3d(cws.Sum(), 0, 0)); // first horizontal
-            double vdim = content.Count * (plcsettings.fs + (double)plcsettings.cellpad * 2);// cell height
+            double vdim = content.Count * (txtht + (double)plcsettings.cellpad * 2);// cell height
             Line v0 = new Line(Point3d.Origin, Point3d.Origin + new Point3d(0, -vdim, 0)); // first vertical
             borders.AddRange(new Line[] { h0, v0 });
             // all horizontals
             for (int i = 0; i < content.Count; i++)
             {
-                Point3d dy = new Point3d(0, -(i + 1) * (plcsettings.fs + (double)plcsettings.cellpad * 2), 0);
+                Point3d dy = new Point3d(0, -(i + 1) * (txtht + (double)plcsettings.cellpad * 2), 0);
                 Point3d start = Point3d.Origin + dy;
                 Point3d end = Point3d.Origin + new Point3d(cws.Sum(), 0, 0) + dy;
                 Line hl = new Line(start, end);
@@ -1168,15 +1161,15 @@ namespace Tabl_
             // position cell content texts
             for (int ri = 0; ri < content.Count; ri++)
             {
-                double rowY = ri * ((double)plcsettings.cellpad * 2 + plcsettings.fs) + (double)plcsettings.cellpad;
+                double rowY = ri * ((double)plcsettings.cellpad * 2 + txtht) + (double)plcsettings.cellpad;
                 TextEntity[] ts = content[ri];
-                double txtX = 0;
+                double txtX = 0; // mid cell x coordinate
                 for (int ci = 0; ci < ts.Length; ci++)
                 {
                     TextEntity te = ts[ci];
                     if (ci == 0) txtX = cws[0] / 2;
                     else txtX += cws[ci - 1] / 2 + cws[ci] / 2;
-                    te.Plane = new Plane(Point3d.Origin + new Point3d(txtX, -rowY, 0), Plane.WorldXY.ZAxis);
+                    te.Plane = new Plane(Point3d.Origin + new Point3d(txtX-te.TextModelWidth/2.0, -rowY, 0), Plane.WorldXY.ZAxis);
                 }
             }
 
