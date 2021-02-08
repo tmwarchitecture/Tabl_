@@ -69,9 +69,8 @@ namespace Tabl_
         public TablDockPanel()
         {
             InitializeComponent();
-            InitializeLVMS();
-            
-            InitializePtGetter();
+            InitializeLVMS(); // listview menustrip
+            InitializePtGetter(); // place tabl point getter
             
 #if !DEBUG
             btnEnv.Visible = false;

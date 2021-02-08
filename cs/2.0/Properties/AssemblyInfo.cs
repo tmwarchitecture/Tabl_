@@ -21,7 +21,7 @@ using Rhino.PlugIns;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Tabl_")]
+[assembly: AssemblyTitle("Tabl_2")]
 
 // This will be used also for the plug-in description.
 [assembly: AssemblyDescription(@"Tabl_ spreadsheet interface
@@ -35,7 +35,7 @@ THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("two individuals Tim and Will")]
-[assembly: AssemblyProduct("Tabl_")]
+[assembly: AssemblyProduct("Tabl_2")]
 [assembly: AssemblyCopyright("Copyright ©Timothy Williams  2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
