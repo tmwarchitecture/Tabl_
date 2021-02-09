@@ -405,7 +405,7 @@ namespace Tabl_
         /// push guid strings to to docstr, key tabl_cs_selected
         /// </summary>
         /// <param name="idstrs">guid strings to push</param>
-        private void PushRefs(IEnumerable<string> idstrs)
+        internal void PushRefs(IEnumerable<string> idstrs)
         {
             string[] strs = idstrs.ToArray();
             string raw = ParentDoc.Strings.GetValue("tabl_cs_selected");

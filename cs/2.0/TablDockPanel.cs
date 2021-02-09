@@ -478,7 +478,7 @@ namespace Tabl_
             loadedids.AddRange(idstrs);
             loadedids.AddRange(guids.Select(i => i.ToString()));
             ParentDoc.Strings.SetString("tabl_cs_selected", string.Join(",", loadedids)); // push back to talb_cs_selected
-            ReloadRefs(loadedids); // sync docstr and loaded
+            ReloadRefs(loadedids); // mirror docstr in loaded
 
             AddPickFilter(false);
             if (!settings.update) RefreshTabl();

@@ -42,7 +42,10 @@ namespace Tabl_
                 if (r == Result.Success)
                 {
                     if (blitz)
+                    {
+                        tablpanel.PushRefs(picked.Select(i => i.ObjectId.ToString()));
                         tablpanel.Loaded = picked;
+                    }
                     else
                     {
                         List<ObjRef> concat = new List<ObjRef>();
@@ -51,6 +54,7 @@ namespace Tabl_
                         foreach (ObjRef oref in picked)
                             if (!ids.Contains(oref.ObjectId.ToString()))
                                 concat.Add(oref);
+                        tablpanel.PushRefs(concat.Select(i => i.ObjectId.ToString()));
                         tablpanel.Loaded = concat.ToArray();
                     }
                     tablpanel.Refresh_Click(null, null); // dummy args, method doesn't use them anyway
