@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace Tabl_
 {
-    public partial class Settings : Form
+    public partial class TablParams : Form
     {
         internal Highlighter docmarker;
         private TablDockPanel super; // the tabldockpanel that launches this form
@@ -26,7 +26,7 @@ namespace Tabl_
         private string[] tsvalues = new string[] { ",", ".", " ", "", };
 
         //constructor
-        public Settings()
+        public TablParams()
         {
             InitializeComponent();
             Icon = Properties.Resources.main;
@@ -39,7 +39,7 @@ namespace Tabl_
             clrPicker.Color = docmarker.clr;
             nudWireWt.Value = docmarker.w;
         }
-        public Settings(TablDockPanel panel):this()
+        public TablParams(TablDockPanel panel):this()
         {
             super = panel;
         }

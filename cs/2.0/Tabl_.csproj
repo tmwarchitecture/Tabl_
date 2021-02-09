@@ -75,11 +75,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Settings.cs">
+    <Compile Include="TablParams.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Settings.designer.cs">
-      <DependentUpon>Settings.cs</DependentUpon>
+    <Compile Include="TablParams.designer.cs">
+      <DependentUpon>TablParams.cs</DependentUpon>
     </Compile>
     <Compile Include="TablCmd.cs" />
     <Compile Include="TablPlugin.cs" />
@@ -100,8 +100,8 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Settings.resx">
-      <DependentUpon>Settings.cs</DependentUpon>
+    <EmbeddedResource Include="TablParams.resx">
+      <DependentUpon>TablParams.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

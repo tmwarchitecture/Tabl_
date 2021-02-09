@@ -1,6 +1,6 @@
 ﻿namespace Tabl_
 {
-    partial class Settings
+    partial class TablParams
     {
         /// <summary>
         /// Required designer variable.

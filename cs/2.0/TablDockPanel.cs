@@ -41,7 +41,7 @@ namespace Tabl_
         private GetPoint ptgetter;
 
         // settings popup
-        private Settings settings;
+        private TablParams settings;
         // placement popup
         private PlaceSettings plcsettings;
         // whether tabl has left most column that counts line items
@@ -100,7 +100,7 @@ namespace Tabl_
                 {"Comments",false },
             };
             ParentDoc = RhinoDoc.ActiveDoc;
-            settings = new Settings(this);
+            settings = new TablParams(this);
             plcsettings = new PlaceSettings();
             tol = ParentDoc.ModelAbsoluteTolerance;
             rtol = ParentDoc.ModelAngleToleranceRadians;
