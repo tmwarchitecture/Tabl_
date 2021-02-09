@@ -2,6 +2,8 @@
 
 Tabl_ is a spreadsheet interface within Rhino for the viewing, editing, and exporting of object properties. Objects are linked to the spreadsheet in real-time, allowing Tabl_ to automatically update as objects are modified.
 
+Comments, Issues, and ideas welcome at HotCoffeeGroup@gmail.com
+
 ## Features
 
 * "Live" Spreadsheet interface running while modeling in Rhino.
@@ -33,6 +35,7 @@ Once finished organizing and formatting the data, Tabl_ can export information t
 * Selecting objects based on object property.
 * Examining large amounts of geometry.
 * Extracting object information.
-* Further information and instructions can be found in the User Manual.
 
-Comments, Issues, and ideas welcome at HotCoffeeGroup@gmail.com
+## Installation
+
+## Starter Guide
