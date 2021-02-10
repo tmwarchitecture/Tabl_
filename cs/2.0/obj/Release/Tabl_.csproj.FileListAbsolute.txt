@@ -1,0 +1,12 @@
+D:\ww_personal\Tabl_\cs\2.0\obj\Release\Tabl_.csprojAssemblyReference.cache
+D:\ww_personal\Tabl_\cs\2.0\obj\Release\Tabl_.AboutTabl_.resources
+D:\ww_personal\Tabl_\cs\2.0\obj\Release\Tabl_.TablDockPanel.resources
+D:\ww_personal\Tabl_\cs\2.0\obj\Release\Tabl_.PlaceSettings.resources
+D:\ww_personal\Tabl_\cs\2.0\obj\Release\Tabl_.Properties.Resources.resources
+D:\ww_personal\Tabl_\cs\2.0\obj\Release\Tabl_.csproj.GenerateResource.cache
+D:\ww_personal\Tabl_\cs\2.0\obj\Release\Tabl_.csproj.CoreCompileInputs.cache
+D:\ww_personal\Tabl_\cs\2.0\bin\Tabl_2.dll
+D:\ww_personal\Tabl_\cs\2.0\bin\Tabl_2.pdb
+D:\ww_personal\Tabl_\cs\2.0\obj\Release\Tabl_2.dll
+D:\ww_personal\Tabl_\cs\2.0\obj\Release\Tabl_2.pdb
+D:\ww_personal\Tabl_\cs\2.0\obj\Release\Tabl_.TablParams.resources
