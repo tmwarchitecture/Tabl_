@@ -405,7 +405,7 @@ namespace Tabl_
         /// push guid strings to to docstr, key tabl_cs_selected
         /// </summary>
         /// <param name="idstrs">guid strings to push</param>
-        internal void PushRefs(IEnumerable<string> idstrs)
+        private void PushRefs(IEnumerable<string> idstrs)
         {
             string[] strs = idstrs.ToArray();
             string raw = ParentDoc.Strings.GetValue("tabl_cs_selected");
@@ -422,7 +422,7 @@ namespace Tabl_
         /// <summary>
         /// push loaded ObjRef[] into docstr record, key tabl_cs_selected
         /// </summary>
-        private void PushRefs()
+        internal void PushRefs()
         {
             IEnumerable<string> idstrs = Loaded.Select(o => o.ObjectId.ToString());
             PushRefs(idstrs);
@@ -658,8 +658,8 @@ namespace Tabl_
                     string len = "";
                     if (obj.ObjectType == ObjectType.Curve)
                     {
-                        var len_num = Math.Round(Loaded[refi].Curve().GetLength(), settings.dp); //decimal
-                        len_num *= settings.su; //custom scale
+                        double len_num = Loaded[refi].Curve().GetLength();
+                        len_num= Math.Round(len_num * settings.su, settings.dp); // scale + decimal place
                         if (settings.ts == ",")
                             len = KMarker(len_num, ',');
                         else if (settings.ts == ".")
@@ -688,8 +688,7 @@ namespace Tabl_
 
                     if (amp != null)
                     {
-                        double area_num = Math.Round(amp.Area, settings.dp);
-                        area_num *= settings.su;
+                        double area_num = Math.Round(amp.Area * settings.su, settings.dp);
                         string area;
                         if (settings.ts == ",")
                             area = KMarker(area_num, ',');
@@ -715,8 +714,7 @@ namespace Tabl_
                         if (Loaded[refi].Brep().IsSolid)
                         {
                             double vol_num = Loaded[refi].Brep().GetVolume(rtol, tol);
-                            vol_num = Math.Round(vol_num, settings.dp);
-                            vol_num *= settings.su;
+                            vol_num = Math.Round(vol_num * settings.su, settings.dp);
                             if (settings.ts == ",")
                                 vol = KMarker(vol_num, ',');
                             else if (settings.ts == ".")
@@ -736,8 +734,7 @@ namespace Tabl_
                             if (b.IsSolid)
                             {
                                 double vol_num = b.GetVolume(rtol, tol);
-                                vol_num = Math.Round(vol_num, settings.dp);
-                                vol_num *= settings.su;
+                                vol_num = Math.Round(vol_num * settings.su, settings.dp); // scale unit + decimal place
                                 if (settings.ts == ",")
                                     vol = KMarker(vol_num, ',');
                                 else if (settings.ts == ".")
@@ -754,8 +751,7 @@ namespace Tabl_
                         {
                             VolumeMassProperties vmp = VolumeMassProperties.Compute(Loaded[refi].Mesh());
                             double vol_num = vmp.Volume;
-                            vol_num = Math.Round(vol_num, settings.dp);
-                            vol_num *= settings.su;
+                            vol_num = Math.Round(vol_num* settings.su, settings.dp); // scale unit + decimla place
                             if (settings.ts == ",")
                                 vol = KMarker(vol_num, ',');
                             else if (settings.ts == ".")
@@ -870,16 +866,16 @@ namespace Tabl_
                     break;
                 case "CenterPt":
                     Point3d ctr = obj.Geometry.GetBoundingBox(false).Center;
-                    double px = Math.Round(ctr.X, settings.dp) * settings.su;
-                    double py = Math.Round(ctr.Y, settings.dp) * settings.su;
-                    double pz = Math.Round(ctr.Z, settings.dp) * settings.su;
+                    double px = Math.Round(ctr.X * settings.su, settings.dp);
+                    double py = Math.Round(ctr.Y * settings.su, settings.dp);
+                    double pz = Math.Round(ctr.Z * settings.su, settings.dp);
                     info = string.Format("{0}, {1}, {2}", px, py, pz);
                     break;
                 case "Extents":
                     BoundingBox bb = obj.Geometry.GetBoundingBox(false);
-                    double xe = Math.Round(bb.Diagonal.X, settings.dp) * settings.su;
-                    double ye = Math.Round(bb.Diagonal.Y, settings.dp) * settings.su;
-                    double ze = Math.Round(bb.Diagonal.Z, settings.dp) * settings.su;
+                    double xe = Math.Round(bb.Diagonal.X * settings.su, settings.dp);
+                    double ye = Math.Round(bb.Diagonal.Y * settings.su, settings.dp);
+                    double ze = Math.Round(bb.Diagonal.Z * settings.su, settings.dp);
                     info = string.Format("{0}, {1}, {2}", xe, ye, ze);
                     break;
                 default:

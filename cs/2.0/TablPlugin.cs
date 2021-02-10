@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Rhino.PlugIns;
 using Rhino.UI;
 
@@ -32,12 +34,12 @@ namespace Tabl_
 
         protected override LoadReturnCode OnLoad(ref string errorMessage)
         {
-            // TODO: use Settings property to set persistent params
             Type paneltype = typeof(TablDockPanel);
             Panels.RegisterPanel(this, paneltype, "Tabl_", Properties.Resources.main);
             return LoadReturnCode.Success;
         }
 
         public TablDockPanel TablPanel { get; set; }
+
     }
 }

@@ -29,6 +29,7 @@ namespace Tabl_
         public TablParams()
         {
             InitializeComponent();
+            RestoreParams();
             Icon = Properties.Resources.main;
             ssopt = new bool[chklTablDisplay.Items.Count];
             for (int i = 0; i < chklTablDisplay.Items.Count; i++)
@@ -42,6 +43,23 @@ namespace Tabl_
         public TablParams(TablDockPanel panel):this()
         {
             super = panel;
+        }
+
+        internal void RestoreParams()
+        {
+            if (!TablPlugin.Instance.Settings.TryGetBool("update", out update))
+                update = false;
+            if (!TablPlugin.Instance.Settings.TryGetInteger("decimal", out dp))
+                dp = 2;
+            if (!TablPlugin.Instance.Settings.TryGetString("thousand", out ts))
+                ts = "";
+            if (!TablPlugin.Instance.Settings.TryGetInteger("clrformat", out cf))
+                cf = 0;
+            if (!TablPlugin.Instance.Settings.TryGetDouble("scale", out su))
+                su = 1.0;
+            if (!TablPlugin.Instance.Settings.TryGetString("unitname", out cun))
+                cun = "";
+            // TODO: set and restore plugin params
         }
 
         // cancel

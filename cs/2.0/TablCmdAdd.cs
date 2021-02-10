@@ -32,7 +32,6 @@ namespace Tabl_
 
         protected override Result RunCommand(RhinoDoc doc, RunMode mode)
         {
-            // TODO: add to loaded, refresh doctstr and refresh tabl if needed
             TablDockPanel tablpanel = Panels.GetPanel<TablDockPanel>(RhinoDoc.ActiveDoc);
             bool blitz = false;
             var r = RhinoGet.GetBool(" Erase existing Tabl_ contents?", false, "No", "Yes", ref blitz);
@@ -43,8 +42,8 @@ namespace Tabl_
                 {
                     if (blitz)
                     {
-                        tablpanel.PushRefs(picked.Select(i => i.ObjectId.ToString()));
                         tablpanel.Loaded = picked;
+                        tablpanel.PushRefs();
                     }
                     else
                     {
@@ -54,8 +53,8 @@ namespace Tabl_
                         foreach (ObjRef oref in picked)
                             if (!ids.Contains(oref.ObjectId.ToString()))
                                 concat.Add(oref);
-                        tablpanel.PushRefs(concat.Select(i => i.ObjectId.ToString()));
                         tablpanel.Loaded = concat.ToArray();
+                        tablpanel.PushRefs();
                     }
                     tablpanel.Refresh_Click(null, null); // dummy args, method doesn't use them anyway
                     if (!Panels.IsPanelVisible(TablDockPanel.PanelId))

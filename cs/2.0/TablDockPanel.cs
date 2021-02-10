@@ -41,9 +41,9 @@ namespace Tabl_
         private GetPoint ptgetter;
 
         // settings popup
-        private TablParams settings;
+        internal TablParams settings;
         // placement popup
-        private PlaceSettings plcsettings;
+        internal PlaceSettings plcsettings;
         // whether tabl has left most column that counts line items
         // whenever a TablLineItem is created, query this
         private bool linecounter = false;
