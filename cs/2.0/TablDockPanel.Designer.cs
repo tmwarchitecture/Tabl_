@@ -88,6 +88,7 @@
             this.dlogExport = new System.Windows.Forms.SaveFileDialog();
             this.dlogImport = new System.Windows.Forms.OpenFileDialog();
             this.btnEnv = new System.Windows.Forms.Button();
+            this.fitCellWidthsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lvCtxtMenu.SuspendLayout();
             this.msHeaders.SuspendLayout();
             this.msEdits.SuspendLayout();
@@ -135,11 +136,12 @@
             this.lvCtxtMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.thisWorkedToolStripMenuItem,
             this.editHighlightedToolStripMenuItem,
+            this.fitCellWidthsToolStripMenuItem,
             this.copyTextsToolStripMenuItem,
             this.copySpreadsheetToolStripMenuItem,
             this.zoomToHighlightedToolStripMenuItem});
             this.lvCtxtMenu.Name = "lvCtxtMenu";
-            this.lvCtxtMenu.Size = new System.Drawing.Size(187, 114);
+            this.lvCtxtMenu.Size = new System.Drawing.Size(187, 158);
             // 
             // thisWorkedToolStripMenuItem
             // 
@@ -174,7 +176,6 @@
             this.isClosedToolStripMenuItem,
             this.commentsToolStripMenuItem});
             this.msHeaders.Name = "msHeader";
-            this.msHeaders.OwnerItem = this.thisWorkedToolStripMenuItem;
             this.msHeaders.ShowCheckMargin = true;
             this.msHeaders.ShowImageMargin = false;
             this.msHeaders.Size = new System.Drawing.Size(134, 488);
@@ -598,6 +599,13 @@
             this.btnEnv.UseVisualStyleBackColor = false;
             this.btnEnv.Click += new System.EventHandler(this.Env_Click);
             // 
+            // fitCellWidthsToolStripMenuItem
+            // 
+            this.fitCellWidthsToolStripMenuItem.Name = "fitCellWidthsToolStripMenuItem";
+            this.fitCellWidthsToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.fitCellWidthsToolStripMenuItem.Text = "Fit Cell Widths";
+            this.fitCellWidthsToolStripMenuItem.Click += new System.EventHandler(this.MenuStripFitCellWidth_Click);
+            // 
             // TablDockPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -686,5 +694,6 @@
         private System.Windows.Forms.ToolStripMenuItem applyToolStripMenuItem;
         private System.Windows.Forms.Button btnSelectInDoc;
         private System.Windows.Forms.ToolStripMenuItem extentsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem fitCellWidthsToolStripMenuItem;
     }
 }

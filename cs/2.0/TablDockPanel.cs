@@ -40,13 +40,13 @@ namespace Tabl_
         private int sortord = 0; // order, 0 none, 1 small to large, -1 reverse
         private GetPoint ptgetter;
 
+        // whether tabl has left most column that counts line items
+        // whenever a TablLineItem is created, query this
+        private bool linecounter = true;
         // settings popup
         internal TablParams settings;
         // placement popup
         internal PlaceSettings plcsettings;
-        // whether tabl has left most column that counts line items
-        // whenever a TablLineItem is created, query this
-        private bool linecounter = false;
         // header visibilities, dict data type has no order
         private Dictionary<string, bool> headers;
         // header order
@@ -120,7 +120,7 @@ namespace Tabl_
             tbmsNameChange.MouseLeave += MenuStripNameTB_DeFocus;
 
             ReloadRefs();
-            if (Loaded.Length != 0) RefreshTabl();
+            RefreshTabl();
         }
 
 #region non-UI handlers
@@ -466,6 +466,13 @@ namespace Tabl_
                         RefreshTabl(new ObjRef(tli.RefId));
                 }
         }
+        private void MenuStripFitCellWidth_Click(object sender, EventArgs e)
+        {
+            if (lvTabl.Items.Count > 0)
+                lvTabl.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+            else
+                lvTabl.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+        }
         #endregion
 
         #region main UI handlers
@@ -742,6 +749,9 @@ namespace Tabl_
                 ParentDoc.Objects.Select(tli.RefId, true);
             ParentDoc.Views.Redraw();
         }
+
+        
         #endregion
+
     }
 }

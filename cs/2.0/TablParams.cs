@@ -60,8 +60,10 @@ namespace Tabl_
                 su = 1.0;
             if (!TablPlugin.Instance.Settings.TryGetString("unitname", out cun))
                 cun = "";
-            TablPlugin.Instance.Settings.TryGetColor("markerclr", out docmarker.clr);
-            TablPlugin.Instance.Settings.TryGetInteger("markerwt", out docmarker.w);
+            if (!TablPlugin.Instance.Settings.TryGetColor("markerclr", out docmarker.clr))
+                docmarker.clr = Color.HotPink;
+            if (!TablPlugin.Instance.Settings.TryGetInteger("markerwt", out docmarker.w))
+                docmarker.w = 3;
             // TODO: persistent settings
         }
 

@@ -434,6 +434,11 @@ namespace Tabl_
         /// <param name="th">true if threaded computing</param>
         private void RefreshTabl()
         {
+            // try to retain widths pv means previous widths
+            int[] pv = new int[lvTabl.Columns.Count];
+            for (int ci = 0; ci < lvTabl.Columns.Count; ci++)
+                pv.SetValue(lvTabl.Columns[ci].Width, ci);
+            
             lvTabl.Clear();
 
             // set up headers
@@ -458,6 +463,8 @@ namespace Tabl_
                     };
                     lvTabl.Columns.Add(ch);
                 }
+            for (int ci = 0; ci < (pv.Length >= lvTabl.Columns.Count ? lvTabl.Columns.Count : pv.Length); ci++)
+                lvTabl.Columns[ci].Width = pv[ci]; // restore widths from previous
 
             // fill spreadsheet
             List<TablLineItem> lines = new List<TablLineItem>();
@@ -482,7 +489,6 @@ namespace Tabl_
                 }
             }
             lvTabl.Items.AddRange(lines.ToArray()); // faster with addrange rather than add in a loop
-            TablColAutoSize();
 
             // remove if something in doc was deleted by user
             if (badidx.Count != 0)
@@ -493,11 +499,10 @@ namespace Tabl_
                 RemoveByIds(todelete.ToArray());
             }
 
-            /* prep for click-n-mark
-             If object type isn't one that produces wireframes like annotations,
-             there will be an empty array left in place.
-             This index-preservation seems largely unncessary with new click-n-mark mechanism
-             */
+            // prep for click-n-mark
+            // If object type isn't one that produces wireframes like annotations,
+            // there will be an empty array left in place.
+            // This index-preservation seems largely unncessary with new click-n-mark mechanism
             settings.docmarker.crvs = new List<Curve[]>(lvTabl.Items.Count);
             for (int n = 0; n < lvTabl.Items.Count; n++)
                 settings.docmarker.crvs.Add(new Curve[] { });
@@ -542,16 +547,7 @@ namespace Tabl_
             }
         }
 
-        /// <summary>
-        /// autosize column width of tabl
-        /// </summary>
-        private void TablColAutoSize()
-        {
-            /*if (lvTabl.Items.Count > 0)
-                lvTabl.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
-            else
-                lvTabl.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);*/
-        }
+        
 
         /// <summary>
         /// get the line item fields for a tabl line
