@@ -149,7 +149,7 @@ namespace Tabl_
                 RhinoDoc.ModifyObjectAttributes += OnAttrMod;
             }
         }
-
+        // saves persistent settings when a doc is closed
         private void OnDocClose(object s, DocumentEventArgs e)
         {
             TablPlugin.Instance.Settings.SetBool("update", settings.update);
@@ -158,6 +158,11 @@ namespace Tabl_
             TablPlugin.Instance.Settings.SetInteger("clrformat", settings.cf);
             TablPlugin.Instance.Settings.SetDouble("scale", settings.su);
             TablPlugin.Instance.Settings.SetString("unitname", settings.cun);
+            TablPlugin.Instance.Settings.SetColor("markerclr", settings.docmarker.clr);
+            TablPlugin.Instance.Settings.SetInteger("markerwt", settings.docmarker.w);
+            TablPlugin.Instance.Settings.SetInteger("cellpad", plcsettings.cellpad);
+            TablPlugin.Instance.Settings.SetDouble("colwidth", plcsettings.cw);
+            TablPlugin.Instance.Settings.SetInteger("colfit", plcsettings.fitting);
             RhinoDoc.CloseDocument -= OnDocClose;
         }
 

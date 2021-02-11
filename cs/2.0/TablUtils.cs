@@ -547,10 +547,10 @@ namespace Tabl_
         /// </summary>
         private void TablColAutoSize()
         {
-            if (lvTabl.Items.Count > 0)
+            /*if (lvTabl.Items.Count > 0)
                 lvTabl.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
             else
-                lvTabl.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+                lvTabl.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);*/
         }
 
         /// <summary>

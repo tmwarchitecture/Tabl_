@@ -17,7 +17,7 @@ namespace Tabl_
     {
         internal int fitting = 0; // 0-fit data, 1-even divide, 2-fixed column
         internal double cw = 40; // column width
-        internal decimal cellpad = 2;
+        internal int cellpad = 2;
         internal bool ok = false; // clicked ok or not upon form close
         internal bool custompl = false;
         internal Plane BasePl { get; set; }
@@ -27,6 +27,7 @@ namespace Tabl_
         public PlaceSettings()
         {
             InitializeComponent();
+            RestoreParams();
 
             switch (fitting)
             {
@@ -49,6 +50,16 @@ namespace Tabl_
 
             BasePl = Plane.WorldXY;
             RectFollower = new RectPreview();
+        }
+
+        private void RestoreParams()
+        {
+            if (!TablPlugin.Instance.Settings.TryGetInteger("colfit", out fitting))
+                fitting = 0;
+            if (!TablPlugin.Instance.Settings.TryGetDouble("colwidth", out cw))
+                cw = 40;
+            if (!TablPlugin.Instance.Settings.TryGetInteger("cellpad", out cellpad))
+                cellpad = 2;
         }
 
         // check changed for column fitting raido bttns, all radio bttn check change call this one
@@ -105,7 +116,7 @@ namespace Tabl_
         private void Padding_ValueChanged(object sender, EventArgs e)
         {
             NumericUpDown s = sender as NumericUpDown;
-            cellpad = s.Value;
+            cellpad = (int)s.Value;
         }
 
         // change planes radio bttns event chain

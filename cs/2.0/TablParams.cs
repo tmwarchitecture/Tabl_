@@ -12,7 +12,7 @@ namespace Tabl_
 {
     public partial class TablParams : Form
     {
-        internal Highlighter docmarker;
+        internal Highlighter docmarker; // instantiated in constructor
         private TablDockPanel super; // the tabldockpanel that launches this form
 
         internal int dp = 2; // decimal place
@@ -29,14 +29,15 @@ namespace Tabl_
         public TablParams()
         {
             InitializeComponent();
-            RestoreParams();
+            docmarker = new Highlighter() { Enabled = cbEnableMarker.Checked, };
+            RestoreParams(); // calls docmarker so run this after docmarket instantiation
             Icon = Properties.Resources.main;
             ssopt = new bool[chklTablDisplay.Items.Count];
             for (int i = 0; i < chklTablDisplay.Items.Count; i++)
                 ssopt.SetValue(false, i);
 
             Shown += OnPopUp;
-            docmarker = new Highlighter() { Enabled = cbEnableMarker.Checked, };
+            
             clrPicker.Color = docmarker.clr;
             nudWireWt.Value = docmarker.w;
         }
@@ -59,7 +60,9 @@ namespace Tabl_
                 su = 1.0;
             if (!TablPlugin.Instance.Settings.TryGetString("unitname", out cun))
                 cun = "";
-            // TODO: set and restore plugin params
+            TablPlugin.Instance.Settings.TryGetColor("markerclr", out docmarker.clr);
+            TablPlugin.Instance.Settings.TryGetInteger("markerwt", out docmarker.w);
+            // TODO: persistent settings
         }
 
         // cancel
