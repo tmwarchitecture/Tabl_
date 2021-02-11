@@ -22,7 +22,7 @@ namespace Tabl_
         internal double su = 1.0; // scale units
         internal string cun = ""; // custom unit name
         internal bool[] ssopt; // spreadsheet options, 0-unit, 1-total, 2-export headers, 3-threaded
-        // thousand separators
+        // thousand separators, order mapped to dropdown items
         private string[] tsvalues = new string[] { ",", ".", " ", "", };
 
         //constructor

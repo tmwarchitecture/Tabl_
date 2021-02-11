@@ -435,7 +435,9 @@ namespace Tabl_
         private void RefreshTabl()
         {
             lvTabl.Clear();
+
             // set up headers
+            string[] numheaders = new string[] { "NumPts", "Area", "Volume", "NumEdges", "NumFaces", "Length", "PrintWidth", "Degree", };
             if (!headers.Values.Contains(true))
             {
                 lvCtxtMenu.Close();
@@ -449,7 +451,11 @@ namespace Tabl_
             foreach (string k in keys)
                 if (headers[k])
                 {
-                    ColumnHeader ch = new ColumnHeader() { Text = k, TextAlign = HorizontalAlignment.Center };
+                    ColumnHeader ch = new ColumnHeader()
+                    {
+                        Text = k,
+                        TextAlign = numheaders.Contains(k)? HorizontalAlignment.Right: HorizontalAlignment.Center,
+                    };
                     lvTabl.Columns.Add(ch);
                 }
 

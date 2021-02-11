@@ -104,6 +104,9 @@ namespace Tabl_
             plcsettings = new PlaceSettings();
             tol = ParentDoc.ModelAbsoluteTolerance;
             rtol = ParentDoc.ModelAngleToleranceRadians;
+            // set tabl plugin params for settings
+            RhinoDoc.CloseDocument += OnDocClose; 
+            // automatic update
             Command.EndCommand += OnDocChange;
             // set up first mod trigger, unlistened during event itself
             RhinoDoc.ModifyObjectAttributes += OnAttrMod;
@@ -147,7 +150,16 @@ namespace Tabl_
             }
         }
 
-        
+        private void OnDocClose(object s, DocumentEventArgs e)
+        {
+            TablPlugin.Instance.Settings.SetBool("update", settings.update);
+            TablPlugin.Instance.Settings.SetInteger("decimal", settings.dp);
+            TablPlugin.Instance.Settings.SetString("thousand", settings.ts);
+            TablPlugin.Instance.Settings.SetInteger("clrformat", settings.cf);
+            TablPlugin.Instance.Settings.SetDouble("scale", settings.su);
+            TablPlugin.Instance.Settings.SetString("unitname", settings.cun);
+            RhinoDoc.CloseDocument -= OnDocClose;
+        }
 
 #endregion
 
