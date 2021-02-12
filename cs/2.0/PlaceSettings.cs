@@ -17,7 +17,7 @@ namespace Tabl_
     {
         internal int fitting = 0; // 0-fit data, 1-even divide, 2-fixed column
         internal double cw = 40; // column width
-        internal int cellpad = 2;
+        internal double cellpad = 2;
         internal bool ok = false; // clicked ok or not upon form close
         internal bool custompl = false;
         internal Plane BasePl { get; set; }
@@ -45,7 +45,7 @@ namespace Tabl_
             }
             tbPlaceColW.Text = cw.ToString();
             tbPlaceColW.Enabled = false;
-            nudPad.Value = cellpad;
+            nudPad.Value = (decimal)cellpad;
             rbXY.Checked = true;
 
             BasePl = Plane.WorldXY;
@@ -58,7 +58,7 @@ namespace Tabl_
                 fitting = 0;
             if (!TablPlugin.Instance.Settings.TryGetDouble("colwidth", out cw))
                 cw = 40;
-            if (!TablPlugin.Instance.Settings.TryGetInteger("cellpad", out cellpad))
+            if (!TablPlugin.Instance.Settings.TryGetDouble("cellpad", out cellpad))
                 cellpad = 2;
         }
 

@@ -160,7 +160,7 @@ namespace Tabl_
             TablPlugin.Instance.Settings.SetString("unitname", settings.cun);
             TablPlugin.Instance.Settings.SetColor("markerclr", settings.docmarker.clr);
             TablPlugin.Instance.Settings.SetInteger("markerwt", settings.docmarker.w);
-            TablPlugin.Instance.Settings.SetInteger("cellpad", plcsettings.cellpad);
+            TablPlugin.Instance.Settings.SetDouble("cellpad", plcsettings.cellpad);
             TablPlugin.Instance.Settings.SetDouble("colwidth", plcsettings.cw);
             TablPlugin.Instance.Settings.SetInteger("colfit", plcsettings.fitting);
             RhinoDoc.CloseDocument -= OnDocClose;
