@@ -512,7 +512,7 @@ namespace Tabl_
             
             // totals
             // whenever iterating through lvTabl.items, beware of last item!
-            if (settings.ssopt[1])
+            if (settings.seetots)
                 lvTabl.Items.Add(TablTotals());
             
             ParentDoc.Views.Redraw();
@@ -526,7 +526,7 @@ namespace Tabl_
             int tliidx = -1;
             for (int i=0; i< lvTabl.Items.Count; i++)
             {
-                if (settings.ssopt[1] && i == lvTabl.Items.Count - 1)
+                if (settings.seetots && i == lvTabl.Items.Count - 1)
                     break;
                 TablLineItem li = lvTabl.Items[i] as TablLineItem;
                 if (li.RefId == oref.ObjectId)
@@ -634,7 +634,7 @@ namespace Tabl_
                         pw = l.PlotWeight;
                     }
                     else pw = obj.Attributes.PlotWeight;
-                    if (settings.ssopt[0]) info = pw.ToString(culture, CultureInfo.InvariantCulture) + "pt";
+                    if (settings.seeunits) info = pw.ToString(culture, CultureInfo.InvariantCulture) + "pt";
                     else info = pw.ToString(culture, CultureInfo.InvariantCulture);
                     break;
                 case "PrintColor":
@@ -673,7 +673,7 @@ namespace Tabl_
                             len = KMarker(len_num, ' ', dp);
                         else len = len_num.ToString(culture, CultureInfo.InvariantCulture);
                     }
-                    if (settings.ssopt[0] && len != null) len += LenUnit(); // with unit
+                    if (settings.seeunits && len != null) len += LenUnit(); // with unit
                     info = len;
                     break;
                 case "Area":
@@ -703,7 +703,7 @@ namespace Tabl_
                             area = KMarker(area_num, ' ', dp);
                         else area = area_num.ToString(culture, CultureInfo.InvariantCulture);
 
-                        if (settings.ssopt[0])
+                        if (settings.seeunits)
                         {
                             if (settings.cun != "" && settings.cun != null)
                                 info = area + settings.cun + "\xB2";
@@ -768,7 +768,7 @@ namespace Tabl_
                         else
                             vol = 0.ToString(culture, CultureInfo.InvariantCulture);
                     // append unit
-                    if (!settings.ssopt[0] || vol == null) info = vol;
+                    if (!settings.seeunits || vol == null) info = vol;
                     else if (vol != "open brep" && vol != "invalid extrusion")
                     {
                         if (settings.cun != "" && settings.cun != null)
@@ -952,7 +952,7 @@ namespace Tabl_
         {
             // detect total line
             TablLineItem totalline = null;
-            if (settings.ssopt[1])
+            if (settings.seetots)
             {
                 totalline = lvTabl.Items[lvTabl.Items.Count - 1] as TablLineItem;
                 lvTabl.Items.RemoveAt(lvTabl.Items.Count - 1);
@@ -972,7 +972,7 @@ namespace Tabl_
             // !!! SYNC ORDER between tabl items and loaded objrefs here !!!
             for (int i = 0; i< lvTabl.Items.Count; i++)
             {
-                if (settings.ssopt[1] && i == lvTabl.Items.Count - 1)
+                if (settings.seetots && i == lvTabl.Items.Count - 1)
                     break;
                 TablLineItem li = lvTabl.Items[i] as TablLineItem;
                 Loaded.SetValue(new ObjRef(li.RefId), i);
@@ -982,7 +982,7 @@ namespace Tabl_
             lvTabl.ListViewItemSorter = Comparer.Default;
 
             // restore if total line is visible
-            if (settings.ssopt[1] && totalline != null)
+            if (settings.seetots && totalline != null)
                 lvTabl.Items.Add(totalline);
         }
         private class LVSorterByStr : IComparer

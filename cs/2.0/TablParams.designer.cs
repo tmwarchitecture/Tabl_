@@ -49,22 +49,22 @@
             this.btnCancel = new System.Windows.Forms.Button();
             this.ttipSettings = new System.Windows.Forms.ToolTip(this.components);
             this.btnMarkerClr = new System.Windows.Forms.Button();
-            this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.cbEnableMarker = new System.Windows.Forms.CheckBox();
-            this.label7 = new System.Windows.Forms.Label();
             this.nudWireWt = new System.Windows.Forms.NumericUpDown();
-            this.clrPicker = new System.Windows.Forms.ColorDialog();
-            this.cbSeeUnit = new System.Windows.Forms.CheckBox();
-            this.cbSeeTot = new System.Windows.Forms.CheckBox();
-            this.cbExHdrs = new System.Windows.Forms.CheckBox();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.cbThreaded = new System.Windows.Forms.CheckBox();
+            this.cbExHdrs = new System.Windows.Forms.CheckBox();
+            this.cbSeeTot = new System.Windows.Forms.CheckBox();
+            this.cbSeeUnit = new System.Windows.Forms.CheckBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.clrPicker = new System.Windows.Forms.ColorDialog();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudDP)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudUnitScale)).BeginInit();
-            this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudWireWt)).BeginInit();
+            this.groupBox5.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -73,9 +73,9 @@
             this.groupBox1.Controls.Add(this.cbThousand);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.nudDP);
-            this.groupBox1.Location = new System.Drawing.Point(12, 99);
+            this.groupBox1.Location = new System.Drawing.Point(245, 96);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(227, 86);
+            this.groupBox1.Size = new System.Drawing.Size(227, 82);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Number Format";
@@ -129,7 +129,7 @@
             this.groupBox2.Controls.Add(this.rbClrComma);
             this.groupBox2.Controls.Add(this.rbClrDash);
             this.groupBox2.Controls.Add(this.rbClrName);
-            this.groupBox2.Location = new System.Drawing.Point(12, 191);
+            this.groupBox2.Location = new System.Drawing.Point(12, 159);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(227, 52);
             this.groupBox2.TabIndex = 1;
@@ -200,9 +200,9 @@
             this.groupBox4.Controls.Add(this.label4);
             this.groupBox4.Controls.Add(this.nudUnitScale);
             this.groupBox4.Controls.Add(this.label3);
-            this.groupBox4.Location = new System.Drawing.Point(12, 12);
+            this.groupBox4.Location = new System.Drawing.Point(245, 12);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(227, 81);
+            this.groupBox4.Size = new System.Drawing.Size(227, 78);
             this.groupBox4.TabIndex = 3;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Custom Units";
@@ -254,7 +254,7 @@
             // 
             // btnOK
             // 
-            this.btnOK.Location = new System.Drawing.Point(245, 216);
+            this.btnOK.Location = new System.Drawing.Point(310, 184);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(78, 27);
             this.btnOK.TabIndex = 4;
@@ -264,7 +264,7 @@
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(327, 216);
+            this.btnCancel.Location = new System.Drawing.Point(394, 184);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(78, 27);
             this.btnCancel.TabIndex = 5;
@@ -288,25 +288,6 @@
             this.btnMarkerClr.UseVisualStyleBackColor = false;
             this.btnMarkerClr.Click += new System.EventHandler(this.MarkerClr_Click);
             // 
-            // groupBox5
-            // 
-            this.groupBox5.Controls.Add(this.cbThreaded);
-            this.groupBox5.Controls.Add(this.cbEnableMarker);
-            this.groupBox5.Controls.Add(this.cbExHdrs);
-            this.groupBox5.Controls.Add(this.rbAutoUpdate);
-            this.groupBox5.Controls.Add(this.cbSeeTot);
-            this.groupBox5.Controls.Add(this.rbManual);
-            this.groupBox5.Controls.Add(this.cbSeeUnit);
-            this.groupBox5.Controls.Add(this.label7);
-            this.groupBox5.Controls.Add(this.btnMarkerClr);
-            this.groupBox5.Controls.Add(this.nudWireWt);
-            this.groupBox5.Location = new System.Drawing.Point(245, 12);
-            this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(227, 198);
-            this.groupBox5.TabIndex = 6;
-            this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Spreadsheet";
-            // 
             // cbEnableMarker
             // 
             this.cbEnableMarker.AutoSize = true;
@@ -320,15 +301,6 @@
             this.ttipSettings.SetToolTip(this.cbEnableMarker, "marks what\'s selected in Tabl_ in the Rhino viewport");
             this.cbEnableMarker.UseVisualStyleBackColor = true;
             this.cbEnableMarker.CheckedChanged += new System.EventHandler(this.Marker_CheckedChanged);
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 78);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(50, 15);
-            this.label7.TabIndex = 3;
-            this.label7.Text = "Refresh";
             // 
             // nudWireWt
             // 
@@ -354,25 +326,36 @@
             0,
             0});
             // 
-            // cbSeeUnit
+            // groupBox5
             // 
-            this.cbSeeUnit.AutoSize = true;
-            this.cbSeeUnit.Location = new System.Drawing.Point(6, 20);
-            this.cbSeeUnit.Name = "cbSeeUnit";
-            this.cbSeeUnit.Size = new System.Drawing.Size(88, 19);
-            this.cbSeeUnit.TabIndex = 7;
-            this.cbSeeUnit.Text = "Show Units";
-            this.cbSeeUnit.UseVisualStyleBackColor = true;
+            this.groupBox5.Controls.Add(this.cbThreaded);
+            this.groupBox5.Controls.Add(this.cbEnableMarker);
+            this.groupBox5.Controls.Add(this.cbExHdrs);
+            this.groupBox5.Controls.Add(this.rbAutoUpdate);
+            this.groupBox5.Controls.Add(this.cbSeeTot);
+            this.groupBox5.Controls.Add(this.rbManual);
+            this.groupBox5.Controls.Add(this.cbSeeUnit);
+            this.groupBox5.Controls.Add(this.label7);
+            this.groupBox5.Controls.Add(this.btnMarkerClr);
+            this.groupBox5.Controls.Add(this.nudWireWt);
+            this.groupBox5.Location = new System.Drawing.Point(12, 12);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(227, 141);
+            this.groupBox5.TabIndex = 6;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Spreadsheet";
             // 
-            // cbSeeTot
+            // cbThreaded
             // 
-            this.cbSeeTot.AutoSize = true;
-            this.cbSeeTot.Location = new System.Drawing.Point(6, 45);
-            this.cbSeeTot.Name = "cbSeeTot";
-            this.cbSeeTot.Size = new System.Drawing.Size(87, 19);
-            this.cbSeeTot.TabIndex = 8;
-            this.cbSeeTot.Text = "Show Total";
-            this.cbSeeTot.UseVisualStyleBackColor = true;
+            this.cbThreaded.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbThreaded.AutoSize = true;
+            this.cbThreaded.Location = new System.Drawing.Point(110, 45);
+            this.cbThreaded.Name = "cbThreaded";
+            this.cbThreaded.Size = new System.Drawing.Size(79, 19);
+            this.cbThreaded.TabIndex = 10;
+            this.cbThreaded.Text = "Threaded";
+            this.ttipSettings.SetToolTip(this.cbThreaded, "beware of overhead computing cost\r\ncheck if items are vast in number");
+            this.cbThreaded.UseVisualStyleBackColor = true;
             // 
             // cbExHdrs
             // 
@@ -385,22 +368,40 @@
             this.cbExHdrs.Text = "Export Headers";
             this.cbExHdrs.UseVisualStyleBackColor = true;
             // 
-            // cbThreaded
+            // cbSeeTot
             // 
-            this.cbThreaded.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.cbThreaded.AutoSize = true;
-            this.cbThreaded.Location = new System.Drawing.Point(110, 45);
-            this.cbThreaded.Name = "cbThreaded";
-            this.cbThreaded.Size = new System.Drawing.Size(79, 19);
-            this.cbThreaded.TabIndex = 10;
-            this.cbThreaded.Text = "Threaded";
-            this.cbThreaded.UseVisualStyleBackColor = true;
+            this.cbSeeTot.AutoSize = true;
+            this.cbSeeTot.Location = new System.Drawing.Point(6, 45);
+            this.cbSeeTot.Name = "cbSeeTot";
+            this.cbSeeTot.Size = new System.Drawing.Size(87, 19);
+            this.cbSeeTot.TabIndex = 8;
+            this.cbSeeTot.Text = "Show Total";
+            this.cbSeeTot.UseVisualStyleBackColor = true;
+            // 
+            // cbSeeUnit
+            // 
+            this.cbSeeUnit.AutoSize = true;
+            this.cbSeeUnit.Location = new System.Drawing.Point(6, 20);
+            this.cbSeeUnit.Name = "cbSeeUnit";
+            this.cbSeeUnit.Size = new System.Drawing.Size(88, 19);
+            this.cbSeeUnit.TabIndex = 7;
+            this.cbSeeUnit.Text = "Show Units";
+            this.cbSeeUnit.UseVisualStyleBackColor = true;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 78);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(50, 15);
+            this.label7.TabIndex = 3;
+            this.label7.Text = "Refresh";
             // 
             // TablParams
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(632, 438);
+            this.ClientSize = new System.Drawing.Size(484, 223);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
@@ -422,9 +423,9 @@
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudUnitScale)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudWireWt)).EndInit();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudWireWt)).EndInit();
             this.ResumeLayout(false);
 
         }

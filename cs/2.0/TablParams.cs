@@ -21,7 +21,10 @@ namespace Tabl_
         internal bool update = false; // true as automatic
         internal double su = 1.0; // scale units
         internal string cun = ""; // custom unit name
-        internal bool[] ssopt; // spreadsheet options, 0-unit, 1-total, 2-export headers, 3-threaded
+        internal bool seeunits = false; // spreadsheet options, 0-unit, 1-total, 2-export headers, 3-threaded
+        internal bool seetots = false;
+        internal bool outhdrs = false;
+        internal bool th = false;
         // thousand separators, order mapped to dropdown items
         private string[] tsvalues = new string[] { ",", ".", " ", "", };
 
@@ -32,9 +35,6 @@ namespace Tabl_
             docmarker = new Highlighter() { Enabled = cbEnableMarker.Checked, };
             RestoreParams(); // calls docmarker so run this after docmarket instantiation
             Icon = Properties.Resources.main;
-            ssopt = new bool[chklTablDisplay.Items.Count];
-            for (int i = 0; i < chklTablDisplay.Items.Count; i++)
-                ssopt.SetValue(false, i);
 
             Shown += OnPopUp;
             
@@ -48,6 +48,7 @@ namespace Tabl_
 
         internal void RestoreParams()
         {
+            // check for sync with TablDockPanel.OnDocClose
             if (!TablPlugin.Instance.Settings.TryGetBool("update", out update))
                 update = false;
             if (!TablPlugin.Instance.Settings.TryGetInteger("decimal", out dp))
@@ -64,7 +65,15 @@ namespace Tabl_
                 docmarker.clr = Color.HotPink;
             if (!TablPlugin.Instance.Settings.TryGetInteger("markerwt", out docmarker.w))
                 docmarker.w = 3;
-            // TODO: persistent settings
+            if (!TablPlugin.Instance.Settings.TryGetBool("seeunits", out seeunits))
+                seeunits = false;
+            if (!TablPlugin.Instance.Settings.TryGetBool("seetots", out seetots))
+                seetots = false;
+            if (!TablPlugin.Instance.Settings.TryGetBool("outhdrs", out outhdrs))
+                outhdrs = false;
+            if (!TablPlugin.Instance.Settings.TryGetBool("threaded", out th))
+                th = false;
+            
         }
 
         // cancel
@@ -96,13 +105,10 @@ namespace Tabl_
 
             tbUnitName.Text = cun;
 
-            for (int i = 0; i < ssopt.Length; i++)
-            {
-                if (ssopt[i])
-                    chklTablDisplay.SetItemChecked(i, true);
-                else
-                    chklTablDisplay.SetItemChecked(i, false);
-            }
+            cbSeeUnit.Checked = seeunits;
+            cbSeeTot.Checked = seetots;
+            cbExHdrs.Checked = outhdrs;
+            cbThreaded.Checked = th;
 
             btnMarkerClr.BackColor = docmarker.clr;
             nudWireWt.Value = docmarker.w;
@@ -121,13 +127,10 @@ namespace Tabl_
             update = rbAutoUpdate.Checked;
             su = (double)nudUnitScale.Value;
             cun = tbUnitName.Text.Trim();
-            for (int i = 0; i < chklTablDisplay.Items.Count; i++)
-            {
-                if (chklTablDisplay.CheckedIndices.Contains(i))
-                    ssopt[i] = true;
-                else
-                    ssopt[i] = false;
-            }
+            seeunits = cbSeeTot.Checked;
+            seetots = cbSeeTot.Checked;
+            th = cbThreaded.Checked;
+            outhdrs = cbExHdrs.Checked;
             docmarker.w = (int)nudWireWt.Value;
 
             // must be shown modal and therefore not disposed after below call

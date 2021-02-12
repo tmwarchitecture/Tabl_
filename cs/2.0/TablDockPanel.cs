@@ -152,6 +152,7 @@ namespace Tabl_
         // saves persistent settings when a doc is closed
         private void OnDocClose(object s, DocumentEventArgs e)
         {
+            // keep this in sync with RestoreParam method of TablParams
             TablPlugin.Instance.Settings.SetBool("update", settings.update);
             TablPlugin.Instance.Settings.SetInteger("decimal", settings.dp);
             TablPlugin.Instance.Settings.SetString("thousand", settings.ts);
@@ -163,6 +164,10 @@ namespace Tabl_
             TablPlugin.Instance.Settings.SetDouble("cellpad", plcsettings.cellpad);
             TablPlugin.Instance.Settings.SetDouble("colwidth", plcsettings.cw);
             TablPlugin.Instance.Settings.SetInteger("colfit", plcsettings.fitting);
+            TablPlugin.Instance.Settings.SetBool("seeunits", settings.seeunits);
+            TablPlugin.Instance.Settings.SetBool("seetots", settings.seetots);
+            TablPlugin.Instance.Settings.SetBool("outhdrs", settings.outhdrs);
+            TablPlugin.Instance.Settings.SetBool("threaded", settings.th);
             RhinoDoc.CloseDocument -= OnDocClose;
         }
 
@@ -642,7 +647,7 @@ namespace Tabl_
             {
                 using (StreamWriter sw = new StreamWriter(dlogExport.OpenFile()))
                 {
-                    if (settings.ssopt[2])
+                    if (settings.outhdrs)
                     {
                         // write headers
                         string[] htxts = new string[lvTabl.Columns.Count];
