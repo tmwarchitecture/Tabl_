@@ -48,14 +48,16 @@
             this.btnOK = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.ttipSettings = new System.Windows.Forms.ToolTip(this.components);
-            this.chklTablDisplay = new System.Windows.Forms.CheckedListBox();
             this.btnMarkerClr = new System.Windows.Forms.Button();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.cbEnableMarker = new System.Windows.Forms.CheckBox();
             this.label7 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
             this.nudWireWt = new System.Windows.Forms.NumericUpDown();
             this.clrPicker = new System.Windows.Forms.ColorDialog();
+            this.cbSeeUnit = new System.Windows.Forms.CheckBox();
+            this.cbSeeTot = new System.Windows.Forms.CheckBox();
+            this.cbExHdrs = new System.Windows.Forms.CheckBox();
+            this.cbThreaded = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudDP)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -169,8 +171,9 @@
             // 
             // rbAutoUpdate
             // 
+            this.rbAutoUpdate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.rbAutoUpdate.AutoSize = true;
-            this.rbAutoUpdate.Location = new System.Drawing.Point(84, 112);
+            this.rbAutoUpdate.Location = new System.Drawing.Point(172, 76);
             this.rbAutoUpdate.Name = "rbAutoUpdate";
             this.rbAutoUpdate.Size = new System.Drawing.Size(49, 19);
             this.rbAutoUpdate.TabIndex = 1;
@@ -181,8 +184,9 @@
             // 
             // rbManual
             // 
+            this.rbManual.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.rbManual.AutoSize = true;
-            this.rbManual.Location = new System.Drawing.Point(11, 112);
+            this.rbManual.Location = new System.Drawing.Point(99, 76);
             this.rbManual.Name = "rbManual";
             this.rbManual.Size = new System.Drawing.Size(67, 19);
             this.rbManual.TabIndex = 0;
@@ -268,53 +272,37 @@
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.Cancel_Click);
             // 
-            // chklTablDisplay
-            // 
-            this.chklTablDisplay.BackColor = System.Drawing.SystemColors.Menu;
-            this.chklTablDisplay.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.chklTablDisplay.CheckOnClick = true;
-            this.chklTablDisplay.FormattingEnabled = true;
-            this.chklTablDisplay.Items.AddRange(new object[] {
-            "Show units",
-            "Show total",
-            "Export headers",
-            "Threaded"});
-            this.chklTablDisplay.Location = new System.Drawing.Point(9, 20);
-            this.chklTablDisplay.MultiColumn = true;
-            this.chklTablDisplay.Name = "chklTablDisplay";
-            this.chklTablDisplay.Size = new System.Drawing.Size(116, 80);
-            this.chklTablDisplay.TabIndex = 0;
-            this.ttipSettings.SetToolTip(this.chklTablDisplay, "enabling thread increases overhead\r\nfaster only if there are myriad of line items" +
-        "");
-            // 
             // btnMarkerClr
             // 
+            this.btnMarkerClr.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnMarkerClr.BackColor = System.Drawing.Color.HotPink;
             this.btnMarkerClr.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnMarkerClr.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnMarkerClr.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnMarkerClr.Location = new System.Drawing.Point(96, 162);
+            this.btnMarkerClr.Location = new System.Drawing.Point(172, 109);
             this.btnMarkerClr.Name = "btnMarkerClr";
-            this.btnMarkerClr.Size = new System.Drawing.Size(36, 21);
+            this.btnMarkerClr.Size = new System.Drawing.Size(49, 21);
             this.btnMarkerClr.TabIndex = 1;
-            this.btnMarkerClr.Text = "...";
+            this.btnMarkerClr.Text = "Color";
             this.ttipSettings.SetToolTip(this.btnMarkerClr, "viewport marker color");
             this.btnMarkerClr.UseVisualStyleBackColor = false;
             this.btnMarkerClr.Click += new System.EventHandler(this.MarkerClr_Click);
             // 
             // groupBox5
             // 
+            this.groupBox5.Controls.Add(this.cbThreaded);
             this.groupBox5.Controls.Add(this.cbEnableMarker);
+            this.groupBox5.Controls.Add(this.cbExHdrs);
             this.groupBox5.Controls.Add(this.rbAutoUpdate);
+            this.groupBox5.Controls.Add(this.cbSeeTot);
             this.groupBox5.Controls.Add(this.rbManual);
+            this.groupBox5.Controls.Add(this.cbSeeUnit);
             this.groupBox5.Controls.Add(this.label7);
-            this.groupBox5.Controls.Add(this.label5);
-            this.groupBox5.Controls.Add(this.chklTablDisplay);
             this.groupBox5.Controls.Add(this.btnMarkerClr);
             this.groupBox5.Controls.Add(this.nudWireWt);
             this.groupBox5.Location = new System.Drawing.Point(245, 12);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(160, 198);
+            this.groupBox5.Size = new System.Drawing.Size(227, 198);
             this.groupBox5.TabIndex = 6;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Spreadsheet";
@@ -324,35 +312,28 @@
             this.cbEnableMarker.AutoSize = true;
             this.cbEnableMarker.Checked = true;
             this.cbEnableMarker.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbEnableMarker.Location = new System.Drawing.Point(11, 137);
+            this.cbEnableMarker.Location = new System.Drawing.Point(6, 111);
             this.cbEnableMarker.Name = "cbEnableMarker";
-            this.cbEnableMarker.Size = new System.Drawing.Size(103, 19);
+            this.cbEnableMarker.Size = new System.Drawing.Size(105, 19);
             this.cbEnableMarker.TabIndex = 4;
-            this.cbEnableMarker.Text = "Mark selected";
+            this.cbEnableMarker.Text = "Mark Selected";
+            this.ttipSettings.SetToolTip(this.cbEnableMarker, "marks what\'s selected in Tabl_ in the Rhino viewport");
             this.cbEnableMarker.UseVisualStyleBackColor = true;
             this.cbEnableMarker.CheckedChanged += new System.EventHandler(this.Marker_CheckedChanged);
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(8, 94);
+            this.label7.Location = new System.Drawing.Point(6, 78);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(50, 15);
             this.label7.TabIndex = 3;
             this.label7.Text = "Refresh";
             // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(12, 164);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(32, 15);
-            this.label5.TabIndex = 3;
-            this.label5.Text = "Wire";
-            // 
             // nudWireWt
             // 
-            this.nudWireWt.Location = new System.Drawing.Point(50, 162);
+            this.nudWireWt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.nudWireWt.Location = new System.Drawing.Point(126, 109);
             this.nudWireWt.Maximum = new decimal(new int[] {
             99,
             0,
@@ -366,17 +347,60 @@
             this.nudWireWt.Name = "nudWireWt";
             this.nudWireWt.Size = new System.Drawing.Size(40, 21);
             this.nudWireWt.TabIndex = 2;
+            this.ttipSettings.SetToolTip(this.nudWireWt, "marker wire thickness");
             this.nudWireWt.Value = new decimal(new int[] {
             3,
             0,
             0,
             0});
             // 
+            // cbSeeUnit
+            // 
+            this.cbSeeUnit.AutoSize = true;
+            this.cbSeeUnit.Location = new System.Drawing.Point(6, 20);
+            this.cbSeeUnit.Name = "cbSeeUnit";
+            this.cbSeeUnit.Size = new System.Drawing.Size(88, 19);
+            this.cbSeeUnit.TabIndex = 7;
+            this.cbSeeUnit.Text = "Show Units";
+            this.cbSeeUnit.UseVisualStyleBackColor = true;
+            // 
+            // cbSeeTot
+            // 
+            this.cbSeeTot.AutoSize = true;
+            this.cbSeeTot.Location = new System.Drawing.Point(6, 45);
+            this.cbSeeTot.Name = "cbSeeTot";
+            this.cbSeeTot.Size = new System.Drawing.Size(87, 19);
+            this.cbSeeTot.TabIndex = 8;
+            this.cbSeeTot.Text = "Show Total";
+            this.cbSeeTot.UseVisualStyleBackColor = true;
+            // 
+            // cbExHdrs
+            // 
+            this.cbExHdrs.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbExHdrs.AutoSize = true;
+            this.cbExHdrs.Location = new System.Drawing.Point(110, 20);
+            this.cbExHdrs.Name = "cbExHdrs";
+            this.cbExHdrs.Size = new System.Drawing.Size(111, 19);
+            this.cbExHdrs.TabIndex = 9;
+            this.cbExHdrs.Text = "Export Headers";
+            this.cbExHdrs.UseVisualStyleBackColor = true;
+            // 
+            // cbThreaded
+            // 
+            this.cbThreaded.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbThreaded.AutoSize = true;
+            this.cbThreaded.Location = new System.Drawing.Point(110, 45);
+            this.cbThreaded.Name = "cbThreaded";
+            this.cbThreaded.Size = new System.Drawing.Size(79, 19);
+            this.cbThreaded.TabIndex = 10;
+            this.cbThreaded.Text = "Threaded";
+            this.cbThreaded.UseVisualStyleBackColor = true;
+            // 
             // TablParams
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(418, 259);
+            this.ClientSize = new System.Drawing.Size(632, 438);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
@@ -427,12 +451,14 @@
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.ToolTip ttipSettings;
         private System.Windows.Forms.GroupBox groupBox5;
-        private System.Windows.Forms.CheckedListBox chklTablDisplay;
-        private System.Windows.Forms.Label label5;
         private System.Windows.Forms.NumericUpDown nudWireWt;
         private System.Windows.Forms.Button btnMarkerClr;
         private System.Windows.Forms.ColorDialog clrPicker;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.CheckBox cbEnableMarker;
+        private System.Windows.Forms.CheckBox cbThreaded;
+        private System.Windows.Forms.CheckBox cbExHdrs;
+        private System.Windows.Forms.CheckBox cbSeeTot;
+        private System.Windows.Forms.CheckBox cbSeeUnit;
     }
 }
