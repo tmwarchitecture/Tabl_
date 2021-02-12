@@ -247,7 +247,7 @@ namespace Tabl_
                 else groups.SetValue(whole, i);
             }
             nums = string.Join(marker.ToString(), groups.Reverse());
-            nums += "." + parts[1];
+            if (parts.Length>1) nums += "." + parts[1];
             return nums;
         }
         /// <summary>

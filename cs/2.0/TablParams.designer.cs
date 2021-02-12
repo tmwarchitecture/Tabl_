@@ -91,8 +91,8 @@
             // 
             this.cbThousand.FormattingEnabled = true;
             this.cbThousand.Items.AddRange(new object[] {
-            "comma \",\"",
-            "dot \".\"",
+            "comma",
+            "dot",
             "space",
             "None"});
             this.cbThousand.Location = new System.Drawing.Point(144, 49);
@@ -115,6 +115,7 @@
             this.nudDP.Name = "nudDP";
             this.nudDP.Size = new System.Drawing.Size(77, 21);
             this.nudDP.TabIndex = 0;
+            this.nudDP.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.nudDP.Value = new decimal(new int[] {
             2,
             0,
@@ -126,7 +127,7 @@
             this.groupBox2.Controls.Add(this.rbClrComma);
             this.groupBox2.Controls.Add(this.rbClrDash);
             this.groupBox2.Controls.Add(this.rbClrName);
-            this.groupBox2.Location = new System.Drawing.Point(245, 12);
+            this.groupBox2.Location = new System.Drawing.Point(12, 191);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(227, 52);
             this.groupBox2.TabIndex = 1;
@@ -169,19 +170,19 @@
             // rbAutoUpdate
             // 
             this.rbAutoUpdate.AutoSize = true;
-            this.rbAutoUpdate.Location = new System.Drawing.Point(142, 90);
+            this.rbAutoUpdate.Location = new System.Drawing.Point(84, 112);
             this.rbAutoUpdate.Name = "rbAutoUpdate";
-            this.rbAutoUpdate.Size = new System.Drawing.Size(79, 19);
+            this.rbAutoUpdate.Size = new System.Drawing.Size(49, 19);
             this.rbAutoUpdate.TabIndex = 1;
             this.rbAutoUpdate.TabStop = true;
-            this.rbAutoUpdate.Text = "Automatic";
+            this.rbAutoUpdate.Text = "Auto";
             this.ttipSettings.SetToolTip(this.rbAutoUpdate, "any change in Rhino will trigger data refresh\r\nbeware of computing time");
             this.rbAutoUpdate.UseVisualStyleBackColor = true;
             // 
             // rbManual
             // 
             this.rbManual.AutoSize = true;
-            this.rbManual.Location = new System.Drawing.Point(65, 90);
+            this.rbManual.Location = new System.Drawing.Point(11, 112);
             this.rbManual.Name = "rbManual";
             this.rbManual.Size = new System.Drawing.Size(67, 19);
             this.rbManual.TabIndex = 0;
@@ -221,13 +222,13 @@
             // 
             // nudUnitScale
             // 
-            this.nudUnitScale.DecimalPlaces = 5;
+            this.nudUnitScale.DecimalPlaces = 3;
             this.nudUnitScale.Increment = new decimal(new int[] {
             5,
             0,
             0,
             131072});
-            this.nudUnitScale.Location = new System.Drawing.Point(143, 16);
+            this.nudUnitScale.Location = new System.Drawing.Point(142, 20);
             this.nudUnitScale.Name = "nudUnitScale";
             this.nudUnitScale.Size = new System.Drawing.Size(77, 21);
             this.nudUnitScale.TabIndex = 1;
@@ -241,7 +242,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(7, 18);
+            this.label3.Location = new System.Drawing.Point(8, 22);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(69, 15);
             this.label3.TabIndex = 0;
@@ -249,9 +250,9 @@
             // 
             // btnOK
             // 
-            this.btnOK.Location = new System.Drawing.Point(245, 191);
+            this.btnOK.Location = new System.Drawing.Point(245, 216);
             this.btnOK.Name = "btnOK";
-            this.btnOK.Size = new System.Drawing.Size(111, 27);
+            this.btnOK.Size = new System.Drawing.Size(78, 27);
             this.btnOK.TabIndex = 4;
             this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
@@ -259,9 +260,9 @@
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(361, 191);
+            this.btnCancel.Location = new System.Drawing.Point(327, 216);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(111, 27);
+            this.btnCancel.Size = new System.Drawing.Size(78, 27);
             this.btnCancel.TabIndex = 5;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
@@ -272,17 +273,16 @@
             this.chklTablDisplay.BackColor = System.Drawing.SystemColors.Menu;
             this.chklTablDisplay.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.chklTablDisplay.CheckOnClick = true;
-            this.chklTablDisplay.ColumnWidth = 110;
             this.chklTablDisplay.FormattingEnabled = true;
             this.chklTablDisplay.Items.AddRange(new object[] {
             "Show units",
             "Show total",
             "Export headers",
             "Threaded"});
-            this.chklTablDisplay.Location = new System.Drawing.Point(6, 20);
+            this.chklTablDisplay.Location = new System.Drawing.Point(9, 20);
             this.chklTablDisplay.MultiColumn = true;
             this.chklTablDisplay.Name = "chklTablDisplay";
-            this.chklTablDisplay.Size = new System.Drawing.Size(220, 32);
+            this.chklTablDisplay.Size = new System.Drawing.Size(116, 80);
             this.chklTablDisplay.TabIndex = 0;
             this.ttipSettings.SetToolTip(this.chklTablDisplay, "enabling thread increases overhead\r\nfaster only if there are myriad of line items" +
         "");
@@ -293,9 +293,9 @@
             this.btnMarkerClr.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnMarkerClr.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnMarkerClr.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnMarkerClr.Location = new System.Drawing.Point(111, 63);
+            this.btnMarkerClr.Location = new System.Drawing.Point(96, 162);
             this.btnMarkerClr.Name = "btnMarkerClr";
-            this.btnMarkerClr.Size = new System.Drawing.Size(26, 21);
+            this.btnMarkerClr.Size = new System.Drawing.Size(36, 21);
             this.btnMarkerClr.TabIndex = 1;
             this.btnMarkerClr.Text = "...";
             this.ttipSettings.SetToolTip(this.btnMarkerClr, "viewport marker color");
@@ -309,12 +309,12 @@
             this.groupBox5.Controls.Add(this.rbManual);
             this.groupBox5.Controls.Add(this.label7);
             this.groupBox5.Controls.Add(this.label5);
-            this.groupBox5.Controls.Add(this.nudWireWt);
-            this.groupBox5.Controls.Add(this.btnMarkerClr);
             this.groupBox5.Controls.Add(this.chklTablDisplay);
-            this.groupBox5.Location = new System.Drawing.Point(245, 70);
+            this.groupBox5.Controls.Add(this.btnMarkerClr);
+            this.groupBox5.Controls.Add(this.nudWireWt);
+            this.groupBox5.Location = new System.Drawing.Point(245, 12);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(227, 115);
+            this.groupBox5.Size = new System.Drawing.Size(160, 198);
             this.groupBox5.TabIndex = 6;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Spreadsheet";
@@ -324,7 +324,7 @@
             this.cbEnableMarker.AutoSize = true;
             this.cbEnableMarker.Checked = true;
             this.cbEnableMarker.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbEnableMarker.Location = new System.Drawing.Point(6, 64);
+            this.cbEnableMarker.Location = new System.Drawing.Point(11, 137);
             this.cbEnableMarker.Name = "cbEnableMarker";
             this.cbEnableMarker.Size = new System.Drawing.Size(103, 19);
             this.cbEnableMarker.TabIndex = 4;
@@ -335,7 +335,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 92);
+            this.label7.Location = new System.Drawing.Point(8, 94);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(50, 15);
             this.label7.TabIndex = 3;
@@ -344,7 +344,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(143, 65);
+            this.label5.Location = new System.Drawing.Point(12, 164);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(32, 15);
             this.label5.TabIndex = 3;
@@ -352,7 +352,7 @@
             // 
             // nudWireWt
             // 
-            this.nudWireWt.Location = new System.Drawing.Point(181, 63);
+            this.nudWireWt.Location = new System.Drawing.Point(50, 162);
             this.nudWireWt.Maximum = new decimal(new int[] {
             99,
             0,
@@ -372,11 +372,11 @@
             0,
             0});
             // 
-            // Settings
+            // TablParams
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(480, 227);
+            this.ClientSize = new System.Drawing.Size(418, 259);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
@@ -387,7 +387,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "Settings";
+            this.Name = "TablParams";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Settings";
             this.groupBox1.ResumeLayout(false);
