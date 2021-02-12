@@ -6,6 +6,7 @@ using Rhino.DocObjects;
 using Rhino.Geometry;
 using Rhino.Display;
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Collections;
@@ -225,10 +226,12 @@ namespace Tabl_
         /// </summary>
         /// <param name="num">the number to format</param>
         /// <param name="marker">separator marker</param>
+        /// <param name="digits">how many decimal places to keep</param>
         /// <returns>string with proper separator inserted</returns>
-        private string KMarker(double num, char marker)
+        private string KMarker(double num, char marker, int dp)
         {
-            string nums = num.ToString();
+            string culture = "F" + dp.ToString();
+            string nums = num.ToString(culture, CultureInfo.InvariantCulture);
             string[] parts = nums.Split(new char[] { '.', });
             string whole = parts[0];
             // int/int is an integral devision, same as "//" in python
@@ -547,8 +550,6 @@ namespace Tabl_
             }
         }
 
-        
-
         /// <summary>
         /// get the line item fields for a tabl line
         /// </summary>
@@ -591,7 +592,9 @@ namespace Tabl_
             // flag missing obj in doc, deletion handled outside this method
             if (obj == null)
                 return "MISSING! DELETE!";
-            
+
+            int dp = settings.dp;
+            string culture = "F" + dp.ToString();
             switch (htxt)
             {
                 case "GUID":
@@ -631,8 +634,8 @@ namespace Tabl_
                         pw = l.PlotWeight;
                     }
                     else pw = obj.Attributes.PlotWeight;
-                    if (settings.ssopt[0]) info = pw.ToString() + "pt";
-                    else info = pw.ToString();
+                    if (settings.ssopt[0]) info = pw.ToString(culture, CultureInfo.InvariantCulture) + "pt";
+                    else info = pw.ToString(culture, CultureInfo.InvariantCulture);
                     break;
                 case "PrintColor":
                     Color pc;
@@ -663,12 +666,12 @@ namespace Tabl_
                         double len_num = Loaded[refi].Curve().GetLength();
                         len_num= Math.Round(len_num * settings.su, settings.dp); // scale + decimal place
                         if (settings.ts == ",")
-                            len = KMarker(len_num, ',');
+                            len = KMarker(len_num, ',', dp);
                         else if (settings.ts == ".")
-                            len = KMarker(len_num, '.');
+                            len = KMarker(len_num, '.', dp);
                         else if (settings.ts == " ")
-                            len = KMarker(len_num, ' ');
-                        else len = len_num.ToString();
+                            len = KMarker(len_num, ' ', dp);
+                        else len = len_num.ToString(culture, CultureInfo.InvariantCulture);
                     }
                     if (settings.ssopt[0] && len != null) len += LenUnit(); // with unit
                     info = len;
@@ -690,15 +693,15 @@ namespace Tabl_
 
                     if (amp != null)
                     {
-                        double area_num = Math.Round(amp.Area * settings.su, settings.dp);
+                        double area_num = Math.Round(amp.Area * settings.su, dp);
                         string area;
                         if (settings.ts == ",")
-                            area = KMarker(area_num, ',');
+                            area = KMarker(area_num, ',', dp);
                         else if (settings.ts == ".")
-                            area = KMarker(area_num, '.');
+                            area = KMarker(area_num, '.', dp);
                         else if (settings.ts == " ")
-                            area = KMarker(area_num, ' ');
-                        else area = area_num.ToString();
+                            area = KMarker(area_num, ' ', dp);
+                        else area = area_num.ToString(culture, CultureInfo.InvariantCulture);
 
                         if (settings.ssopt[0])
                         {
@@ -716,21 +719,21 @@ namespace Tabl_
                         if (Loaded[refi].Brep().IsSolid)
                         {
                             double vol_num = Loaded[refi].Brep().GetVolume(rtol, tol);
-                            vol_num = Math.Round(vol_num * settings.su, settings.dp);
+                            vol_num = Math.Round(vol_num * settings.su, dp);
                             if (settings.ts == ",")
-                                vol = KMarker(vol_num, ',');
+                                vol = KMarker(vol_num, ',', dp);
                             else if (settings.ts == ".")
-                                vol = KMarker(vol_num, '.');
+                                vol = KMarker(vol_num, '.', dp);
                             else if (settings.ts == " ")
-                                vol = KMarker(vol_num, ' ');
-                            else vol = vol_num.ToString();
+                                vol = KMarker(vol_num, ' ', dp);
+                            else vol = vol_num.ToString(culture, CultureInfo.InvariantCulture);
                         }
                         else
-                            vol = "0";
+                            vol = 0.ToString(culture, CultureInfo.InvariantCulture);
                     else if (obj.ObjectType == ObjectType.Extrusion)
                     {
                         Brep b = Brep.TryConvertBrep(obj.Geometry);
-                        if (b == null) vol = "0";
+                        if (b == null) vol = 0.ToString(culture, CultureInfo.InvariantCulture);
                         else
                         {
                             if (b.IsSolid)
@@ -738,14 +741,14 @@ namespace Tabl_
                                 double vol_num = b.GetVolume(rtol, tol);
                                 vol_num = Math.Round(vol_num * settings.su, settings.dp); // scale unit + decimal place
                                 if (settings.ts == ",")
-                                    vol = KMarker(vol_num, ',');
+                                    vol = KMarker(vol_num, ',', dp);
                                 else if (settings.ts == ".")
-                                    vol = KMarker(vol_num, '.');
+                                    vol = KMarker(vol_num, '.', dp);
                                 else if (settings.ts == " ")
-                                    vol = KMarker(vol_num, ' ');
-                                else vol = vol_num.ToString();
+                                    vol = KMarker(vol_num, ' ', dp);
+                                else vol = vol_num.ToString(culture, CultureInfo.InvariantCulture);
                             }
-                            else vol = "0";
+                            else vol = 0.ToString(culture, CultureInfo.InvariantCulture);
                         }
                     }
                     else if (obj.ObjectType == ObjectType.Mesh)
@@ -755,15 +758,15 @@ namespace Tabl_
                             double vol_num = vmp.Volume;
                             vol_num = Math.Round(vol_num* settings.su, settings.dp); // scale unit + decimla place
                             if (settings.ts == ",")
-                                vol = KMarker(vol_num, ',');
+                                vol = KMarker(vol_num, ',', dp);
                             else if (settings.ts == ".")
-                                vol = KMarker(vol_num, '.');
+                                vol = KMarker(vol_num, '.', dp);
                             else if (settings.ts == " ")
-                                vol = KMarker(vol_num, ' ');
-                            else vol = vol_num.ToString();
+                                vol = KMarker(vol_num, ' ', dp);
+                            else vol = vol_num.ToString(culture, CultureInfo.InvariantCulture);
                         }
                         else
-                            vol = "0";
+                            vol = 0.ToString(culture, CultureInfo.InvariantCulture);
                     // append unit
                     if (!settings.ssopt[0] || vol == null) info = vol;
                     else if (vol != "open brep" && vol != "invalid extrusion")
@@ -866,19 +869,27 @@ namespace Tabl_
                         txt = "keys: " + string.Join(";", usertxts.AllKeys);
                     info = txt.Length <= 50 ? txt : txt.Substring(0, 50) + "(...truncated)";
                     break;
-                case "CenterPt":
+                case "LocationPt":
                     Point3d ctr = obj.Geometry.GetBoundingBox(false).Center;
-                    double px = Math.Round(ctr.X * settings.su, settings.dp);
-                    double py = Math.Round(ctr.Y * settings.su, settings.dp);
-                    double pz = Math.Round(ctr.Z * settings.su, settings.dp);
-                    info = string.Format("{0}, {1}, {2}", px, py, pz);
+                    double px = Math.Round(ctr.X * settings.su, dp);
+                    double py = Math.Round(ctr.Y * settings.su, dp);
+                    double pz = Math.Round(ctr.Z * settings.su, dp);
+                    info = string.Format("{0}, {1}, {2}", 
+                        px.ToString(culture, CultureInfo.InvariantCulture), 
+                        py.ToString(culture, CultureInfo.InvariantCulture), 
+                        pz.ToString(culture, CultureInfo.InvariantCulture)
+                        );
                     break;
                 case "Extents":
                     BoundingBox bb = obj.Geometry.GetBoundingBox(false);
-                    double xe = Math.Round(bb.Diagonal.X * settings.su, settings.dp);
-                    double ye = Math.Round(bb.Diagonal.Y * settings.su, settings.dp);
-                    double ze = Math.Round(bb.Diagonal.Z * settings.su, settings.dp);
-                    info = string.Format("{0}, {1}, {2}", xe, ye, ze);
+                    double xe = Math.Round(bb.Diagonal.X * settings.su, dp);
+                    double ye = Math.Round(bb.Diagonal.Y * settings.su, dp);
+                    double ze = Math.Round(bb.Diagonal.Z * settings.su, dp);
+                    info = string.Format("{0}, {1}, {2}", 
+                        xe.ToString(culture, CultureInfo.InvariantCulture),
+                        ye.ToString(culture, CultureInfo.InvariantCulture), 
+                        ze.ToString(culture, CultureInfo.InvariantCulture)
+                        );
                     break;
                 default:
                     break;
@@ -951,7 +962,7 @@ namespace Tabl_
             string[] txtfields = new string[] { "GUID", "Name", "Comments", "Type", "LineType", "Layer", "PrintColor", "Color", "Material", "IsClosed", "IsPlanar", };
             if (txtfields.Contains(htxt))
                 lvTabl.ListViewItemSorter = new LVSorterByStr(sorthdr, sortord);
-            else if (htxt == "CenterPt" || htxt == "Extents")
+            else if (htxt == "LocationPt" || htxt == "Extents")
                 lvTabl.ListViewItemSorter = new LVSorterByPt(sorthdr, sortord);
             else
                 lvTabl.ListViewItemSorter = new LVSorterByNum(sorthdr, sortord);

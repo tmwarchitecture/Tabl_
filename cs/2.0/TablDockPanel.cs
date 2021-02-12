@@ -52,7 +52,7 @@ namespace Tabl_
         // header order
         private string[] ho = new string[]
         {
-            "GUID","Type","Name","Layer","Color","LineType", "PrintColor","PrintWidth","Material","Length","Area", "Volume","NumPts","NumEdges","NumFaces", "Degree","CenterPt","Extents","IsPlanar","IsClosed","Comments",
+            "GUID","Type","Name","Layer","Color","LineType", "PrintColor","PrintWidth","Material","Length","Area", "Volume","NumPts","NumEdges","NumFaces", "Degree","LocationPt","Extents","IsPlanar","IsClosed","Comments",
         };
         // delegate comparer, used to sort dict keys
         private int HeaderSorter(string a, string b)
@@ -93,7 +93,7 @@ namespace Tabl_
                 {"NumEdges", false },
                 {"NumFaces" , false},
                 {"Degree",false },
-                {"CenterPt",false },
+                {"LocationPt",false },
                 {"Extents", false },
                 {"IsPlanar",false },
                 {"IsClosed", false },
@@ -104,7 +104,7 @@ namespace Tabl_
             plcsettings = new PlaceSettings();
             tol = ParentDoc.ModelAbsoluteTolerance;
             rtol = ParentDoc.ModelAngleToleranceRadians;
-            // set tabl plugin params for settings
+            // set tabl plugin params for settings on document close
             RhinoDoc.CloseDocument += OnDocClose; 
             // automatic update
             Command.EndCommand += OnDocChange;
