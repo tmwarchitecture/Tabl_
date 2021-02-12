@@ -433,8 +433,8 @@
             // 
             this.copyTextsToolStripMenuItem.Name = "copyTextsToolStripMenuItem";
             this.copyTextsToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.copyTextsToolStripMenuItem.Text = "Copy Texts";
-            this.copyTextsToolStripMenuItem.ToolTipText = "only highlighted will be copied\r\nraw text as csv";
+            this.copyTextsToolStripMenuItem.Text = "Copy Text";
+            this.copyTextsToolStripMenuItem.ToolTipText = "Copy selected as raw text";
             this.copyTextsToolStripMenuItem.Click += new System.EventHandler(this.MenuStripCopyTabl_Click);
             // 
             // copySpreadsheetToolStripMenuItem
@@ -442,7 +442,7 @@
             this.copySpreadsheetToolStripMenuItem.Name = "copySpreadsheetToolStripMenuItem";
             this.copySpreadsheetToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.copySpreadsheetToolStripMenuItem.Text = "Copy Spreadsheet";
-            this.copySpreadsheetToolStripMenuItem.ToolTipText = "only highlighted will be copied\r\npaste in an Excel will you?";
+            this.copySpreadsheetToolStripMenuItem.ToolTipText = "Copy selected as CSV";
             this.copySpreadsheetToolStripMenuItem.Click += new System.EventHandler(this.MenuStripCopyTabl_Click);
             // 
             // zoomToHighlightedToolStripMenuItem
@@ -450,7 +450,7 @@
             this.zoomToHighlightedToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.zoomToHighlightedToolStripMenuItem.Name = "zoomToHighlightedToolStripMenuItem";
             this.zoomToHighlightedToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.zoomToHighlightedToolStripMenuItem.Text = "Zoom to Highlighted";
+            this.zoomToHighlightedToolStripMenuItem.Text = "Zoom Selected";
             this.zoomToHighlightedToolStripMenuItem.Click += new System.EventHandler(this.MenuStripZoom_Click);
             // 
             // btnInfo
@@ -475,7 +475,7 @@
             this.btnExport.Name = "btnExport";
             this.btnExport.Size = new System.Drawing.Size(25, 25);
             this.btnExport.TabIndex = 1;
-            this.ttipBtns.SetToolTip(this.btnExport, "Export entire spreadsheet");
+            this.ttipBtns.SetToolTip(this.btnExport, "Export data to CSV");
             this.btnExport.UseVisualStyleBackColor = true;
             this.btnExport.Click += new System.EventHandler(this.Export_Click);
             // 
@@ -488,7 +488,7 @@
             this.btnImport.Name = "btnImport";
             this.btnImport.Size = new System.Drawing.Size(25, 25);
             this.btnImport.TabIndex = 1;
-            this.ttipBtns.SetToolTip(this.btnImport, "Import spreadsheet\r\nWill append to existing list");
+            this.ttipBtns.SetToolTip(this.btnImport, "Import data from CSV.\r\nWill add to existing list");
             this.btnImport.UseVisualStyleBackColor = true;
             this.btnImport.Click += new System.EventHandler(this.Import_Click);
             // 
@@ -501,7 +501,7 @@
             this.btnPlace.Name = "btnPlace";
             this.btnPlace.Size = new System.Drawing.Size(25, 25);
             this.btnPlace.TabIndex = 1;
-            this.ttipBtns.SetToolTip(this.btnPlace, "Place spreadsheet in Rhino model");
+            this.ttipBtns.SetToolTip(this.btnPlace, "Place Tabl_ data in Rhino");
             this.btnPlace.UseVisualStyleBackColor = true;
             this.btnPlace.Click += new System.EventHandler(this.Place_Click);
             // 
@@ -553,7 +553,7 @@
             this.btnRemove.Name = "btnRemove";
             this.btnRemove.Size = new System.Drawing.Size(25, 25);
             this.btnRemove.TabIndex = 1;
-            this.ttipBtns.SetToolTip(this.btnRemove, "Select from document to remove");
+            this.ttipBtns.SetToolTip(this.btnRemove, "Remove object from Tabl_");
             this.btnRemove.UseVisualStyleBackColor = true;
             this.btnRemove.Click += new System.EventHandler(this.Remove_Click);
             // 
@@ -566,7 +566,7 @@
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(25, 25);
             this.btnAdd.TabIndex = 1;
-            this.ttipBtns.SetToolTip(this.btnAdd, "Add from Rhino model");
+            this.ttipBtns.SetToolTip(this.btnAdd, "Add object from Rhino");
             this.btnAdd.UseVisualStyleBackColor = true;
             this.btnAdd.Click += new System.EventHandler(this.Add_Click);
             // 
@@ -578,7 +578,7 @@
             this.btnSelectInDoc.Name = "btnSelectInDoc";
             this.btnSelectInDoc.Size = new System.Drawing.Size(25, 25);
             this.btnSelectInDoc.TabIndex = 3;
-            this.ttipBtns.SetToolTip(this.btnSelectInDoc, "Select highlighted item in rhino document");
+            this.ttipBtns.SetToolTip(this.btnSelectInDoc, "Select object in Rhino");
             this.btnSelectInDoc.UseVisualStyleBackColor = true;
             this.btnSelectInDoc.Click += new System.EventHandler(this.SelectInDoc_Click);
             // 
