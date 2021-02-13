@@ -146,6 +146,36 @@
   <ItemGroup>
     <None Include="Resources\Artboard 11.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Add%402x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Export%402x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Import%402x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Info%402x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Placement%402x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Refresh%402x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Remove%402x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Select%402x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Settings%402x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Trash%402x.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

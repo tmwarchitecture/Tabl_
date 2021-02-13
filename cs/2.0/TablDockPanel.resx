@@ -129,17 +129,6 @@
   <metadata name="ttipBtns.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>243, 17</value>
   </metadata>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="btnTrash.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAL
-        EgAACxIB0t1+/AAAAOZJREFUSEu1k2ENwkAMhSdhEiYBCUiYFCRMAlImYRKQgAQc3N67tEu5vOPPlSZf
-        KF/TFsqYSil/RcpMpMxEykykzETKXyBuYFY1hZQ9bDiTXdUVUvZIX4A4wEfVCGvgpWqOlA6bAZMFrIAL
-        V6vRMTnavoiUDpttyB1slm9Wo2MytOBpQx5gBhxanyDE18IeUjrtEAR/ZDq++vKhBbw7k3oGvtp7LrnO
-        1/ZFpHTYbEPqk4KI3+ANhhfw7kwIP3Gk+ranRcqID+rQ/Y84UkYQPAdPpVhUT0TKTKTMRMpMpMxEykyk
-        zKNMJ+DC4aL+uqowAAAAAElFTkSuQmCC
-</value>
-  </data>
   <metadata name="dlogExport.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>430, 17</value>
   </metadata>
