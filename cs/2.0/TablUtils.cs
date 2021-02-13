@@ -807,6 +807,18 @@ namespace Tabl_
                 case "Degree":
                     if (obj.ObjectType == ObjectType.Curve)
                         info = Loaded[refi].Curve().Degree.ToString();
+                    else if (obj.Geometry.HasBrepForm)
+                    {
+                        var faces = Loaded[refi].Brep().Faces;
+                        if (faces.Count > 1) info = "multiple";
+                        else
+                        {
+                            var d0 = faces[0].UnderlyingSurface().Degree(0);
+                            var d1 = faces[0].UnderlyingSurface().Degree(1);
+                            var dg = d0 > d1 ? d0 : d1;
+                            info = dg.ToString();
+                        }
+                    }
                     break;
                 case "IsPlanar":
                     if (obj.ObjectType == ObjectType.Brep)
