@@ -38,4 +38,8 @@ Once finished organizing and formatting the data, Tabl_ can export information t
 
 ## Installation
 
+Run the `.rhi` file. You must have Rhino installed on your machine. To remove Tabl_ on a Windows machine, close Rhino first. Then go to "C:\Users\YOURNAME\AppData\Roaming\McNeel\Rhinoceros\7.0\Plug-ins\" and remove the Tabl_ folder. Restart Rhino and it will be unintalled. 
+
 ## Starter Guide
+
+Type "LaunchTabl" in Rhino to call up the main interface. From v2.0 onwards, Tabl_ integrates with Rhino docked panels so it can be snapped and sorted with other tabbed tools. 
