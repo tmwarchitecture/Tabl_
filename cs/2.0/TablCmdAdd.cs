@@ -42,7 +42,7 @@ namespace Tabl_
                 {
                     if (blitz)
                     {
-                        tablpanel.Loaded = picked;
+                        tablpanel.Loaded = picked.Select(oref=>new ObjRef(oref.ObjectId)).ToArray();
                         tablpanel.PushRefs();
                     }
                     else
@@ -52,7 +52,7 @@ namespace Tabl_
                         var ids = tablpanel.Loaded.Select(i => i.ObjectId.ToString());
                         foreach (ObjRef oref in picked)
                             if (!ids.Contains(oref.ObjectId.ToString()))
-                                concat.Add(oref);
+                                concat.Add(new ObjRef(oref.ObjectId));
                         tablpanel.Loaded = concat.ToArray();
                         tablpanel.PushRefs();
                     }

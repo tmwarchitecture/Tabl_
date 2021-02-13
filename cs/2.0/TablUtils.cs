@@ -16,7 +16,7 @@ using System.Drawing;
 
 namespace Tabl_
 {
-    internal class Highlighter : DisplayConduit
+    internal class DocMarker : DisplayConduit
     {
         /* groups of curves, each group is from an object
          largely unnecessary to keep this indexing, flat list should work
@@ -35,7 +35,7 @@ namespace Tabl_
         /// <summary>
         /// constructor for highlight marker in rhino model, of selected line item of Tabl_
         /// </summary>
-        public Highlighter()
+        public DocMarker()
         {
             crvs = new List<Curve[]>();
             pts = new List<Point3d>();

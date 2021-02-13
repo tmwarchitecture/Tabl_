@@ -12,7 +12,7 @@ namespace Tabl_
 {
     public partial class TablParams : Form
     {
-        internal Highlighter docmarker; // instantiated in constructor
+        internal DocMarker docmarker; // instantiated in constructor
         private TablDockPanel super; // the tabldockpanel that launches this form
 
         internal int dp = 2; // decimal place
@@ -28,11 +28,11 @@ namespace Tabl_
         // thousand separators, order mapped to dropdown items
         private string[] tsvalues = new string[] { ",", ".", " ", "", };
 
-        //constructor
+        //constructors
         public TablParams()
         {
             InitializeComponent();
-            docmarker = new Highlighter() { Enabled = cbEnableMarker.Checked, };
+            docmarker = new DocMarker() { Enabled = cbEnableMarker.Checked, };
             RestoreParams(); // calls docmarker so run this after docmarket instantiation
             Icon = Properties.Resources.main;
 
