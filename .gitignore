@@ -51,4 +51,5 @@ Temporary Items
 /cs/1.0/.vs
 /cs/2.0/.vs
 
-/cs/2.0/obj/Debug/
+/cs/2.0/obj/Debug
+/cs/2.0/obj/Release
