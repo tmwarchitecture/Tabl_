@@ -197,12 +197,13 @@ namespace Tabl_
         public Guid RefId { get; set; }
         
         /// <summary>
-        /// constructor, this doesn't assign RefId. set property separately
+        /// constructor
         /// </summary>
         /// <param name="items">collection of cells on the row</param>
-        public TablLineItem(string[] items) : base(items)
+        /// <param name="id">guid of rhino object this line points to</param>
+        public TablLineItem(string[] items, Guid id) : base(items)
         {
-            
+            RefId = id;
         }
     }
 
@@ -472,25 +473,28 @@ namespace Tabl_
             // fill spreadsheet
             List<TablLineItem> lines = new List<TablLineItem>();
             List<int> badidx = new List<int>(); // missing in document but objref still references
-            for (int oi = 0; oi < Loaded.Length; oi++)
-            {
-                string[] infos = TablLineFields(oi);
-                if (infos.Length == 0)
-                    break;
-                else if (infos[0] == "MISSING! DELETE!")
+            if (!settings.th)
+                for (int oi = 0; oi < Loaded.Length; oi++)
                 {
-                    badidx.Add(oi);
-                    continue;
+                    string[] infos = TablLineFields(oi);
+                    if (infos.Length == 0)
+                        break;
+                    else if (infos[0] == "MISSING! DELETE!")
+                    {
+                        badidx.Add(oi);
+                        continue;
+                    }
+                    else if (!linecounter)
+                        lines.Add(new TablLineItem(infos, Loaded[oi].ObjectId));
+                    else
+                    {
+                        List<string> infolist = new List<string> { (oi + 1).ToString(), };
+                        infolist.AddRange(infos);
+                        lines.Add(new TablLineItem(infolist.ToArray(), Loaded[oi].ObjectId));
+                    }
                 }
-                else if (!linecounter)
-                    lines.Add(new TablLineItem(infos) { RefId = Loaded[oi].ObjectId,});
-                else
-                {
-                    List<string> infolist = new List<string> { (oi + 1).ToString(), };
-                    infolist.AddRange(infos);
-                    lines.Add(new TablLineItem(infolist.ToArray()) { RefId = Loaded[oi].ObjectId,});
-                }
-            }
+            else
+                TablThreadedQuery(ref badidx, ref lines);
             lvTabl.Items.AddRange(lines.ToArray()); // faster with addrange rather than add in a loop
 
             // remove if something in doc was deleted by user
@@ -537,19 +541,477 @@ namespace Tabl_
             }
             string[] infos = TablLineFields(tliidx);
             if (!linecounter)
-                lvTabl.Items[tliidx] = new TablLineItem(infos) {
-                    RefId = Loaded[tliidx].ObjectId,
-                };
+                lvTabl.Items[tliidx] = new TablLineItem(infos, Loaded[tliidx].ObjectId);
             else
             {
                 List<string> infolist = new List<string> { (tliidx + 1).ToString(), };
                 infolist.AddRange(infos);
-                lvTabl.Items[tliidx] = new TablLineItem(infolist.ToArray()) {
-                    RefId = Loaded[tliidx].ObjectId,
-                };
+                lvTabl.Items[tliidx] = new TablLineItem(infolist.ToArray(), Loaded[tliidx].ObjectId);
             }
         }
 
+        /// <summary>
+        /// compute entire Tabl_ multi-threaded, furnish the tabl line items collection as well as bad indices collection
+        /// </summary>
+        /// <param name="bad">destination to store bad reference indices, will be cleared first</param>
+        /// <param name="li">destination to store queried line items, will be cleared first</param>
+        private void TablThreadedQuery(ref List<int> bad, ref List<TablLineItem> li)
+        {
+            List<int> todelete = new List<int>();
+            TablLineItem[] queried = new TablLineItem[Loaded.Length];
+            Parallel.For(0, queried.Length, oi =>
+            {
+                // get stuff in a thread safe manner
+                GeometryBase g;
+                int dp;
+                int cf;
+                bool seeunits;
+                string ts;
+                double su;
+                string cun;
+                lock (locker)
+                {
+                    try
+                    {
+                        RhinoObject obj = Loaded[oi].Object();
+                        g = obj.Geometry;
+                    }
+                    catch (Exception ex)
+                    {
+                        if (ex is ArgumentNullException || ex is NullReferenceException)
+                        {
+                            todelete.Add(oi);
+                            return;
+                        }
+                        throw ex;
+                    }
+                    dp = settings.dp;
+                    cf = settings.cf;
+                    seeunits = settings.seeunits;
+                    ts = settings.ts;
+                    su = settings.su;
+                    cun = settings.cun;
+                }
+                string culture = "F" + dp.ToString();
+
+                // query
+                string[] infos = linecounter ? new string[lvTabl.Columns.Count - 1] : new string[lvTabl.Columns.Count];
+                for (int ci = 0; ci < infos.Length; ci++)
+                {
+                    int headeri = linecounter ? ci + 1 : ci;
+                    string htxt;
+                    lock (locker)
+                        htxt = lvTabl.Columns[headeri].Text;
+                    string info = "";
+                    switch (htxt)
+                    {
+                        case "GUID":
+                            lock (locker) info = Loaded[oi].ObjectId.ToString();
+                            break;
+                        case "Type":
+                            lock (locker) info = Loaded[oi].Object().ObjectType.ToString();
+                            break;
+                        case "Name":
+                            lock (locker) info = Loaded[oi].Object().Name;
+                            break;
+                        case "Layer":
+                            int lidx;
+                            Layer l;
+                            lock (locker)
+                            {
+                                lidx = Loaded[oi].Object().Attributes.LayerIndex;
+                                l = ParentDoc.Layers.FindIndex(lidx);
+                                info = l.Name;
+                            }
+                            break;
+                        case "Color":
+                            Color c;
+                            lock (locker) c = Loaded[oi].Object().Attributes.DrawColor(ParentDoc);
+                            if (cf == 0)
+                                info = c.ToString();
+                            else if (cf == 1)
+                                info = string.Format("{0}-{1}-{2}", c.R, c.G, c.B);
+                            else
+                                info = string.Format("{0},{1},{2}", c.R, c.G, c.B);
+                            break;
+                        case "LineType":
+                            int lti;
+                            lock (locker) lti = ParentDoc.Linetypes.LinetypeIndexForObject(Loaded[oi].Object());
+                            info = ParentDoc.Linetypes[lti].Name;
+                            break;
+                        case "PrintWidth":
+                            double pw;
+                            lock (locker)
+                            {
+                                var obj = Loaded[oi].Object();
+                                var pws = obj.Attributes.PlotWeightSource;
+                                if (pws == ObjectPlotWeightSource.PlotWeightFromLayer)
+                                {
+                                    lidx = obj.Attributes.LayerIndex;
+                                    l = ParentDoc.Layers.FindIndex(lidx);
+                                    pw = l.PlotWeight;
+                                }
+                                else pw = obj.Attributes.PlotWeight;
+                            }
+                            if (seeunits) info = pw.ToString(culture, CultureInfo.InvariantCulture) + "pt";
+                            else info = pw.ToString(culture, CultureInfo.InvariantCulture);
+                            break;
+                        case "PrintColor":
+                            Color pc;
+                            lock (locker)
+                            {
+                                var obj = Loaded[oi].Object();
+                                var pcs = obj.Attributes.PlotColorSource;
+                                if (pcs == ObjectPlotColorSource.PlotColorFromLayer)
+                                {
+                                    lidx = obj.Attributes.LayerIndex;
+                                    l = ParentDoc.Layers.FindIndex(lidx);
+                                    pc = l.PlotColor;
+                                }
+                                else pc = obj.Attributes.PlotColor;
+                            }
+                            if (cf == 0)
+                                info = pc.ToString();
+                            else if (cf == 1)
+                                info = string.Format("{0}-{1}-{2}", pc.R, pc.G, pc.B);
+                            else
+                                info = string.Format("{0} {1} {2}", pc.R, pc.G, pc.B);
+                            break;
+                        case "Material":
+                            lock (locker)
+                            {
+                                var mti = Loaded[oi].Object().Attributes.MaterialIndex;
+                                var mt = ParentDoc.Materials.FindIndex(mti);
+                                if (mt != null) info = mt.Name;
+                            }
+                            break;
+                        case "Length":
+                            string len = "";
+                            lock (locker)
+                            {
+                                var obj = Loaded[oi].Object();
+                                if (obj.ObjectType == ObjectType.Curve)
+                                {
+                                    double len_num = Loaded[oi].Curve().GetLength();
+                                    len_num = Math.Round(len_num * su, dp); // scale + decimal place
+                                    if (ts == ",")
+                                        len = KMarker(len_num, ',', dp);
+                                    else if (ts == ".")
+                                        len = KMarker(len_num, '.', dp);
+                                    else if (ts == " ")
+                                        len = KMarker(len_num, ' ', dp);
+                                    else len = len_num.ToString(culture, CultureInfo.InvariantCulture);
+                                }
+                            }
+                            if (seeunits && len != null) len += LenUnit(); // with unit
+                            info = len;
+                            break;
+                        case "Area":
+                            Brep obrep = null;
+                            Curve ocrv = null;
+                            Mesh omesh = null;
+                            lock (locker)
+                            {
+                                var obj = Loaded[oi].Object();
+                                switch (obj.ObjectType)
+                                {
+                                    case ObjectType.Brep:
+                                        obrep = Loaded[oi].Brep().DuplicateBrep();
+                                        break;
+                                    case ObjectType.Extrusion:
+                                        obrep = Brep.TryConvertBrep(obj.Geometry).DuplicateBrep();
+                                        break;
+                                    case ObjectType.Surface:
+                                        obrep = Brep.TryConvertBrep(obj.Geometry).DuplicateBrep();
+                                        break;
+                                    case ObjectType.Curve:
+                                        ocrv = Loaded[oi].Curve().DuplicateCurve();
+                                        break;
+                                    case ObjectType.Mesh:
+                                        omesh = Loaded[oi].Mesh().DuplicateMesh();
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                            //compute
+                            AreaMassProperties amp = null;
+                            if (obrep != null)
+                                amp = AreaMassProperties.Compute(obrep);
+                            else if (ocrv != null)
+                                if (ocrv.IsClosed)
+                                    amp = AreaMassProperties.Compute(ocrv);
+                                else amp = null;
+                            else if (omesh != null)
+                                amp = AreaMassProperties.Compute(omesh);
+                            // formatting
+                            if (amp != null)
+                            {
+                                double area_num = Math.Round(amp.Area * su, dp);
+                                string area;
+                                if (ts == ",")
+                                    area = KMarker(area_num, ',', dp);
+                                else if (ts == ".")
+                                    area = KMarker(area_num, '.', dp);
+                                else if (ts == " ")
+                                    area = KMarker(area_num, ' ', dp);
+                                else area = area_num.ToString(culture, CultureInfo.InvariantCulture);
+
+                                if (seeunits)
+                                {
+                                    if (cun != "" && cun != null)
+                                        info = area + cun + "\xB2";
+                                    else
+                                        info = area + LenUnit() + "\xB2";
+                                }
+                                else info = area;
+                            }
+                            break;
+                        case "Volume":
+                            obrep = null;
+                            omesh = null;
+                            lock (locker)
+                            {
+                                var obj = Loaded[oi].Object();
+                                switch (obj.ObjectType)
+                                {
+                                    case ObjectType.Brep:
+                                        obrep = Loaded[oi].Brep().DuplicateBrep();
+                                        break;
+                                    case ObjectType.Extrusion:
+                                        obrep = Brep.TryConvertBrep(obj.Geometry).DuplicateBrep();
+                                        break;
+                                    case ObjectType.Surface:
+                                        obrep = Brep.TryConvertBrep(obj.Geometry).DuplicateBrep();
+                                        break;
+                                    case ObjectType.Mesh:
+                                        omesh = Loaded[oi].Mesh().DuplicateMesh();
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                            // compute
+                            string vol = null;
+                            if (obrep != null)
+                                if (obrep.IsSolid)
+                                {
+                                    double vol_num = obrep.GetVolume(rtol, tol);
+                                    vol_num = Math.Round(vol_num * su, dp);
+                                    if (ts == ",")
+                                        vol = KMarker(vol_num, ',', dp);
+                                    else if (ts == ".")
+                                        vol = KMarker(vol_num, '.', dp);
+                                    else if (ts == " ")
+                                        vol = KMarker(vol_num, ' ', dp);
+                                    else vol = vol_num.ToString(culture, CultureInfo.InvariantCulture);
+                                }
+                                else
+                                    vol = 0.ToString(culture, CultureInfo.InvariantCulture);
+                            else if (omesh != null)
+                                if (omesh.IsClosed)
+                                {
+                                    VolumeMassProperties vmp = VolumeMassProperties.Compute(omesh);
+                                    double vol_num = vmp.Volume;
+                                    vol_num = Math.Round(vol_num * su, dp); // scale unit + decimla place
+                                    if (ts == ",")
+                                        vol = KMarker(vol_num, ',', dp);
+                                    else if (ts == ".")
+                                        vol = KMarker(vol_num, '.', dp);
+                                    else if (ts == " ")
+                                        vol = KMarker(vol_num, ' ', dp);
+                                    else vol = vol_num.ToString(culture, CultureInfo.InvariantCulture);
+                                }
+                                else
+                                    vol = 0.ToString(culture, CultureInfo.InvariantCulture);
+                            // formatting
+                            if (!seeunits || vol == null) info = vol;
+                            else if (vol != "open brep" && vol != "invalid extrusion")
+                            {
+                                if (cun != "" && cun != null)
+                                    info = vol + cun + "\xB3";
+                                else info = vol + LenUnit() + "\xB3";
+                            }
+                            break;
+                        case "NumPts":
+                            lock (locker)
+                            {
+                                var obj = Loaded[oi].Object();
+                                if (obj.ObjectType == ObjectType.Curve)
+                                    info = Loaded[oi].Curve().ToNurbsCurve().Points.Count.ToString();
+                                else if (obj.ObjectType == ObjectType.Mesh)
+                                    info = Loaded[oi].Mesh().Vertices.Count.ToString();
+                                else if (obj.Geometry.HasBrepForm)
+                                    info = Brep.TryConvertBrep(obj.Geometry).Vertices.Count.ToString();
+                            }
+                            break;
+                        case "NumEdges":
+                            lock (locker)
+                            {
+                                var obj = Loaded[oi].Object();
+                                if (obj.ObjectType == ObjectType.Brep)
+                                    info = Loaded[oi].Brep().Edges.Count.ToString();
+                                else if (obj.ObjectType == ObjectType.Extrusion)
+                                    if (obj.Geometry.HasBrepForm)
+                                        info = Brep.TryConvertBrep(obj.Geometry).Edges.Count.ToString();
+                                    else info = "invalid extrusion";
+                                else if (obj.ObjectType == ObjectType.Mesh)
+                                    info = Loaded[oi].Mesh().TopologyEdges.Count.ToString();
+                            }
+                            break;
+                        case "NumFaces":
+                            lock (locker)
+                            {
+                                var obj = Loaded[oi].Object();
+                                if (obj.ObjectType == ObjectType.Brep)
+                                    info = Loaded[oi].Brep().Faces.Count.ToString();
+                                else if (obj.ObjectType == ObjectType.Extrusion)
+                                    if (obj.Geometry.HasBrepForm)
+                                        info = Brep.TryConvertBrep(obj.Geometry).Faces.Count.ToString();
+                                    else info = "invalid extrusion";
+                                else if (obj.ObjectType == ObjectType.Mesh)
+                                    info = Loaded[oi].Mesh().Faces.Count.ToString();
+                            }
+                            break;
+                        case "Degree":
+                            lock (locker)
+                            {
+                                var obj = Loaded[oi].Object();
+                                if (obj.ObjectType == ObjectType.Curve)
+                                    info = Loaded[oi].Curve().Degree.ToString();
+                                else if (obj.Geometry.HasBrepForm)
+                                {
+                                    var faces = Loaded[oi].Brep().Faces;
+                                    if (faces.Count > 1) info = "multiple";
+                                    else
+                                    {
+                                        var d0 = faces[0].UnderlyingSurface().Degree(0);
+                                        var d1 = faces[0].UnderlyingSurface().Degree(1);
+                                        var dg = d0 > d1 ? d0 : d1;
+                                        info = dg.ToString();
+                                    }
+                                }
+                            }
+                            break;
+                        case "IsPlanar":
+                            lock (locker)
+                            {
+                                var obj = Loaded[oi].Object();
+                                if (obj.ObjectType == ObjectType.Brep)
+                                {
+                                    Brep brep = Loaded[oi].Brep();
+                                    if (brep.IsSurface)
+                                        if (brep.Faces[0].IsPlanar())
+                                            info = "yes";
+                                        else info = "no";
+                                    else info = "polysrf";
+                                }
+                                else if (obj.ObjectType == ObjectType.Curve)
+                                    if (Loaded[oi].Curve().IsPlanar())
+                                        info = "yes";
+                                    else info = "no";
+                                else if (obj.ObjectType == ObjectType.Extrusion)
+                                    if (obj.Geometry.HasBrepForm)
+                                    {
+                                        Brep brep = Brep.TryConvertBrep(obj.Geometry);
+                                        if (brep.IsSurface)
+                                            if (brep.Faces[0].IsPlanar())
+                                                info = "yes";
+                                            else info = "no";
+                                        else info = "polysrf";
+                                    }
+                                    else info = "invalid extrusion";
+                                else info = "irrelevant";
+                            }
+                            break;
+                        case "IsClosed":
+                            lock (locker)
+                            {
+                                var obj = Loaded[oi].Object();
+                                if (obj.ObjectType == ObjectType.Brep)
+                                {
+                                    Brep brep = Loaded[oi].Brep();
+                                    if (brep.IsSolid)
+                                        info = "yes";
+                                    else info = "no";
+                                }
+                                else if (obj.ObjectType == ObjectType.Curve)
+                                    if (Loaded[oi].Curve().IsClosed)
+                                        info = "yes";
+                                    else info = "no";
+                                else if (obj.ObjectType == ObjectType.Extrusion)
+                                    if (obj.Geometry.HasBrepForm)
+                                    {
+                                        Brep brep = Brep.TryConvertBrep(obj.Geometry);
+                                        if (brep.IsSolid)
+                                            info = "yes";
+                                        else info = "no";
+                                    }
+                                    else info = "invalid extrusion";
+                                else info = "irrelevant";
+                            }
+                            break;
+                        case "Comments":
+                            lock (locker)
+                            {
+                                var obj = Loaded[oi].Object();
+                                var usertxts = obj.Attributes.GetUserStrings(); // it's like a dictionary
+                                string txt = "";
+                                if (usertxts.AllKeys.Contains("Tabl_"))
+                                    txt = usertxts["Tabl_"];
+                                else if (usertxts.Count == 1)
+                                    txt = usertxts[usertxts.AllKeys[0]];
+                                else
+                                    txt = "keys: " + string.Join(";", usertxts.AllKeys);
+                                info = txt.Length <= 50 ? txt : txt.Substring(0, 50) + "(...truncated)";
+                            }
+                            break;
+                        case "LocationPt":
+                            lock (locker)
+                                g = Loaded[oi].Geometry().Duplicate();
+                            Point3d ctr = g.GetBoundingBox(false).Center;
+                            double px = Math.Round(ctr.X * su, dp);
+                            double py = Math.Round(ctr.Y * su, dp);
+                            double pz = Math.Round(ctr.Z * su, dp);
+                            info = string.Format("{0}, {1}, {2}",
+                                px.ToString(culture, CultureInfo.InvariantCulture),
+                                py.ToString(culture, CultureInfo.InvariantCulture),
+                                pz.ToString(culture, CultureInfo.InvariantCulture)
+                                );
+                            break;
+                        case "Extents":
+                            lock (locker)
+                                g = Loaded[oi].Geometry().Duplicate();
+                            BoundingBox bb = g.GetBoundingBox(false);
+                            double xe = Math.Round(bb.Diagonal.X * su, dp);
+                            double ye = Math.Round(bb.Diagonal.Y * su, dp);
+                            double ze = Math.Round(bb.Diagonal.Z * su, dp);
+                            info = string.Format("{0}, {1}, {2}",
+                                xe.ToString(culture, CultureInfo.InvariantCulture),
+                                ye.ToString(culture, CultureInfo.InvariantCulture),
+                                ze.ToString(culture, CultureInfo.InvariantCulture)
+                                );
+                            break;
+                        default:
+                            break;
+                    }
+                    lock (locker)
+                        infos.SetValue(info, ci); // use index from enumerating infos.Length, headeri might get out of range
+                }
+
+                if (linecounter)
+                {
+                    List<string> infolist = new List<string> { (oi + 1).ToString(), };
+                    infolist.AddRange(infos);
+                    infos = infolist.ToArray();
+                }
+                lock (locker)
+                    queried.SetValue(new TablLineItem(infos, Loaded[oi].ObjectId), oi);
+            });
+
+            bad = todelete;
+            li = Array.FindAll(queried, i=>i!=null).ToList();
+        }
         /// <summary>
         /// get the line item fields for a tabl line
         /// </summary>
@@ -934,7 +1396,7 @@ namespace Tabl_
                 else
                     totals.SetValue("", i);
             }
-            return new TablLineItem(totals)
+            return new TablLineItem(totals, Guid.Empty)
             {
                 BackColor = Color.LightSteelBlue
             };
