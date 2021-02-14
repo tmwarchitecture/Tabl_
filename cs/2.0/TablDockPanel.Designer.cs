@@ -33,7 +33,7 @@
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.lvCtxtMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.thisWorkedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ShowColToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.msHeaders = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.gUIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -125,7 +125,7 @@
             // lvCtxtMenu
             // 
             this.lvCtxtMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.thisWorkedToolStripMenuItem,
+            this.ShowColToolStripMenuItem,
             this.editHighlightedToolStripMenuItem,
             this.fitCellWidthsToolStripMenuItem,
             this.copyTextsToolStripMenuItem,
@@ -134,12 +134,12 @@
             this.lvCtxtMenu.Name = "lvCtxtMenu";
             this.lvCtxtMenu.Size = new System.Drawing.Size(170, 136);
             // 
-            // thisWorkedToolStripMenuItem
+            // ShowColToolStripMenuItem
             // 
-            this.thisWorkedToolStripMenuItem.DropDown = this.msHeaders;
-            this.thisWorkedToolStripMenuItem.Name = "thisWorkedToolStripMenuItem";
-            this.thisWorkedToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
-            this.thisWorkedToolStripMenuItem.Text = "Show Columns";
+            this.ShowColToolStripMenuItem.DropDown = this.msHeaders;
+            this.ShowColToolStripMenuItem.Name = "ShowColToolStripMenuItem";
+            this.ShowColToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.ShowColToolStripMenuItem.Text = "Show Columns";
             // 
             // msHeaders
             // 
@@ -167,7 +167,6 @@
             this.isClosedToolStripMenuItem,
             this.commentsToolStripMenuItem});
             this.msHeaders.Name = "msHeader";
-            this.msHeaders.OwnerItem = this.thisWorkedToolStripMenuItem;
             this.msHeaders.ShowCheckMargin = true;
             this.msHeaders.ShowImageMargin = false;
             this.msHeaders.Size = new System.Drawing.Size(134, 488);
@@ -427,7 +426,7 @@
             this.copyTextsToolStripMenuItem.Name = "copyTextsToolStripMenuItem";
             this.copyTextsToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
             this.copyTextsToolStripMenuItem.Text = "Copy Text";
-            this.copyTextsToolStripMenuItem.ToolTipText = "Copy selected as raw text";
+            this.copyTextsToolStripMenuItem.ToolTipText = "Copy selected as CSV";
             this.copyTextsToolStripMenuItem.Click += new System.EventHandler(this.MenuStripCopyTabl_Click);
             // 
             // copySpreadsheetToolStripMenuItem
@@ -435,7 +434,7 @@
             this.copySpreadsheetToolStripMenuItem.Name = "copySpreadsheetToolStripMenuItem";
             this.copySpreadsheetToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
             this.copySpreadsheetToolStripMenuItem.Text = "Copy Spreadsheet";
-            this.copySpreadsheetToolStripMenuItem.ToolTipText = "Copy selected as CSV";
+            this.copySpreadsheetToolStripMenuItem.ToolTipText = "Copy selected as tab-separated values";
             this.copySpreadsheetToolStripMenuItem.Click += new System.EventHandler(this.MenuStripCopyTabl_Click);
             // 
             // zoomToHighlightedToolStripMenuItem
@@ -546,7 +545,7 @@
             this.btnRemove.Name = "btnRemove";
             this.btnRemove.Size = new System.Drawing.Size(25, 25);
             this.btnRemove.TabIndex = 1;
-            this.ttipBtns.SetToolTip(this.btnRemove, "Remove object from Tabl_");
+            this.ttipBtns.SetToolTip(this.btnRemove, "Select objects to remove");
             this.btnRemove.UseVisualStyleBackColor = true;
             this.btnRemove.Click += new System.EventHandler(this.Remove_Click);
             // 
@@ -665,7 +664,7 @@
         private System.Windows.Forms.ToolStripMenuItem isClosedToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem commentsToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip lvCtxtMenu;
-        private System.Windows.Forms.ToolStripMenuItem thisWorkedToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ShowColToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editHighlightedToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyTextsToolStripMenuItem;
         private System.Windows.Forms.ToolTip ttipBtns;

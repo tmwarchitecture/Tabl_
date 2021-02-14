@@ -6,9 +6,17 @@ Comments or ideas welcome at HotCoffeeGroup@gmail.com :e-mail:
 
 Feel free to report bugs by opening an issue in this repo.
 
-## Installation
+## Requirements
+Latest version requires Rhino 6 or Rhino 7 running on Windows.
 
-Run the `.rhi` file. You must have Rhino installed on your machine. To remove Tabl_ on a Windows machine, close Rhino first. Then go to "C:\Users\YOURNAME\AppData\Roaming\McNeel\Rhinoceros\7.0\Plug-ins\" and remove the Tabl_ folder. Restart Rhino and it will be unintalled. 
+## Installation
+1. Download the latest release from https://www.food4rhino.com/app/tabl
+
+2. Run the `.rhi` file and follow the instructions. 
+
+
+## Uninstallation
+To remove Tabl_ on a Windows machine, close Rhino first. Then go to "%AppData%\McNeel\Rhinoceros\7.0\Plug-ins\" (replace 7.0 with corresponding Rhino version) and delete the Tabl_ folder. Restart Rhino and it will be uninstalled. 
 
 ## Versions
 
@@ -27,7 +35,7 @@ Run the `.rhi` file. You must have Rhino installed on your machine. To remove Ta
 * Flexible formatting masks on data points.
 * Place the Tabl_ into the Rhino document as text objects.
 
-Tabl_ provides a column and row spreadsheet in which objects can be added and removed from. The user can then check which of the nearly two dozens properties to display as the columns in the spreadsheet. Each column can be sorted to provide a unique way of examining object properties. Tabl_ can also provide totals for numeric properties, allowing instant feedback on how the geometry is meeting project goals. Additionally, multiple options of formatting are available for numbers and colors, depending on the user requirements.
+Tabl_ provides a column and row spreadsheet in which objects can be added and removed from. The user can then check which of the nearly two dozen properties to display as the columns in the spreadsheet. Each column can be sorted to provide a unique way of examining object properties. Tabl_ can also provide totals for numeric properties, allowing instant feedback on how the geometry is meeting project goals. Additionally, multiple options of formatting are available for numbers and colors, depending on the user requirements.
 
 Once finished organizing and formatting the data, Tabl_ can export information to a CSV, or simply copy to the clipboard for pasting into other spreadsheet programs. Tabl_ can also be placed into the Rhino document model space or layout space as editable text objects.
 
