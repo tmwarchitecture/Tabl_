@@ -7,7 +7,7 @@ Comments or ideas welcome at HotCoffeeGroup@gmail.com :e-mail:
 Feel free to report bugs by opening an issue in this repo.
 
 ## Requirements
-Requires Rhino 6 or Rhino 7.
+Latest version requires Rhino 6 or Rhino 7 running on Windows.
 
 ## Installation
 1. Download the latest release from https://www.food4rhino.com/app/tabl
