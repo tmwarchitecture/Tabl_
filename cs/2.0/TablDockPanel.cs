@@ -53,7 +53,7 @@ namespace Tabl_
         private string[] ho = new string[]
         {
             "GUID","Type","Name","Layer","Color","LineType", "PrintColor","PrintWidth","Material","Length","Area", "Volume","NumPts","NumEdges","NumFaces", "Degree","LocationPt","Extents","IsPlanar","IsClosed","Comments",
-        };
+        }; //TODO: centroids (using AreaMassProp or VolMassProp)
         // delegate comparer, used to sort dict keys
         private int HeaderSorter(string a, string b)
         {
@@ -71,10 +71,6 @@ namespace Tabl_
             InitializeComponent();
             InitializeLVMS(); // listview menustrip
             InitializePtGetter(); // place tabl point getter
-            
-#if !DEBUG
-            btnEnv.Visible = false;
-#endif
 
             headers = new Dictionary<string, bool> {
                 {"GUID", false },
@@ -626,9 +622,6 @@ namespace Tabl_
 
         private void Env_Click(object sender, EventArgs e)
         {
-#if !DEBUG
-            return;
-#endif
             // this is debug popup
             string msg = "";
             msg += string.Format("Loaded: {0}", Loaded.Length);

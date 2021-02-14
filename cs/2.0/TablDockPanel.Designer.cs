@@ -167,6 +167,7 @@
             this.isClosedToolStripMenuItem,
             this.commentsToolStripMenuItem});
             this.msHeaders.Name = "msHeader";
+            this.msHeaders.OwnerItem = this.ShowColToolStripMenuItem;
             this.msHeaders.ShowCheckMargin = true;
             this.msHeaders.ShowImageMargin = false;
             this.msHeaders.Size = new System.Drawing.Size(134, 488);
@@ -596,6 +597,7 @@
             this.btnEnv.Size = new System.Drawing.Size(25, 25);
             this.btnEnv.TabIndex = 1;
             this.btnEnv.UseVisualStyleBackColor = false;
+            this.btnEnv.Visible = false;
             this.btnEnv.Click += new System.EventHandler(this.Env_Click);
             // 
             // TablDockPanel
