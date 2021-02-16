@@ -14,6 +14,8 @@ Latest version requires Rhino 6 or Rhino 7 running on Windows.
 
 2. Run the `.rhi` file and follow the instructions. 
 
+3. Type 'LaunchTabl_" into the Rhino command line to view that dockable tab.
+
 
 ## Uninstallation
 To remove Tabl_ on a Windows machine, close Rhino first. Then go to "%AppData%\McNeel\Rhinoceros\7.0\Plug-ins\" (replace 7.0 with corresponding Rhino version) and delete the **Tabl_** folder. Restart Rhino and it will be uninstalled. 
@@ -72,3 +74,5 @@ Type "LaunchTabl" in Rhino to call up the main interface. From v2.0 onwards, **T
 ![alt text](https://github.com/tmwarchitecture/Tabl_/blob/master/cs/2.0/Resources/Settings%402x.png) settings for **Tabl_**
 
 Right click in the main **Tabl_** area to access context menu options, one of which is to select the object properties to display (spreadsheet columns). 
+
+Press **Delete** to remove a highlighted element from Tabl_.
