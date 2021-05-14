@@ -10,12 +10,11 @@ Feel free to report bugs by opening an issue in this repo.
 Latest version requires Rhino 6 or Rhino 7 running on Windows.
 
 ## Installation
-1. Download the latest release from https://www.food4rhino.com/app/tabl
+ 1. Download the latest release from https://www.food4rhino.com/app/tabl
+ 2. Run the `.rhi` file and follow the instructions. 
+ 3. Type 'LaunchTabl_" into the Rhino command line to view that dockable tab.
 
-2. Run the `.rhi` file and follow the instructions. 
-
-3. Type 'LaunchTabl_" into the Rhino command line to view that dockable tab.
-
+Rhino 7 users can find Tabl_ in the package manager
 
 ## Uninstallation
 To remove Tabl_ on a Windows machine, close Rhino first. Then go to "%AppData%\McNeel\Rhinoceros\7.0\Plug-ins\" (replace 7.0 with corresponding Rhino version) and delete the **Tabl_** folder. Restart Rhino and it will be uninstalled. 
