@@ -52,25 +52,25 @@ Once finished organizing and formatting the data, **Tabl_** can export informati
 
 Type "LaunchTabl" in Rhino to call up the main interface. From v2.0 onwards, **Tabl_** integrates with Rhino docked panels so it can be snapped and sorted with other tabbed tools.
 
-![alt text](https://github.com/tmwarchitecture/Tabl_/blob/master/cs/2.0/Resources/Add%402x.png) click to select objects in the Rhino model and add to **Tabl_**
+![alt text](https://github.com/tmwarchitecture/Tabl_/blob/master/cs/v2/Resources/Add%402x.png) click to select objects in the Rhino model and add to **Tabl_**
 
-![alt text](https://github.com/tmwarchitecture/Tabl_/blob/master/cs/2.0/Resources/Export%402x.png) export full **Tabl_** spreadsheet as a CSV document
+![alt text](https://github.com/tmwarchitecture/Tabl_/blob/master/cs/v2/Resources/Export%402x.png) export full **Tabl_** spreadsheet as a CSV document
 
-![alt text](https://github.com/tmwarchitecture/Tabl_/blob/master/cs/2.0/Resources/Import%402x.png) import from CSV files (must have GUID column for **Tabl_** to recognize Rhino objects)
+![alt text](https://github.com/tmwarchitecture/Tabl_/blob/master/cs/v2/Resources/Import%402x.png) import from CSV files (must have GUID column for **Tabl_** to recognize Rhino objects)
 
-![alt text](https://github.com/tmwarchitecture/Tabl_/blob/master/cs/2.0/Resources/Info%402x.png) About splash
+![alt text](https://github.com/tmwarchitecture/Tabl_/blob/master/cs/v2/Resources/Info%402x.png) About splash
 
-![alt text](https://github.com/tmwarchitecture/Tabl_/blob/master/cs/2.0/Resources/Placement%402x.png) place a **Tabl_** in the Rhino 3d environment
+![alt text](https://github.com/tmwarchitecture/Tabl_/blob/master/cs/v2/Resources/Placement%402x.png) place a **Tabl_** in the Rhino 3d environment
 
-![alt text](https://github.com/tmwarchitecture/Tabl_/blob/master/cs/2.0/Resources/Refresh%402x.png) refresh **Tabl_**
+![alt text](https://github.com/tmwarchitecture/Tabl_/blob/master/cs/v2/Resources/Refresh%402x.png) refresh **Tabl_**
 
-![alt text](https://github.com/tmwarchitecture/Tabl_/blob/master/cs/2.0/Resources/Remove%402x.png) click to remove from Rhino document by selecting them in the model
+![alt text](https://github.com/tmwarchitecture/Tabl_/blob/master/cs/v2/Resources/Remove%402x.png) click to remove from Rhino document by selecting them in the model
 
-![alt text](https://github.com/tmwarchitecture/Tabl_/blob/master/cs/2.0/Resources/Select%402x.png) select what's highlighted in **Tabl_** in the Rhino model
+![alt text](https://github.com/tmwarchitecture/Tabl_/blob/master/cs/v2/Resources/Select%402x.png) select what's highlighted in **Tabl_** in the Rhino model
 
-![alt text](https://github.com/tmwarchitecture/Tabl_/blob/master/cs/2.0/Resources/Trash%402x.png) delete all records in **Tabl_** (does not delete Rhino object)
+![alt text](https://github.com/tmwarchitecture/Tabl_/blob/master/cs/v2/Resources/Trash%402x.png) delete all records in **Tabl_** (does not delete Rhino object)
 
-![alt text](https://github.com/tmwarchitecture/Tabl_/blob/master/cs/2.0/Resources/Settings%402x.png) settings for **Tabl_**
+![alt text](https://github.com/tmwarchitecture/Tabl_/blob/master/cs/v2/Resources/Settings%402x.png) settings for **Tabl_**
 
 Right click in the main **Tabl_** area to access context menu options, one of which is to select the object properties to display (spreadsheet columns). 
 
