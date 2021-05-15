@@ -335,7 +335,7 @@ namespace Tabl_
         }
 
         /// <summary>
-        /// lock or unlock objects within Tabl_ loaded, should be called in pairs
+        /// lock or unlock objects within Tabl_ loaded, MUST be called in pairs
         /// </summary>
         /// <param name="l">set true to lock already in tabl_</param>
         private void AddPickFilter(bool l)
@@ -352,7 +352,7 @@ namespace Tabl_
             ParentDoc.Views.RedrawEnabled = true;
         }
         /// <summary>
-        /// lock or unlock objects outside the Tabl_ loaded objects, should be called in pairs
+        /// lock or unlock objects outside the Tabl_ loaded objects, MUST be called in pairs
         /// </summary>
         /// <param name="expt">exempt objects, lock status won't alter</param>
         /// <param name="l">set true to lock (enter picking)</param>
