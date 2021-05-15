@@ -411,11 +411,7 @@ namespace Tabl_
         }
         private void MenuStripMatChange_Click(object sender, EventArgs e)
         {
-            // TODO: needs working material assignment
-#if !DEBUG
-            MessageBox.Show("not implemented...");
-#else
-            int matidx;
+            string cmd;
             List<string> mats = new List<string>();
             foreach (RenderMaterial mat in ParentDoc.RenderMaterials)
             {
@@ -423,7 +419,9 @@ namespace Tabl_
             }
             object selection = Dialogs.ShowListBox("Materials", "select target material", mats);
             if (selection is string lname)
-                matidx = ParentDoc.Materials.Find(lname, true);
+            {
+                cmd = "-_RenderAssignMaterialToObjects " + lname + " ";
+            }
             else
             {
                 MessageBox.Show("Material selection failed. Either no material in the document or selection improper", "Failed", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -433,22 +431,19 @@ namespace Tabl_
             int errn = 0;
             foreach (TablLineItem tli in lvTabl.SelectedItems)
             {
-                ObjRef oref = new ObjRef(tli.RefId);
-                var obj = oref.Object();
-                obj.Attributes.MaterialSource = ObjectMaterialSource.MaterialFromObject;
-                if (matidx == -1)
-                {
-                    errn++;
-                    continue;
-                }
-                obj.Attributes.MaterialIndex = matidx;
-                if (!obj.CommitChanges())
-                    errn++;
+                ParentDoc.Views.RedrawEnabled = false;
+
+                ParentDoc.Objects.Select(tli.RefId, true);
+                RhinoApp.RunScript(cmd, false);
+                ParentDoc.Objects.Select(tli.RefId, false);
+
+                ParentDoc.Views.RedrawEnabled = true;
+                ParentDoc.Views.Redraw();
             }
             if (errn > 0)
                 MessageBox.Show(string.Format("error changing {0} material(s)\nplease email support\nsorry about the inconvenience", errn));
             RefreshTabl();
-#endif
+
         }
         private void MenuStripCommentsChange_Click(object sender, EventArgs e)
         {
